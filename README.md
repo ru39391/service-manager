@@ -27,7 +27,7 @@
 
 ### Дизайн интерфейса
 
-Без авторского макета. Предполагается использование готовых одного из готовых решений:
+Без авторского макета. Предполагается использование одного из готовых решений:
 - [https://tailwindcss.com/](https://tailwindcss.com/)
 - [https://mui.com/](https://mui.com/)
 - [https://getbootstrap.com/](https://getbootstrap.com/)
