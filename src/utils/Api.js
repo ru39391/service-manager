@@ -21,8 +21,8 @@ class Api extends Component {
     };
   }
 
-  getDepts() {
-    return fetch(`${this._baseUrl}depts`, {
+  getData(path) {
+    return fetch(`${this._baseUrl}${path}`, {
       method: 'GET',
       headers: this._setHeaders()
     })

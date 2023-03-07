@@ -1,6 +1,13 @@
 import { useState, useEffect } from 'react'
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
+import {
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
+  Collapse
+} from '@mui/material';
 import api from '../../utils/Api';
 import storage from '../../utils/Storage';
 import { DEFAULT_DOC_TITLE } from '../../utils/constants';
@@ -17,16 +24,19 @@ function App() {
   });
 
   function handleDepts() {
-    api.getDepts()
-      .then(res => {
+    Promise.all(['depts','pages'].map(item => api.getData(item)))
+      .then(([...res]) => {
+        console.log(res);
+        /*
         const { data } = res;
         const depts = storage.handleData('depts', data);
         setDeptsList(depts);
 
         const { name } = depts[0];
         setDocTitle(name);
+        */
       })
-      .catch(err => {
+      .catch((err) => {
         console.log(err);
       });
   }
@@ -42,8 +52,9 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      <div className="App">
-      </div>
+      <List component="nav">
+        {/*deptsList.map((deptsListItem) => (<ListItemButton><ListItemText key={deptsListItem.id} primary={deptsListItem.name} /></ListItemButton>))*/}
+      </List>
     </ThemeProvider>
   )
 }
