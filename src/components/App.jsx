@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Nav from './Nav';
 import Wrapper from './Wrapper';
@@ -22,7 +22,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <Grid container spacing={4}>
-        <Grid item xs="auto"><Nav /></Grid>
+        <Grid item xs={3} sx={{ maxWidth: 450 }}><Nav /></Grid>
         <Grid item xs><Wrapper /></Grid>
       </Grid>
     </ThemeProvider>

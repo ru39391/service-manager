@@ -1,11 +1,10 @@
+import { useEffect } from 'react';
 import { shallow } from 'zustand/shallow';
+import useNav from '../store/NavStore';
 import useDepts from '../store/DeptsStore';
+import NavItem from './NavItem';
 import {
   List,
-  ListItemButton,
-  ListItemIcon,
-  ListItemText,
-  Collapse,
   LinearProgress,
   Snackbar,
   Alert
@@ -21,19 +20,34 @@ function Nav() {
     shallow
   );
 
-  function showBtnData(data) {
-    console.log(data);
-  }
+  const {
+    expanders,
+    setExpanders,
+    currExpander,
+    expandChildren
+  } = useNav(
+    (state) => ({
+      expanders: state.expanders,
+      currExpander: state.currExpander,
+      setExpanders: state.setExpanders,
+      expandChildren: state.expandChildren,
+    }),
+    shallow
+  );
 
-  function renderNav(data) {
-    const { id, name } = data;
-    return <ListItemButton key={id.toString()} onClick={() => showBtnData(data)}><ListItemText primary={name} /></ListItemButton>;
-  }
+  useEffect(() => {
+    setExpanders(depts)
+  }, [depts]);
+
+  useEffect(() => {
+    console.log(expanders.find(item => item.id === currExpander.id));
+    console.log(currExpander);
+  }, [expanders]);
 
   return (
     <>
       {isLoading && <LinearProgress />}
-      <List component="nav">{depts.map((item) => renderNav(item))}</List>
+      <List component="nav">{depts.map((item) => <NavItem key={item.id} id={item.id} name={item.name} subdepts={item.subdepts} expandChildren={expandChildren} expanders={expanders} />)}</List>
       {error && <Snackbar
         anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
         open
