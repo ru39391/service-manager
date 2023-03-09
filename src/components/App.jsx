@@ -2,7 +2,9 @@ import { useEffect } from 'react';
 import CssBaseline from '@mui/material/CssBaseline';
 import Nav from './Nav';
 import Wrapper from './Wrapper';
-import { Box, Grid } from '@mui/material';
+import Preloader from './Preloader';
+import AlertError from './AlertError';
+import { Grid } from '@mui/material';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { DEFAULT_DOC_TITLE } from '../utils/constants';
 import '@fontsource/roboto/400.css';
@@ -21,6 +23,8 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <Preloader />
+      <AlertError />
       <Grid container spacing={4}>
         <Grid item xs={3} sx={{ maxWidth: 450 }}><Nav /></Grid>
         <Grid item xs><Wrapper /></Grid>
@@ -29,4 +33,4 @@ function App() {
   )
 }
 
-export default App
+export default App;

@@ -46,4 +46,4 @@ function NavItem({ id, name, subdepts, expandChildren, expanders }) {
   )
 }
 
-export default NavItem
+export default NavItem;

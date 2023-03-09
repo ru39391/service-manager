@@ -3,19 +3,12 @@ import { shallow } from 'zustand/shallow';
 import useNav from '../store/NavStore';
 import useDepts from '../store/DeptsStore';
 import NavItem from './NavItem';
-import {
-  List,
-  LinearProgress,
-  Snackbar,
-  Alert
-} from '@mui/material';
+import { List } from '@mui/material';
 
 function Nav() {
-  const { depts, isLoading, error } = useDepts(
+  const { depts } = useDepts(
     (state) => ({
       depts: state.depts,
-      isLoading: state.isLoading,
-      error: state.error,
     }),
     shallow
   );
@@ -45,20 +38,10 @@ function Nav() {
   }, [expanders]);
 
   return (
-    <>
-      {isLoading && <LinearProgress />}
-      <List component="nav">{depts.map((item) => <NavItem key={item.id} id={item.id} name={item.name} subdepts={item.subdepts} expandChildren={expandChildren} expanders={expanders} />)}</List>
-      {error && <Snackbar
-        anchorOrigin={{ horizontal: 'left', vertical: 'top' }}
-        open
-        autoHideDuration={6000}
-        message={error}
-        key="error"
-      >
-        <Alert severity="error" variant="filled" sx={{ width: '100%' }}>{error}</Alert>
-      </Snackbar>}
-    </>
+    <List component="nav">
+      {depts.map((item) => <NavItem key={item.id} id={item.id} name={item.name} subdepts={item.subdepts} expandChildren={expandChildren} expanders={expanders} />)}
+    </List>
   )
 }
 
-export default Nav
+export default Nav;
