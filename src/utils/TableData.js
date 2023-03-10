@@ -22,12 +22,15 @@ class TableData extends Component {
     this._popItems(keysArr, poppedCounter);
 
     return keysArr.map((item, index, arr) => {
+      const caption = COL_TITLES[arr[index].toUpperCase()];
       return item === 'id' ? {
         field: item,
-        hide: true
+        hide: true,
       } : {
         field: `col${index}`,
-        headerName: COL_TITLES[arr[index].toUpperCase()]
+        headerName: caption,
+        flex: caption.length > 4 ? 1 : 0,
+        width: caption.length > 4 ? 'auto' : 100,
       };
     });
   }

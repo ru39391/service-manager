@@ -17,6 +17,6 @@ function AlertError() {
       </Snackbar>}
     </>
   )
-}
+};
 
 export default AlertError;

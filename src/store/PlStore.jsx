@@ -12,18 +12,39 @@ const usePricelist = create(devtools((set, get) => ({
   isLoading: true,
   error: null,
   fetchPriceList: api.fetchData(PRICELIST_PATH)
-    .then((res) => {
+    .then(({ data }) => {
       set({
-        pricelist: res.data,
-        priceTableCols: tableData.setColumns(res.data, 3),
-        priceTableRows: tableData.setRows(res.data, 3),
+        pricelist: data,
+        priceTableCols: tableData.setColumns(data, 3),
         isLoading: false,
-        error: null
+        error: null,
       })
     })
     .catch((err) => {
       set({ isLoading: false, error: PRICELIST_ERROR_MSG })
     }),
+  handlePlRows: (arr) => {
+    const findItem = (array, value) => { return array.find(({ id }) => id === value) };
+    const deptsArr = arr.map(({ id, name, subdepts }) => ({ id, name, subdepts }));
+
+    const rowsArr = get().pricelist.map(({ id, name, price, dept, subdept, group }) => {
+      const { name: deptName, subdepts } = findItem(deptsArr, dept);
+      const { name: subDeptName } = findItem(Object.values(subdepts), subdept);
+      return {
+        id,
+        name,
+        price,
+        dept: deptName,
+        subdept: subDeptName,
+        group,
+      };
+    });
+
+    set({ priceTableRows: tableData.setRows(rowsArr) });
+  },
+  getPlRowData: ({ id }) => {
+    console.log(get().pricelist[id - 1]);
+  }
 })));
 
 export default usePricelist;

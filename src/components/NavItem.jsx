@@ -4,12 +4,12 @@ import {
   ListItemIcon,
   ListItemText,
   Collapse,
-  IconButton
+  IconButton,
 } from '@mui/material';
 import {
   FolderOpen,
   ExpandMore,
-  ExpandLess
+  ExpandLess,
 } from '@mui/icons-material';
 
 function NavItem({ id, name, subdepts, expandChildren, expanders }) {
@@ -30,13 +30,13 @@ function NavItem({ id, name, subdepts, expandChildren, expanders }) {
       {subdeptsArr.length && <Collapse in={isExpanded} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
           {subdeptsArr.map(
-            (item) => <ListItemButton
-              key={item.id.toString()}
+            ({ id, name }) => <ListItemButton
+              key={id.toString()}
               sx={{ pl: 6, color: 'grey.600', fontSize: 14 }}>
                 <ListItemText
                   disableTypography
                   sx={{ m: 0 }}
-                  primary={item.name}
+                  primary={name}
                 />
               </ListItemButton>
           )}
@@ -44,6 +44,6 @@ function NavItem({ id, name, subdepts, expandChildren, expanders }) {
       </Collapse>}
     </>
   )
-}
+};
 
 export default NavItem;

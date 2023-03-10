@@ -6,14 +6,32 @@ import { DEPTS_ERROR_MSG } from '../utils/constants';
 
 const useDepts = create(devtools((set, get) => ({
   depts: [],
+  navExpanders: [],
   isLoading: true,
   error: null,
+  setNavExpanders: (arr) => {
+    return arr.map(({ id }) => ({ id, isExpanded: false }))
+  },
+  expandChildren: (id) => set({
+    navExpanders: get().navExpanders.map((item) => {
+      if(item.id === id) item.isExpanded = !item.isExpanded;
+      return item;
+    }),
+  }),
   fetchDepts: api.fetchData(DEPTS_PATH)
-    .then((res) => {
-      set({ depts: res.data, isLoading: false, error: null })
+    .then(({ data }) => {
+      set({
+        depts: data,
+        navExpanders: get().setNavExpanders(data),
+        isLoading: false,
+        error: null,
+      })
     })
     .catch((err) => {
-      set({ isLoading: false, error: DEPTS_ERROR_MSG })
+      set({
+        isLoading: false,
+        error: DEPTS_ERROR_MSG,
+      })
     }),
 })));
 

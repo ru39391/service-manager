@@ -1,11 +1,15 @@
 import useDepts from '../store/DeptsStore';
+import usePricelist from '../store/PlStore';
 import { LinearProgress } from '@mui/material';
 
 function Preloader() {
-  const isDeptsLoading = useDepts(state => state.isLoading);
+  const isLoadingArr = [
+    useDepts(state => state.isLoading),
+    usePricelist(state => state.isLoading),
+  ];
 
   return (
-    <>{isDeptsLoading && <LinearProgress />}</>
+    <>{isLoadingArr.every(item => item) && <LinearProgress />}</>
   )
 }
 
