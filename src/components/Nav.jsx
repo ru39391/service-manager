@@ -33,8 +33,8 @@ function Nav() {
   }, [depts]);
 
   useEffect(() => {
-    console.log(expanders.find(item => item.id === currExpander.id));
-    console.log(currExpander);
+    //console.log(expanders.find(item => item.id === currExpander.id));
+    //console.log(currExpander);
   }, [expanders]);
 
   return (

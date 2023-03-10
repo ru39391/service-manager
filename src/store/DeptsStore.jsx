@@ -13,7 +13,7 @@ const useDepts = create(devtools((set, get) => ({
       set({ depts: res.data, isLoading: false, error: null })
     })
     .catch((err) => {
-      set({ depts: [], isLoading: false, error: DEPTS_ERROR_MSG })
+      set({ isLoading: false, error: DEPTS_ERROR_MSG })
     }),
 })));
 
