@@ -20,14 +20,12 @@ const usePricelist = create(devtools((set, get) => ({
         error: null,
       })
     })
-    .catch((err) => {
-      set({ isLoading: false, error: PRICELIST_ERROR_MSG })
-    }),
-  handlePlRows: (arr) => {
+    .catch((err) => set({ isLoading: false, error: PRICELIST_ERROR_MSG })),
+  setPlRows: (arr) => set({ priceTableRows: tableData.setRows(arr) }),
+  handlePlRows: (arr, pricelist = get().pricelist) => {
     const findItem = (array, value) => { return array.find(({ id }) => id === value) };
     const deptsArr = arr.map(({ id, name, subdepts }) => ({ id, name, subdepts }));
-
-    const rowsArr = get().pricelist.map(({ id, name, price, dept, subdept, group }) => {
+    const rowsArr = pricelist.map(({ id, name, price, dept, subdept, group }) => {
       const { name: deptName, subdepts } = findItem(deptsArr, dept);
       const { name: subDeptName } = findItem(Object.values(subdepts), subdept);
       return {
@@ -39,8 +37,11 @@ const usePricelist = create(devtools((set, get) => ({
         group,
       };
     });
-
-    set({ priceTableRows: tableData.setRows(rowsArr) });
+    get().setPlRows(rowsArr);
+  },
+  setCurrentRows: (data, arr) => {
+    const { id, type } = data;
+    get().handlePlRows(arr, get().pricelist.filter(({ dept, subdept }) => dept === id));
   },
   getPlRowData: ({ id }) => {
     console.log(get().pricelist[id - 1]);

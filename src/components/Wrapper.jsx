@@ -19,12 +19,22 @@ const Transition = forwardRef(function Transition(props, ref) {
 });
 
 function Wrapper() {
-  const depts = useDepts(state => state.depts);
+  const {
+    depts,
+    currChapter,
+  } = useDepts(
+    (state) => ({
+      depts: state.depts,
+      currChapter: state.currChapter,
+    }),
+    shallow
+  );
   const {
     pricelist,
     priceTableCols,
     priceTableRows,
     handlePlRows,
+    setCurrentRows,
     getPlRowData,
   } = usePricelist(
     (state) => ({
@@ -32,6 +42,7 @@ function Wrapper() {
       priceTableCols: state.priceTableCols,
       priceTableRows: state.priceTableRows,
       handlePlRows: state.handlePlRows,
+      setCurrentRows: state.setCurrentRows,
       getPlRowData: state.getPlRowData,
     }),
     shallow
@@ -40,6 +51,10 @@ function Wrapper() {
   useEffect(() => {
     handlePlRows(depts);
   }, [pricelist]);
+
+  useEffect(() => {
+    setCurrentRows(currChapter, depts);
+  }, [currChapter]);
 
   return (
     <Container maxWidth="lg">
