@@ -49,17 +49,23 @@ function NavItem({
       {subdeptsArr.length && <Collapse in={isExpanded} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
           {subdeptsArr.map(
-            ({ id, name }) => <ListItemButton
+            ({ id, name }) =>
+            <ListItemButton
               key={id.toString()}
               selected={currentId === id && type === SUBDEPT_TYPE_NAME}
-              sx={{ pl: 6, color: 'grey.600', fontSize: 14 }}
-              onClick={() => setCurrChapter({ id, type: SUBDEPT_TYPE_NAME })}>
-                <ListItemText
-                  disableTypography
-                  sx={{ m: 0 }}
-                  primary={name}
-                />
-              </ListItemButton>
+              sx={{
+                pl: 6,
+                color: 'grey.600',
+                fontSize: 14,
+              }}
+              onClick={() => setCurrChapter({ id, type: SUBDEPT_TYPE_NAME })}
+            >
+              <ListItemText
+                disableTypography
+                sx={{ m: 0 }}
+                primary={name}
+              />
+            </ListItemButton>
           )}
         </List>
       </Collapse>}

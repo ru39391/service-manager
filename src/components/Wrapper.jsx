@@ -57,9 +57,20 @@ function Wrapper() {
   }, [currChapter]);
 
   return (
-    <Container maxWidth="lg">
+    <Container
+      sx={{
+        py: 5,
+        height: '100vh',
+      }}
+      maxWidth="lg"
+    >
       <DataGrid
-        sx={{ height: '100vh' }}
+        sx={{
+          border: 0,
+          height: '100%',
+          boxShadow: '0 2px 10px 0 rgba(0,0,0,.045)',
+          bgcolor: 'background.default',
+        }}
         rows={priceTableRows}
         columns={priceTableCols}
         onRowClick={({ row }) => {getPlRowData(row)}}

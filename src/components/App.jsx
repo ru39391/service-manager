@@ -13,6 +13,15 @@ function App() {
   const theme = createTheme({
     palette: {
       mode: 'light',
+      background: {
+        body: '#F4F5FA'
+      }
+    },
+    custom: {
+      dFlexColumn: {
+        display: 'flex',
+        flexDirection: 'column',
+      }
     }
   });
 
@@ -25,9 +34,14 @@ function App() {
       <CssBaseline />
       <Preloader />
       <AlertError />
-      <Grid container spacing={4}>
-        <Grid item xs={3} sx={{ maxWidth: 450 }}><Nav /></Grid>
-        <Grid item xs><Wrapper /></Grid>
+      <Grid
+        container
+        sx={{
+          bgcolor: 'background.body',
+        }}
+      >
+        <Grid item xs={3} sx={theme.custom.dFlexColumn}><Nav /></Grid>
+        <Grid item xs={9}><Wrapper /></Grid>
       </Grid>
     </ThemeProvider>
   )
