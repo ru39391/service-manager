@@ -1,22 +1,11 @@
-import { useEffect, forwardRef } from 'react';
+import { useEffect } from 'react';
 import { shallow } from 'zustand/shallow';
 import useDepts from '../store/DeptsStore';
 import usePricelist from '../store/PlStore';
+import Popup from './Popup';
 import NoRowsOverlay from './NoRowsOverlay';
-import {
-  Container,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
-  Slide,
-} from '@mui/material';
+import { Container } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-
-const Transition = forwardRef(function Transition(props, ref) {
-  return <Slide direction="up" ref={ref} {...props} />;
-});
 
 function Wrapper() {
   const {
@@ -36,6 +25,7 @@ function Wrapper() {
     handlePlRows,
     setCurrentRows,
     getPlRowData,
+    priceTableRowData,
   } = usePricelist(
     (state) => ({
       pricelist: state.pricelist,
@@ -44,6 +34,7 @@ function Wrapper() {
       handlePlRows: state.handlePlRows,
       setCurrentRows: state.setCurrentRows,
       getPlRowData: state.getPlRowData,
+      priceTableRowData: state.priceTableRowData,
     }),
     shallow
   );
@@ -76,27 +67,8 @@ function Wrapper() {
         onRowClick={({ row }) => {getPlRowData(row)}}
         slots={{ noRowsOverlay: NoRowsOverlay }}
       />
-      {/*
-      <Dialog
-        open={open}
-        TransitionComponent={Transition}
-        keepMounted
-        onClose={handleClose}
-        aria-describedby="alert-dialog-slide-description"
-      >
-        <DialogTitle>{"Use Google's location service?"}</DialogTitle>
-        <DialogContent>
-          <DialogContentText id="alert-dialog-slide-description">
-            Let Google help apps determine location. This means sending anonymous
-            location data to Google, even when no apps are running.
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={handleClose}>Disagree</Button>
-          <Button onClick={handleClose}>Agree</Button>
-        </DialogActions>
-      </Dialog>
-      */}
+
+      {Object.values(priceTableRowData).length && <Popup data={priceTableRowData} />}
     </Container>
   )
 }

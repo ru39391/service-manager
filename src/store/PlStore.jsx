@@ -9,6 +9,7 @@ const usePricelist = create(devtools((set, get) => ({
   pricelist: [],
   priceTableCols: [],
   priceTableRows: [],
+  priceTableRowData: {},
   isLoading: true,
   error: null,
   fetchPriceList: api.fetchData(PRICELIST_PATH)
@@ -48,8 +49,9 @@ const usePricelist = create(devtools((set, get) => ({
     const { id, type } = data;
     get().handlePlRows(arr, get().pricelist.filter(item => item[type] === id));
   },
-  getPlRowData: ({ col1 }) => {
-    console.log(get().pricelist.find(({ name }) => name.toLowerCase() === col1.toLowerCase()));
+  getPlRowData: (row = {}) => {
+    const priceTableRowData = Object.values(row).length ? get().pricelist.find(({ name }) => name.toLowerCase() === row.col1.toLowerCase()) : {};
+    set({ priceTableRowData });
   }
 })));
 
