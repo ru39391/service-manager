@@ -14,27 +14,23 @@ const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-function Popup({ data }) {
+function Popup({ data, closePopup, isOpen }) {
   return (
     <Dialog
-      open
+      open={isOpen}
       TransitionComponent={Transition}
       keepMounted
-      //onClose={handleClose}
       aria-describedby="alert-dialog-slide-description"
     >
-      <DialogTitle>{"Use Google's location service?"}</DialogTitle>
+      <DialogTitle>{`${data.id} - ${data.name}`}</DialogTitle>
       <DialogContent>
         <DialogContentText id="alert-dialog-slide-description" component="ul">
           {/* Object.values(data).map((item, index) => <Box component="li" key={index}>{item}</Box>) */}
         </DialogContentText>
       </DialogContent>
       <DialogActions>
-        <Button>Disagree</Button>
+        <Button onClick={() => closePopup()}>Disagree</Button>
         <Button>Agree</Button>
-        {/*
-        onClick={handleClose}
-        */}
       </DialogActions>
     </Dialog>
   )

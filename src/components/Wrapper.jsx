@@ -68,7 +68,7 @@ function Wrapper() {
         slots={{ noRowsOverlay: NoRowsOverlay }}
       />
 
-      {Object.values(priceTableRowData).length && <Popup data={priceTableRowData} />}
+      <Popup data={priceTableRowData} closePopup={getPlRowData} isOpen={Boolean(Object.values(priceTableRowData).length)} />
     </Container>
   )
 }
