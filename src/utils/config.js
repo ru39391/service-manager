@@ -5,6 +5,7 @@ const PRICELIST_PATH = 'pricelist';
 
 const DEPT_TYPE_NAME = 'dept';
 const SUBDEPT_TYPE_NAME = 'subdept';
+const GROUP_TYPE_NAME = 'group';
 
 export {
   API_URL,
@@ -12,4 +13,5 @@ export {
   PRICELIST_PATH,
   DEPT_TYPE_NAME,
   SUBDEPT_TYPE_NAME,
+  GROUP_TYPE_NAME
 };
