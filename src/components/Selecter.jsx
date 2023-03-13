@@ -7,6 +7,7 @@ import {
   FormControl,
   MenuItem,
 } from '@mui/material';
+import { DEPT_TYPE_NAME, SUBDEPT_TYPE_NAME, GROUP_TYPE_NAME } from '../utils/config';
 
 function Selecter({ dept, subdept, group }) {
   const {
@@ -21,21 +22,58 @@ function Selecter({ dept, subdept, group }) {
     }),
     shallow
   );
+
+  const getParamName = (arr, value) => {
+    console.log(arr, value, arr.find(({ id }) => id === value));
+    return arr.find(({ id }) => id === value).name;
+  };
+  const filterArr = (arr, param, value) => {
+    //console.log(arr, param, value);
+    return arr.filter(item => item[param] === value);
+  }
   const getActionProps = (value, actionMeta) => {
     const { value: id, name: label } = actionMeta.props;
     return { id, label };
   }
-  const getParamName = (arr, value) => arr.find(({ id }) => id === value).name;
+
   const [currDept, setCurrDept] = useState({ id: dept, label: getParamName(depts, dept) });
   const [currSubDept, setCurrSubDept] = useState({ id: subdept, label: getParamName(subdepts, subdept) });
   const [currGroup, setCurrGroup] = useState({ id: group, label: getParamName(groups, group) });
 
   const listsArr = [
-    { items: depts, state: currDept, handleChange: (value, actionMeta) => { setCurrDept(getActionProps(value, actionMeta)) }},
-    { items: subdepts, state: currSubDept, handleChange: (value, actionMeta) => { setCurrSubDept(getActionProps(value, actionMeta)) }},
-    { items: groups, state: currGroup, handleChange: (value, actionMeta) => { setCurrGroup(getActionProps(value, actionMeta)) }},
+    {
+      items: depts,
+      state: currDept,
+      handleChange: (value, actionMeta) => {
+        setCurrDept(getActionProps(value, actionMeta))
+      },
+    },
+    {
+      items: filterArr(subdepts, DEPT_TYPE_NAME, currDept.id),
+      state: currSubDept,
+      handleChange: (value, actionMeta) => {
+        setCurrSubDept(getActionProps(value, actionMeta))
+      },
+    },
+    {
+      items: filterArr(groups, SUBDEPT_TYPE_NAME, currSubDept.id),
+      state: currGroup,
+      handleChange: (value, actionMeta) => {
+        setCurrGroup(getActionProps(value, actionMeta));
+      },
+    },
   ]
-  //console.log(depts);
+
+  /*
+  useEffect(() => {
+    const arr = listsArr[1].items;
+    setCurrSubDept({ id: arr[0].id, label: getParamName(arr, arr[0].id) });
+  }, [currDept]);
+
+  useEffect(() => {
+    const arr = listsArr[2].items;
+    setCurrGroup({ id: arr[0].id, label: getParamName(arr, arr[0].id) });
+  }, [currSubDept]);*/
 
   return (
     <>
@@ -50,24 +88,10 @@ function Selecter({ dept, subdept, group }) {
             label="Age"
             onChange={handleChange}
           >
-            {items.map(({ id, name }) => <MenuItem key={id.toString()} value={id} name={name}>{name}</MenuItem>)}
+            {items.map(({ id, name }) => <MenuItem key={id.toString()} value={id} name={name}>{id} - {name}</MenuItem>)}
           </Select>
         </FormControl>
       )}
-      {/*
-      <FormControl fullWidth>
-        <InputLabel id="demo-simple-select-label">{currDept.label}</InputLabel>
-        <Select
-          id="demo-simple-select"
-          labelId="demo-simple-select-label"
-          value={currDept.id}
-          label="Age"
-          onChange={listsArr[0].handleChange}
-        >
-          {depts.map(({ id, name }) => <MenuItem key={id.toString()} value={id} name={name}>{name}</MenuItem>)}
-        </Select>
-      </FormControl>
-      */}
     </>
   )
 };
