@@ -10,6 +10,7 @@ import {
   TextField,
 } from '@mui/material';
 import Selecter from './Selecter';
+import { SERVICE_POPUP_TITLE } from '../utils/constants';
 
 const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
@@ -29,7 +30,7 @@ function Popup({ data, labels, closePopup }) {
       TransitionComponent={Transition}
       keepMounted
     >
-      <DialogTitle>{`${data.id} - ${data.name}`}</DialogTitle>
+      <DialogTitle>{SERVICE_POPUP_TITLE}</DialogTitle>
       <DialogContent>
         <DialogContentText></DialogContentText>
         {isOpen && [name, price].map(
