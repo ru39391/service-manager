@@ -67,8 +67,8 @@ function Wrapper() {
         onRowClick={({ row }) => {getPlRowData(row)}}
         slots={{ noRowsOverlay: NoRowsOverlay }}
       />
-
-      <Popup labels={priceTableCols} data={priceTableRowData} depts={depts} closePopup={getPlRowData} />
+      {/*
+      <Popup labels={priceTableCols} data={priceTableRowData} closePopup={getPlRowData} />*/}
     </Container>
   )
 }

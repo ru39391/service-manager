@@ -24,7 +24,7 @@ const usePricelist = create(devtools((set, get) => ({
     .catch((err) => set({ isLoading: false, error: PRICELIST_ERROR_MSG })),
   setPlRows: (arr) => set({ priceTableRows: tableData.setRows(arr) }),
   handlePlRows: (arr, pricelist = get().pricelist) => {
-    const findItem = (array, value) => { return array.find(({ id }) => id === value) };
+    const findItem = (array, value) => array.find(({ id }) => id === value);
     const deptsArr = arr.map(({ id, name, subdepts, groups }) => ({ id, name, subdepts, groups }));
     const rowsArr = pricelist.map(({ id, name, price, dept, subdept, group }, index) => {
       const {

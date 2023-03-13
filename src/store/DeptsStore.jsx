@@ -1,18 +1,19 @@
 import { create } from 'zustand';
 import { devtools } from 'zustand/middleware'
 import api from '../utils/Api';
-import { DEPTS_PATH } from '../utils/config';
+import { DEPTS_PATH, SUBDEPTS_PATH, GROUPS_PATH } from '../utils/config';
 import { DEPTS_ERROR_MSG } from '../utils/constants';
 
 const useDepts = create(devtools((set, get) => ({
   depts: [],
+  subdepts: [],
+  groups: [],
   navExpanders: [],
   currChapter: {},
   isLoading: true,
   error: null,
-  setNavExpanders: (arr) => {
-    return arr.map(({ id }) => ({ id, isExpanded: false }));
-  },
+  getChildren: (arr, param) => arr.map(item => Object.values(item[param])).flat(),
+  setNavExpanders: (arr) => arr.map(({ id }) => ({ id, isExpanded: false })),
   setCurrChapter: ({ id, type }) => set({ currChapter: { id, type } }),
   expandChildren: (id) => set({
     navExpanders: get().navExpanders.map((item) => {
@@ -20,11 +21,14 @@ const useDepts = create(devtools((set, get) => ({
       return item;
     }),
   }),
-  fetchDepts: api.fetchData(DEPTS_PATH)
-    .then(({ data }) => {
+  fetchDepts: Promise.all([DEPTS_PATH, SUBDEPTS_PATH, GROUPS_PATH].map(item => api.fetchData(item)))
+    .then(([...res]) => {
+      const [depts, subdepts, groups] = res.map(({ data }) => data);
       set({
-        depts: data,
-        navExpanders: get().setNavExpanders(data),
+        depts,
+        subdepts,
+        groups,
+        navExpanders: get().setNavExpanders(depts),
         isLoading: false,
         error: null,
       });
