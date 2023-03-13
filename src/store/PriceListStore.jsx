@@ -5,7 +5,7 @@ import tableData from '../utils/TableData';
 import { PRICELIST_PATH } from '../utils/config';
 import { PRICELIST_ERROR_MSG } from '../utils/constants';
 
-const usePricelist = create(devtools((set, get) => ({
+const usePriceList = create(devtools((set, get) => ({
   pricelist: [],
   priceTableCols: [],
   priceTableRows: [],
@@ -21,7 +21,10 @@ const usePricelist = create(devtools((set, get) => ({
         error: null,
       })
     })
-    .catch((err) => set({ isLoading: false, error: PRICELIST_ERROR_MSG })),
+    .catch((err) => set({
+      isLoading: false,
+      error: PRICELIST_ERROR_MSG
+    })),
   setPlRows: (arr) => set({ priceTableRows: tableData.setRows(arr) }),
   handlePlRows: (arr, pricelist = get().pricelist) => {
     const findItem = (array, value) => array.find(({ id }) => id === value);
@@ -55,4 +58,4 @@ const usePricelist = create(devtools((set, get) => ({
   }
 })));
 
-export default usePricelist;
+export default usePriceList;

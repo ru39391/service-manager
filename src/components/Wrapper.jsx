@@ -1,6 +1,6 @@
 import { shallow } from 'zustand/shallow';
 import useDepts from '../store/DeptsStore';
-import Pricelist from './Pricelist';
+import PriceList from './PriceList';
 import { Container } from '@mui/material';
 
 function Wrapper() {
@@ -25,7 +25,7 @@ function Wrapper() {
       }}
       maxWidth="lg"
     >
-      <Pricelist
+      <PriceList
         depts={depts}
         currChapter={currChapter}
       />

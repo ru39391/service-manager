@@ -1,11 +1,11 @@
 import useDepts from '../store/DeptsStore';
-import usePricelist from '../store/PlStore';
+import usePriceList from '../store/PriceListStore';
 import { LinearProgress } from '@mui/material';
 
 function Preloader() {
   const isLoadingArr = [
     useDepts(state => state.isLoading),
-    usePricelist(state => state.isLoading),
+    usePriceList(state => state.isLoading),
   ];
 
   return (

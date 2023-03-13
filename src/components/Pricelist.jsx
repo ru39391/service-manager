@@ -1,9 +1,9 @@
 import { useEffect } from 'react';
 import { shallow } from 'zustand/shallow';
-import usePricelist from '../store/PlStore';
+import usePriceList from '../store/PriceListStore';
 import DataTable from './DataTable';
 
-function Pricelist({ depts, currChapter }) {
+function PriceList({ depts, currChapter }) {
   const {
     pricelist,
     priceTableCols,
@@ -12,7 +12,7 @@ function Pricelist({ depts, currChapter }) {
     setCurrentRows,
     getPlRowData,
     priceTableRowData,
-  } = usePricelist(
+  } = usePriceList(
     (state) => ({
       pricelist: state.pricelist,
       priceTableCols: state.priceTableCols,
@@ -43,4 +43,4 @@ function Pricelist({ depts, currChapter }) {
   )
 }
 
-export default Pricelist;
+export default PriceList;

@@ -4,6 +4,7 @@ const DEPTS_PATH = 'depts';
 const SUBDEPTS_PATH = 'subdepts';
 const GROUPS_PATH = 'groups';
 const PRICELIST_PATH = 'pricelist';
+const RESOURCES_PATH = 'resources';
 
 const DEPT_TYPE_NAME = 'dept';
 const SUBDEPT_TYPE_NAME = 'subdept';
@@ -15,6 +16,7 @@ export {
   SUBDEPTS_PATH,
   GROUPS_PATH,
   PRICELIST_PATH,
+  RESOURCES_PATH,
   DEPT_TYPE_NAME,
   SUBDEPT_TYPE_NAME,
   GROUP_TYPE_NAME
