@@ -45,7 +45,7 @@ function Popup({ data, labels, closePopup }) {
             type="text"
           />
         )}
-        {isOpen && <Selecter dept={dept} subdept={subdept} group={group} />}
+        {isOpen && <Selecter dept={dept} subdept={subdept} group={group} labels={labelsArr.splice(3,3)} />}
       </DialogContent>
       <DialogActions>
         <Button onClick={() => closePopup()}>Закрыть</Button>
