@@ -9,12 +9,12 @@ const useDepts = create(devtools((set, get) => ({
   subdepts: [],
   groups: [],
   navExpanders: [],
-  currChapter: {},
+  currNavItem: {},
   isLoading: true,
   error: null,
   getChildren: (arr, param) => arr.map(item => Object.values(item[param])).flat(),
   setNavExpanders: (arr) => arr.map(({ id }) => ({ id, isExpanded: false })),
-  setCurrChapter: ({ id, type }) => set({ currChapter: { id, type } }),
+  setCurrNavItem: ({ id, type }) => set({ currNavItem: { id, type } }),
   expandChildren: (id) => set({
     navExpanders: get().navExpanders.map((item) => {
       if(item.id === id) item.isExpanded = !item.isExpanded;

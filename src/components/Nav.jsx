@@ -7,16 +7,16 @@ function Nav() {
   const {
     depts,
     navExpanders,
-    currChapter,
+    currNavItem,
     expandChildren,
-    setCurrChapter,
+    setCurrNavItem,
   } = useDepts(
     (state) => ({
       depts: state.depts,
       navExpanders: state.navExpanders,
-      currChapter: state.currChapter,
+      currNavItem: state.currNavItem,
       expandChildren: state.expandChildren,
-      setCurrChapter: state.setCurrChapter,
+      setCurrNavItem: state.setCurrNavItem,
     }),
     shallow
   );
@@ -54,9 +54,9 @@ function Nav() {
           name={name}
           subdepts={subdepts}
           expandChildren={expandChildren}
-          setCurrChapter={setCurrChapter}
+          setCurrNavItem={setCurrNavItem}
           expanders={navExpanders}
-          current={currChapter}
+          current={currNavItem}
         />
       )}
     </List>

@@ -19,7 +19,7 @@ function NavItem({
   name,
   subdepts,
   expandChildren,
-  setCurrChapter,
+  setCurrNavItem,
   expanders,
   current,
 }) {
@@ -37,7 +37,7 @@ function NavItem({
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          onClick={() => setCurrChapter({ id, type: DEPT_TYPE_NAME })}
+          onClick={() => setCurrNavItem({ id, type: DEPT_TYPE_NAME })}
         >
           <ListItemIcon><FolderOpen fontSize="small" sx={{ color: 'info.light' }} /></ListItemIcon>
           <ListItemText sx={{ mr: 1 }} primary={name} />
@@ -58,7 +58,7 @@ function NavItem({
                 color: 'grey.600',
                 fontSize: 14,
               }}
-              onClick={() => setCurrChapter({ id, type: SUBDEPT_TYPE_NAME })}
+              onClick={() => setCurrNavItem({ id, type: SUBDEPT_TYPE_NAME })}
             >
               <ListItemText
                 disableTypography

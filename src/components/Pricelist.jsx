@@ -1,9 +1,22 @@
 import { useEffect } from 'react';
 import { shallow } from 'zustand/shallow';
+import useDepts from '../store/DeptsStore';
 import usePriceList from '../store/PriceListStore';
 import DataTable from './DataTable';
 
-function PriceList({ depts, currChapter }) {
+function PriceList() {
+  const {
+    depts,
+    currNavItem,
+  } = useDepts(
+    (state) => ({
+      depts: state.depts,
+      groups: state.groups,
+      currNavItem: state.currNavItem,
+    }),
+    shallow
+  );
+
   const {
     pricelist,
     priceTableCols,
@@ -30,8 +43,8 @@ function PriceList({ depts, currChapter }) {
   }, [pricelist]);
 
   useEffect(() => {
-    setCurrentRows(currChapter, depts);
-  }, [currChapter]);
+    setCurrentRows(currNavItem, depts);
+  }, [currNavItem]);
 
   return (
     <DataTable

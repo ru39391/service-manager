@@ -1,22 +1,8 @@
-import { shallow } from 'zustand/shallow';
-import useDepts from '../store/DeptsStore';
 import PriceList from './PriceList';
+import GroupsList from './GroupsList';
 import { Container } from '@mui/material';
 
 function Wrapper() {
-  const {
-    depts,
-    groups,
-    currChapter,
-  } = useDepts(
-    (state) => ({
-      depts: state.depts,
-      groups: state.groups,
-      currChapter: state.currChapter,
-    }),
-    shallow
-  );
-
   return (
     <Container
       sx={{
@@ -25,10 +11,11 @@ function Wrapper() {
       }}
       maxWidth="lg"
     >
-      <PriceList
-        depts={depts}
-        currChapter={currChapter}
-      />
+      <GroupsList />
+      {/*
+      <GroupsList />
+      <PriceList />
+      */}
     </Container>
   )
 }
