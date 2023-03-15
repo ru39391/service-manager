@@ -8,7 +8,7 @@ function DataTable({ src, tableCols, tableRows, rowData, getRowData }) {
       <DataGrid
         sx={{
           border: 0,
-          height: '100%',
+          flexGrow: 1,
           boxShadow: '0 2px 10px 0 rgba(0,0,0,.045)',
           bgcolor: 'background.default',
         }}
@@ -17,7 +17,6 @@ function DataTable({ src, tableCols, tableRows, rowData, getRowData }) {
         onRowClick={({ row }) => {getRowData({ src: src, row })}}
         slots={{ noRowsOverlay: NoRowsOverlay }}
       />
-
       <Popup labels={tableCols} data={rowData} closePopup={getRowData} />
     </>
   )

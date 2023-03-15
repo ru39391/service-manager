@@ -9,6 +9,7 @@ const RESOURCES_PATH = 'resources';
 const DEPT_TYPE_NAME = 'dept';
 const SUBDEPT_TYPE_NAME = 'subdept';
 const GROUP_TYPE_NAME = 'group';
+const RES_TYPE_NAME = 'res';
 
 export {
   API_URL,
@@ -19,5 +20,6 @@ export {
   RESOURCES_PATH,
   DEPT_TYPE_NAME,
   SUBDEPT_TYPE_NAME,
-  GROUP_TYPE_NAME
+  GROUP_TYPE_NAME,
+  RES_TYPE_NAME,
 };

@@ -3,7 +3,8 @@ import { shallow } from 'zustand/shallow';
 import useResList from '../store/ResStore';
 import DataTable from './DataTable';
 
-function ResList({ depts, groups }) {
+function ResList() {
+  {/*
   const {
     resTableCols,
     resTableRows,
@@ -24,14 +25,10 @@ function ResList({ depts, groups }) {
   useEffect(() => {
     handleRlRows(depts);
   }, [groups]);
+  */}
 
   return (
-    <DataTable
-      tableCols={resTableCols}
-      tableRows={resTableRows}
-      rowData={resTableRowData}
-      getRowData={getRlRowData}
-    />
+    <>Здесь будет список ресурсов</>
   )
 }
 
