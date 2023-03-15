@@ -11,7 +11,7 @@ function Wrapper() {
       }}
       maxWidth="lg"
     >
-      <GroupsList />
+      <PriceList />
       {/*
       <GroupsList />
       <PriceList />

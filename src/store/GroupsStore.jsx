@@ -25,7 +25,7 @@ const useGroupsList = create(devtools((set, get) => ({
     set({ groupsTableCols: tableData.setColumns(groups, 3) });
   },
   setCurrentRows: (data, depts, groups) => {
-    console.log(data);
+    //console.log(data);
     const { id, type } = data;
     get().handleGlRows(depts, groups.filter(item => item[type] === id));
   },

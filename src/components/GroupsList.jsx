@@ -1,7 +1,7 @@
 import { useEffect } from 'react';
 import { shallow } from 'zustand/shallow';
 import useDepts from '../store/DeptsStore';
-import useGroupsList from '../store/GroupsStore';
+import useTableData from '../store/TableDataStore';
 import DataTable from './DataTable';
 
 function GroupsList() {
@@ -19,38 +19,38 @@ function GroupsList() {
   );
 
   const {
-    groupsTableCols,
-    groupsTableRows,
-    groupsTableRowData,
-    handleGlRows,
-    setCurrentRows,
-    getGlRowData,
-  } = useGroupsList(
+    tableCols,
+    tableRows,
+    tableRowData,
+    renderDeptsRows,
+    filterRows,
+    getRowData,
+  } = useTableData(
     (state) => ({
-      groupsTableCols: state.groupsTableCols,
-      groupsTableRows: state.groupsTableRows,
-      groupsTableRowData: state.groupsTableRowData,
-      handleGlRows: state.handleGlRows,
-      setCurrentRows: state.setCurrentRows,
-      getGlRowData: state.getGlRowData,
+      tableCols: state.tableCols,
+      tableRows: state.tableRows,
+      tableRowData: state.tableRowData,
+      renderDeptsRows: state.renderDeptsRows,
+      filterRows: state.filterRows,
+      getRowData: state.getRowData,
     }),
     shallow
   );
 
   useEffect(() => {
-    handleGlRows(depts, groups);
+    renderDeptsRows(groups, depts);
   }, [groups]);
 
   useEffect(() => {
-    setCurrentRows(currNavItem, depts, groups);
+    //filterRows(currNavItem, depts, groups);
   }, [currNavItem]);
 
   return (
     <DataTable
-      tableCols={groupsTableCols}
-      tableRows={groupsTableRows}
-      rowData={groupsTableRowData}
-      getRowData={getGlRowData}
+      tableCols={tableCols}
+      tableRows={tableRows}
+      rowData={tableRowData}
+      getRowData={getRowData}
     />
   )
 }
