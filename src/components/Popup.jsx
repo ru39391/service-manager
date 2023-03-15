@@ -21,6 +21,18 @@ function Popup({ data, labels, closePopup }) {
   const { id, name, price, dept, subdept, group} = data;
   const labelsArr = labels.map(({ field, headerName }, index) => Boolean(index) ? headerName : field);
 
+  const inputsArr = price ? [name, price] : [name];
+  const selecterProps = group ? {
+    dept,
+    subdept,
+    group,
+    labels: labelsArr.splice(3,3),
+  } : {
+    dept,
+    subdept,
+    labels: labelsArr.splice(2,3),
+  };
+
   return (
     <Dialog
       open={isOpen}
@@ -33,7 +45,7 @@ function Popup({ data, labels, closePopup }) {
       <DialogTitle>{SERVICE_POPUP_TITLE}</DialogTitle>
       <DialogContent>
         <DialogContentText></DialogContentText>
-        {isOpen && [name, price].map(
+        {isOpen && inputsArr.map(
           (item, index) =>
           <TextField
             key={index.toString()}
@@ -46,7 +58,7 @@ function Popup({ data, labels, closePopup }) {
             type="text"
           />
         )}
-        {isOpen && <Selecter dept={dept} subdept={subdept} group={group} labels={labelsArr.splice(3,3)} />}
+        {isOpen && <Selecter {...selecterProps} />}
       </DialogContent>
       <DialogActions>
         <Button onClick={() => closePopup()}>Закрыть</Button>

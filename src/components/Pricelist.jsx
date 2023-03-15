@@ -6,7 +6,14 @@ import useTableData from '../store/TableDataStore';
 import DataTable from './DataTable';
 
 function PriceList() {
-  const pricelist = usePriceList(state => state.pricelist);
+  const {
+    pricelist
+  } = usePriceList(
+    (state) => ({
+      pricelist: state.pricelist
+    }),
+    shallow
+  );
 
   const {
     depts,
@@ -14,7 +21,6 @@ function PriceList() {
   } = useDepts(
     (state) => ({
       depts: state.depts,
-      groups: state.groups,
       currNavItem: state.currNavItem,
     }),
     shallow

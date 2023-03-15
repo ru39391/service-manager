@@ -42,11 +42,12 @@ function GroupsList() {
   }, [groups]);
 
   useEffect(() => {
-    //filterDeptsRows(currNavItem, depts, groups);
+    filterDeptsRows(groups, depts, currNavItem);
   }, [currNavItem]);
 
   return (
     <DataTable
+      src={groups}
       tableCols={tableCols}
       tableRows={tableRows}
       rowData={tableRowData}

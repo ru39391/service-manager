@@ -14,9 +14,9 @@ const useTableData = create(devtools((set, get) => ({
       tableRows: rowsArr.length ? tableData.setRows(rowsArr) : get().tableRows,
     })
   },
-  renderDeptsRows: (arr, depts) => {
+  renderDeptsRows: (src, depts) => {
     const findItem = (arr, value) => arr.find(({ id }) => id === value);
-    const handledArr = arr.map(({ id, name, price, dept, subdept, group }, index) => {
+    const handledArr = src.map(({ id, name, price, dept, subdept, group }, index) => {
       const { subdepts, groups } = findItem(depts, dept);
       const data = {
         id: index + 1,
@@ -33,15 +33,15 @@ const useTableData = create(devtools((set, get) => ({
       return handledData;
     });
 
-    return arr.length && depts.length ? get().setData(arr, handledArr) : get().setData(get().tableCols, get().tableRows);
+    return src.length && depts.length ? get().setData(src, handledArr) : get().setData(get().tableCols, get().tableRows);
   },
-  filterDeptsRows: (arr, depts, data) => {
+  filterDeptsRows: (src, depts, data) => {
     const { id, type } = data;
-    get().renderDeptsRows(arr.filter(item => item[type] === id), depts);
+    get().renderDeptsRows(src.filter(item => item[type] === id), depts);
   },
   getRowData: (data = {}) => {
-    const { arr = [], row = {} } = data;
-    const tableRowData = Object.values(row).length && arr.length ? arr.find(({ name }) => name.toLowerCase() === row.col1.toLowerCase()) : {};
+    const { src = [], row = {} } = data;
+    const tableRowData = Object.values(row).length && src.length ? src.find(({ name }) => name.toLowerCase() === row.col1.toLowerCase()) : {};
     set({ tableRowData });
   }
 })));

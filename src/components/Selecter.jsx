@@ -23,7 +23,10 @@ function Selecter({ dept, subdept, group, labels }) {
     shallow
   );
 
-  const getParamValue = (arr, value, param = 'name') => arr.find(({ id }) => id === value)[param];
+  const getParamValue = (arr, value, param = 'name') => {
+    const data = arr.find(({ id }) => id === value);
+    return data ? data[param] : data;
+  };
   const filterArr = (arr, param, value) => arr.filter(item => item[param] === value);
 
   function handleState({ arr, setData, setList }) {
@@ -117,7 +120,9 @@ function Selecter({ dept, subdept, group, labels }) {
         handleActionProps(value, actionMeta, GROUP_TYPE_NAME);
       },
     },
-  ]
+  ];
+
+  if(!group) listsArr.pop();
 
   return (
     <>

@@ -14,7 +14,7 @@ function DataTable({ src, tableCols, tableRows, rowData, getRowData }) {
         }}
         rows={tableRows}
         columns={tableCols}
-        onRowClick={({ row }) => {getRowData({ arr: src, row })}}
+        onRowClick={({ row }) => {getRowData({ src: src, row })}}
         slots={{ noRowsOverlay: NoRowsOverlay }}
       />
 
