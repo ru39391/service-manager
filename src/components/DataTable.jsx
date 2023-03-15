@@ -2,7 +2,7 @@ import Popup from './Popup';
 import NoRowsOverlay from './NoRowsOverlay';
 import { DataGrid } from '@mui/x-data-grid';
 
-function DataTable({ tableCols, tableRows, rowData, getRowData }) {
+function DataTable({ src, tableCols, tableRows, rowData, getRowData }) {
   return (
     <>
       <DataGrid
@@ -14,7 +14,7 @@ function DataTable({ tableCols, tableRows, rowData, getRowData }) {
         }}
         rows={tableRows}
         columns={tableCols}
-        onRowClick={({ row }) => {getRowData(row)}}
+        onRowClick={({ row }) => {getRowData({ arr: src, row })}}
         slots={{ noRowsOverlay: NoRowsOverlay }}
       />
 

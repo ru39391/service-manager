@@ -6,6 +6,8 @@ import useTableData from '../store/TableDataStore';
 import DataTable from './DataTable';
 
 function PriceList() {
+  const pricelist = usePriceList(state => state.pricelist);
+
   const {
     depts,
     currNavItem,
@@ -19,32 +21,11 @@ function PriceList() {
   );
 
   const {
-    pricelist,
-    priceTableCols,
-    priceTableRows,
-    handlePlRows,
-    setCurrentRows,
-    getPlRowData,
-    priceTableRowData,
-  } = usePriceList(
-    (state) => ({
-      pricelist: state.pricelist,
-      priceTableCols: state.priceTableCols,
-      priceTableRows: state.priceTableRows,
-      handlePlRows: state.handlePlRows,
-      setCurrentRows: state.setCurrentRows,
-      getPlRowData: state.getPlRowData,
-      priceTableRowData: state.priceTableRowData,
-    }),
-    shallow
-  );
-
-  const {
     tableCols,
     tableRows,
     tableRowData,
     renderDeptsRows,
-    filterRows,
+    filterDeptsRows,
     getRowData,
   } = useTableData(
     (state) => ({
@@ -52,7 +33,7 @@ function PriceList() {
       tableRows: state.tableRows,
       tableRowData: state.tableRowData,
       renderDeptsRows: state.renderDeptsRows,
-      filterRows: state.filterRows,
+      filterDeptsRows: state.filterDeptsRows,
       getRowData: state.getRowData,
     }),
     shallow
@@ -63,11 +44,12 @@ function PriceList() {
   }, [pricelist]);
 
   useEffect(() => {
-    //filterRows(pricelist, depts, currNavItem);
+    filterDeptsRows(pricelist, depts, currNavItem);
   }, [currNavItem]);
 
   return (
     <DataTable
+      src={pricelist}
       tableCols={tableCols}
       tableRows={tableRows}
       rowData={tableRowData}

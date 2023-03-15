@@ -35,13 +35,14 @@ const useTableData = create(devtools((set, get) => ({
 
     return arr.length && depts.length ? get().setData(arr, handledArr) : get().setData(get().tableCols, get().tableRows);
   },
-  filterRows: (data, depts, groups) => {
+  filterDeptsRows: (arr, depts, data) => {
     const { id, type } = data;
-    get().renderRows(depts, groups.filter(item => item[type] === id));
+    get().renderDeptsRows(arr.filter(item => item[type] === id), depts);
   },
-  getRowData: (row = {}) => {
-    const groupsTableRowData = Object.values(row).length ? get().groupsTableRows.find(({ name }) => name.toLowerCase() === row.col1.toLowerCase()) : {};
-    set({ groupsTableRowData });
+  getRowData: (data = {}) => {
+    const { arr = [], row = {} } = data;
+    const tableRowData = Object.values(row).length && arr.length ? arr.find(({ name }) => name.toLowerCase() === row.col1.toLowerCase()) : {};
+    set({ tableRowData });
   }
 })));
 

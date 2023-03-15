@@ -23,7 +23,7 @@ function GroupsList() {
     tableRows,
     tableRowData,
     renderDeptsRows,
-    filterRows,
+    filterDeptsRows,
     getRowData,
   } = useTableData(
     (state) => ({
@@ -31,7 +31,7 @@ function GroupsList() {
       tableRows: state.tableRows,
       tableRowData: state.tableRowData,
       renderDeptsRows: state.renderDeptsRows,
-      filterRows: state.filterRows,
+      filterDeptsRows: state.filterDeptsRows,
       getRowData: state.getRowData,
     }),
     shallow
@@ -42,7 +42,7 @@ function GroupsList() {
   }, [groups]);
 
   useEffect(() => {
-    //filterRows(currNavItem, depts, groups);
+    //filterDeptsRows(currNavItem, depts, groups);
   }, [currNavItem]);
 
   return (
