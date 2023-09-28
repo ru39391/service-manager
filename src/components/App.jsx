@@ -9,6 +9,8 @@ import { ThemeProvider, createTheme } from '@mui/material/styles';
 import { DEFAULT_DOC_TITLE } from '../utils/constants';
 import '@fontsource/roboto/400.css';
 
+import Parser from './Parser';
+
 function App() {
   const theme = createTheme({
     palette: {
@@ -32,6 +34,8 @@ function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
+      <Parser />
+      {/*
       <Preloader />
       <AlertError />
       <Grid
@@ -43,6 +47,7 @@ function App() {
         <Grid item xs={3} sx={theme.custom.dFlexColumn}><Nav /></Grid>
         <Grid item xs={9}><Wrapper /></Grid>
       </Grid>
+      */}
     </ThemeProvider>
   )
 }
