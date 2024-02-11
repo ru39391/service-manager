@@ -1,35 +1,48 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React, { FC, useEffect } from 'react';
+import { Grid } from '@mui/material';
+import CssBaseline from '@mui/material/CssBaseline';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import '@fontsource/roboto/400.css';
 
-function App() {
-  const [count, setCount] = useState(0)
+import Parser from './components/Parser';
+
+import { DEFAULT_DOC_TITLE } from './utils/constants';
+
+const App: FC = () => {
+  const theme = createTheme({
+    palette: {
+      mode: 'light',
+      background: {
+        body: '#F4F5FA'
+      }
+    },
+    custom: {
+      dFlexColumn: {
+        display: 'flex',
+        flexDirection: 'column',
+      }
+    }
+  });
+
+  useEffect(() => {
+    document.title = DEFAULT_DOC_TITLE;
+  }, []);
 
   return (
-    <>
-      <div>
-        <a href="https://vitejs.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
+    <ThemeProvider theme={theme}>
+      <Grid
+        container
+        direction='column'
+        sx={{
+          p: 2,
+          bgcolor: 'background.body',
+        }}
+      >
+        <Parser />
+      </Grid>
+      <CssBaseline />
+    </ThemeProvider>
   )
 }
 
-export default App
+export default App;
