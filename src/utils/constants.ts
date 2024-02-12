@@ -1,17 +1,5 @@
 const DEFAULT_DOC_TITLE = 'Управление услугами';
 
-const COL_TITLES = {
-  NAME: 'Название',
-  PRICE: 'Цена',
-  DEPT: 'Отделение',
-  SUBDEPT: 'Специализация',
-  GROUP: 'Группа',
-};
-
-const PRICE_TYPE_TITLE = 'Услуги';
-const GROUP_TYPE_TITLE = 'Группы услуг';
-const RES_TYPE_TITLE = 'Ресурсы';
-
 const CATEGORY_TITLE = 'Категория';
 
 const DEPTS_ERROR_MSG = 'Ошибка при получении списка отделений';
@@ -33,6 +21,17 @@ const IS_COMPLEX_KEY = 'isComplex';
 const COMPLEX_KEY = 'complex';
 const IS_VISIBLE_KEY = 'isVisible';
 
+const ITEM_KEY = 'items';
+const RES_KEY = 'res';
+
+const TITLES = {
+  [DEPT_KEY]: 'Отделения',
+  [SUBDEPT_KEY]: 'Специализации',
+  [GROUP_KEY]: 'Группы услуг',
+  [ITEM_KEY]: 'Услуги',
+  [RES_KEY]: 'Ресурсы'
+};
+
 const CAPTIONS = {
   [INDEX_KEY]: '№',
   [ID_KEY]: 'ID',
@@ -52,11 +51,7 @@ export {
   DEPTS_ERROR_MSG,
   PRICELIST_ERROR_MSG,
   RESOURCES_ERROR_MSG,
-  COL_TITLES,
   POPUP_TITLE,
-  PRICE_TYPE_TITLE,
-  GROUP_TYPE_TITLE,
-  RES_TYPE_TITLE,
   CATEGORY_TITLE,
   ID_KEY,
   NAME_KEY,
@@ -68,5 +63,6 @@ export {
   IS_COMPLEX_KEY,
   COMPLEX_KEY,
   IS_VISIBLE_KEY,
-  CAPTIONS
+  CAPTIONS,
+  TITLES
 };

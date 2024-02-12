@@ -35,13 +35,23 @@ const useTableData = (): ITableData => {
   const [groupsTableData, setGroupsTableData] = useState<TTableData>(null);
   const [itemsTableData, setItemsTableData] = useState<TTableData>(null);
 
-  const setBooleanCaption =(item: TCustomData<string | number>, key: string) => ({ [key]: item[key] ? 'Да' : 'Нет' });
+  const setBooleanCaption =(item: TCustomData<string | number>, key: string): TCustomData<string> => ({ [key]: item[key] ? 'Да' : 'Нет' });
+
+  const isValueExist = (value: string | number | undefined): boolean => ['string', 'number'].includes(typeof value);
 
   const getCategoryName = (arr: TCustomData<string | number>[], item: TCustomData<string | number>, key: string): string => {
     const data = arr.find(row => row[ID_KEY] === item[key]);
 
     return data ? data[NAME_KEY] as string : '';
   }
+
+  const getItemsName = (arr: number[], items: TCustomData<string | number>[]): string => arr.length
+   ? arr.reduce((acc: string[], id: number) => {
+    const data: TCustomData<string | number> | undefined = items.find(item => item[ID_KEY] === id);
+
+    return data ? [...acc, data[NAME_KEY] as string] : acc;
+   }, []).join(', ')
+   : '';
 
   const handleArr = (data: TCustomData<TCustomData<string | number>[]>, key: string): TTableData => {
     if(!data[key].length) {
@@ -54,13 +64,13 @@ const useTableData = (): ITableData => {
         id: index,
         index: index + 1,
         ...item,
-        ...(item[DEPT_KEY] && { [DEPT_KEY]: getCategoryName(depts, item, DEPT_KEY) }),
-        ...(item[SUBDEPT_KEY] && { [SUBDEPT_KEY]: getCategoryName(subdepts, item, SUBDEPT_KEY) }),
-        ...(item[GROUP_KEY] && { [GROUP_KEY]: getCategoryName(groups, item, GROUP_KEY) }),
-        ...(item[IS_COMPLEX_ITEM_KEY] && setBooleanCaption(item, IS_COMPLEX_ITEM_KEY)),
-        ...(item[IS_COMPLEX_KEY] && setBooleanCaption(item, IS_COMPLEX_KEY)),
-        ...(item[COMPLEX_KEY] && { [COMPLEX_KEY]: ''/*JSON.parse(item[COMPLEX_KEY])*/ }),
-        ...(item[IS_VISIBLE_KEY] && setBooleanCaption(item, IS_VISIBLE_KEY))
+        ...(isValueExist(item[DEPT_KEY]) && { [DEPT_KEY]: getCategoryName(depts, item, DEPT_KEY) }),
+        ...(isValueExist(item[SUBDEPT_KEY]) && { [SUBDEPT_KEY]: getCategoryName(subdepts, item, SUBDEPT_KEY) }),
+        ...(isValueExist(item[GROUP_KEY]) && { [GROUP_KEY]: getCategoryName(groups, item, GROUP_KEY) }),
+        ...(isValueExist(item[IS_COMPLEX_ITEM_KEY]) && setBooleanCaption(item, IS_COMPLEX_ITEM_KEY)),
+        ...(isValueExist(item[IS_COMPLEX_KEY]) && setBooleanCaption(item, IS_COMPLEX_KEY)),
+        ...(isValueExist(item[COMPLEX_KEY]) && { [COMPLEX_KEY]: getItemsName(JSON.parse(item[COMPLEX_KEY]), items) }),
+        ...(isValueExist(item[IS_VISIBLE_KEY]) && setBooleanCaption(item, IS_VISIBLE_KEY))
       }], []);
     const cols: GridColDef<GridValidRowModel>[] = Object.keys(rows[0])
       .filter(key => key !== 'id')

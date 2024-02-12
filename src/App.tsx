@@ -1,5 +1,5 @@
 import React, { FC, useEffect } from 'react';
-import { Grid } from '@mui/material';
+import { Box } from '@mui/material';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import '@fontsource/roboto/400.css';
@@ -30,16 +30,7 @@ const App: FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Grid
-        container
-        direction='column'
-        sx={{
-          p: 2,
-          bgcolor: 'background.body',
-        }}
-      >
-        <Parser />
-      </Grid>
+      <Box sx={{ p: 2, bgcolor: 'background.body', height: '100vh' }}><Parser /></Box>
       <CssBaseline />
     </ThemeProvider>
   )
