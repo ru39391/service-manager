@@ -1,8 +1,10 @@
 import React, { FC, useEffect } from 'react';
 import { styled } from '@mui/material/styles';
 import { Box, Button } from '@mui/material';
+import { DataGrid } from '@mui/x-data-grid';
 import { CloudUpload } from '@mui/icons-material';
 
+import useTableData from '../hooks/useTableData';
 import useFileUploader from '../hooks/useFileUploader';
 
 const InvisibleInput = styled('input')({
@@ -17,6 +19,13 @@ const InvisibleInput = styled('input')({
 
 const Parser: FC = () => {
   const {
+    deptsTableData,
+    subdeptsTableData,
+    groupsTableData,
+    itemsTableData,
+    setTableData
+  } = useTableData();
+  const {
     depts,
     subdepts,
     groups,
@@ -25,8 +34,13 @@ const Parser: FC = () => {
   } = useFileUploader();
 
   useEffect(() => {
-    console.log(items.filter(({ isComplex }) => isComplex === 1)[0]);
-  }, [items]);
+    setTableData({depts, subdepts, groups, items});
+  }, [
+    depts,
+    subdepts,
+    groups,
+    items
+  ]);
 
   return (
     <>
@@ -36,19 +50,28 @@ const Parser: FC = () => {
           <InvisibleInput type="file" accept=".xlsx, .xls" onChange={uploadFile} />
         </Button>
       </Box>
-      
-      <table>
-        <tr>
-          <td>ID</td>
-          <td>Название</td>
-          <td>Цена</td>
-          <td>Отделение</td>
-          <td>Специализация</td>
-          <td>Группа</td>
-          <td>Включает услуги</td>
-          <td>Отображать на сайте</td>
-        </tr>
-      </table>
+
+      {[
+        //deptsTableData,
+        //subdeptsTableData,
+        //groupsTableData,
+        itemsTableData
+      ].map((data, index) => Boolean(data) && <DataGrid
+        key={index}
+        sx={{
+          border: 0,
+          flexGrow: 1,
+          boxShadow: '0 2px 10px 0 rgba(0,0,0,.045)',
+          bgcolor: 'background.default',
+        }}
+        columns={data ? data.cols : []}
+        rows={data ? data.rows : []}
+        onRowClick={({ row }) => console.log(row)}
+      />)}
+
+      {/*      
+        slots={{ noRowsOverlay: NoRowsOverlay }}
+      */}
     </>
   );
 }

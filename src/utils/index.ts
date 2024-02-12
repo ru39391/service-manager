@@ -10,6 +10,22 @@ const fetchArray = (arr: TCustomData<string | number>[], param: string): TCustom
   }, []);
 };
 
+const sortArray = (arr: TCustomData<string | number>[], key: string): TCustomData<string | number>[] => {
+  return arr.sort((a, b) => {
+    const nameA = a[key].toString().toLowerCase();
+    const nameB = b[key].toString().toLowerCase();
+
+    if (nameA < nameB) {
+      return -1;
+    }
+    if (nameA > nameB) {
+      return 1;
+    }
+    return 0;
+  });
+};
+
 export {
-  fetchArray
+  fetchArray,
+  sortArray
 };

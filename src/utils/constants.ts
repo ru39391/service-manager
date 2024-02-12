@@ -20,6 +20,7 @@ const RESOURCES_ERROR_MSG = 'Ошибка при получении списка
 
 const POPUP_TITLE = 'Изменить данные';
 
+const INDEX_KEY = 'index';
 const ID_KEY = 'item_id';
 const NAME_KEY = 'name';
 const PRICE_KEY = 'price';
@@ -31,6 +32,20 @@ const IS_COMPLEX_ITEM_KEY = 'isComplexItem';
 const IS_COMPLEX_KEY = 'isComplex';
 const COMPLEX_KEY = 'complex';
 const IS_VISIBLE_KEY = 'isVisible';
+
+const CAPTIONS = {
+  [INDEX_KEY]: '№',
+  [ID_KEY]: 'ID',
+  [NAME_KEY]: 'Название',
+  [PRICE_KEY]: 'Цена, руб.',
+  [DEPT_KEY]: 'Отделение',
+  [SUBDEPT_KEY]: 'Специализация',
+  [GROUP_KEY]: 'Группа',
+  [IS_COMPLEX_ITEM_KEY]: 'Входит в комплекс',
+  [IS_COMPLEX_KEY]: 'Комплекс услуг',
+  [COMPLEX_KEY]: 'Услуги в комплексе',
+  [IS_VISIBLE_KEY]: 'Показывать на сайте',
+};
 
 export {
   DEFAULT_DOC_TITLE,
@@ -52,5 +67,6 @@ export {
   IS_COMPLEX_ITEM_KEY,
   IS_COMPLEX_KEY,
   COMPLEX_KEY,
-  IS_VISIBLE_KEY
+  IS_VISIBLE_KEY,
+  CAPTIONS
 };
