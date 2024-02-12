@@ -76,8 +76,11 @@ const useTableData = (): ITableData => {
       .filter(key => key !== 'id')
       .map(item => ({
         field: item,
+        //@ts-expect-error
         headerName: CAPTIONS[item],
+        //@ts-expect-error
         flex: CAPTIONS[item].length > 4 ? 1 : 0,
+        //@ts-expect-error
         width: CAPTIONS[item].length > 4 ? 'auto' : 100,
       } as GridColDef<GridValidRowModel>));
 

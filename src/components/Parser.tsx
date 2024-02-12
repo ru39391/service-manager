@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, SyntheticEvent } from 'react';
+import { FC, useState, useEffect, SyntheticEvent } from 'react';
 import { styled } from '@mui/material/styles';
 import { Grid, Tab, Tabs, Box, Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -38,7 +38,8 @@ const Parser: FC = () => {
     items,
     uploadFile
   } = useFileUploader();
-
+  
+  //@ts-expect-error
   const handleTab = (event: SyntheticEvent, value: number) => {
     setTabValue(value);
   };

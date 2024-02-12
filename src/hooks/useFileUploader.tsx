@@ -38,6 +38,7 @@ const useFileUploader = (): IFileUploaderHook => {
     const complexArr: number[] = arr.filter(({ parent }) => parent === itemId).map(({ id }) => id);
     const summ: number = complexArr
       .map(item => {
+        //@ts-expect-error
         const { SPRICE }: { SPRICE: number } = items.find(({ SCHID }) => SCHID === item);
 
         return SPRICE;
@@ -92,6 +93,7 @@ const useFileUploader = (): IFileUploaderHook => {
   };
 
   const handleItems = (arr: TCustomData<string | number>[]): void => {
+    //@ts-expect-error
     const complexItemsArr: TCustomData<number>[] = arr
       .filter(({ ISCOMPLEX }) => Number(ISCOMPLEX) === 1)
       .map(({ SCHID: parent, ID_SCHEMA_IN_COMPLEX: id }) => ({ parent, id }));
@@ -130,6 +132,7 @@ const useFileUploader = (): IFileUploaderHook => {
   };
 
   const handleUploadedFile = (event: Event): void => {
+    //@ts-expect-error
     const { result } = event.target;
 
     const wb = read(result, { type: 'binary' });
