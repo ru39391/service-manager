@@ -1,4 +1,4 @@
-import { FC, useState, useEffect, SyntheticEvent } from 'react';
+import React, { FC, useState, useEffect, SyntheticEvent } from 'react';
 import { styled } from '@mui/material/styles';
 import { Grid, Tab, Tabs, Box, Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -36,7 +36,9 @@ const Parser: FC = () => {
     subdepts,
     groups,
     items,
-    uploadFile
+    rowData,
+    uploadFile,
+    getRowData
   } = useFileUploader();
   
   //@ts-expect-error
@@ -51,6 +53,12 @@ const Parser: FC = () => {
     subdepts,
     groups,
     items
+  ]);
+
+  useEffect(() => {
+    console.log(rowData);
+  }, [
+    rowData
   ]);
 
   return (
@@ -99,7 +107,10 @@ const Parser: FC = () => {
               }}
               columns={data ? data.cols : []}
               rows={data ? data.rows : []}
-              onRowClick={({ row }) => console.log(row)}
+              onRowClick={({ columns, row }) => getRowData({
+                key: columns.length < 10 ? `${columns.length - 1}` : `${columns.length}`,
+                id: row.item_id
+              })}
             />
           </TabPanel>)}
         </Grid>

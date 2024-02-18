@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { sortArray } from '../utils';
 import { GridValidRowModel, GridColDef } from '@mui/x-data-grid';
 import {
+  INDEX_KEY,
   ID_KEY,
   NAME_KEY,
   DEPT_KEY,
@@ -45,11 +46,13 @@ const useTableData = (): ITableData => {
     return data ? data[NAME_KEY] as string : '';
   }
 
-  const getItemsName = (arr: number[], items: TCustomData<string | number>[]): string => arr.length
-   ? arr.reduce((acc: string[], id: number) => {
-    const data: TCustomData<string | number> | undefined = items.find(item => item[ID_KEY] === id);
+  const getItemsName = (arr: TCustomData<number>[], items: TCustomData<string | number>[]): string => arr.length
+   ? arr
+      .map(item => ({ id: Number(Object.keys(item)[0]), quantity: Object.values(item)[0] }))
+      .reduce((acc: string[], row: TCustomData<number>) => {
+    const data: TCustomData<string | number> | undefined = items.find(item => item[ID_KEY] === row.id);
 
-    return data ? [...acc, data[NAME_KEY] as string] : acc;
+    return data ? [...acc, `${data[NAME_KEY]} - ${row.quantity} шт.`] : acc;
    }, []).join(', ')
    : '';
 
@@ -60,9 +63,15 @@ const useTableData = (): ITableData => {
 
     const {depts, subdepts, groups, items} = data;
     const rows: GridValidRowModel[] = sortArray(data[key], NAME_KEY)
+      .map(item => {
+        const data = {...item};
+
+        delete data[INDEX_KEY];
+        return data;
+      })
       .reduce((acc: GridValidRowModel[], item: GridValidRowModel, index) => [...acc, {
         id: index,
-        index: index + 1,
+        [INDEX_KEY]: index + 1,
         ...item,
         ...(isValueExist(item[DEPT_KEY]) && { [DEPT_KEY]: getCategoryName(depts, item, DEPT_KEY) }),
         ...(isValueExist(item[SUBDEPT_KEY]) && { [SUBDEPT_KEY]: getCategoryName(subdepts, item, SUBDEPT_KEY) }),
@@ -90,7 +99,7 @@ const useTableData = (): ITableData => {
     };
   }
 
-  const setTableData = (data: TCustomData<TCustomData<string | number>[]>): void => {
+  const setTableData = (data: TCustomData<TCustomData<string | number>[]>): void => {    
     setDeptsTableData(handleArr(data, `${DEPT_KEY}s`));
     setSubeptsTableData(handleArr(data, `${SUBDEPT_KEY}s`));
     setGroupsTableData(handleArr(data, `${GROUP_KEY}s`));

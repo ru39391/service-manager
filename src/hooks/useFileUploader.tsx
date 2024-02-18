@@ -2,6 +2,7 @@ import { useState, ChangeEvent } from 'react';
 import { read, utils } from 'xlsx';
 import { fetchArray } from '../utils';
 import {
+  INDEX_KEY,
   ID_KEY,
   NAME_KEY,
   PRICE_KEY,
@@ -21,7 +22,9 @@ interface IFileUploaderHook {
   subdepts: TCustomData<string | number>[];
   groups: TCustomData<string | number>[];
   items: TCustomData<string | number>[];
+  rowData: TCustomData<string | number> | null;
   uploadFile: (event: ChangeEvent<HTMLInputElement>) => void;
+  getRowData: (data: TCustomData<string | number>) => void;
 }
 
 const useFileUploader = (): IFileUploaderHook => {
@@ -29,19 +32,22 @@ const useFileUploader = (): IFileUploaderHook => {
   const [subdepts, setSubdepts] = useState<TCustomData<string | number>[]>([]);
   const [groups, setGroups] = useState<TCustomData<string | number>[]>([]);
   const [items, setItems] = useState<TCustomData<string | number>[]>([]);
+  const [rowData, setRowData] = useState<TCustomData<string | number> | null>(null);
 
   const handleComplexItem = (
     items: TCustomData<string | number>[],
     arr: TCustomData<number>[],
     itemId: number
-  ): { ids: number[], summ: number } => {
-    const complexArr: number[] = arr.filter(({ parent }) => parent === itemId).map(({ id }) => id);
+  ): { ids: TCustomData<number>[], summ: number } => {
+    const complexArr: TCustomData<number>[] = arr.filter(({ parent }) => parent === itemId).map(({ id, quantity }) => ({ [id]: quantity }));
     const summ: number = complexArr
       .map(item => {
+        const id = Number(Object.keys(item)[0]);
+        const quantity = Object.values(item)[0];
         //@ts-expect-error
-        const { SPRICE }: { SPRICE: number } = items.find(({ SCHID }) => SCHID === item);
+        const { SPRICE }: { SPRICE: number } = items.find(({ SCHID }) => SCHID === id);
 
-        return SPRICE;
+        return quantity*SPRICE;
       })
       .reduce((acc, item) => acc + item, 0);
 
@@ -96,7 +102,11 @@ const useFileUploader = (): IFileUploaderHook => {
     //@ts-expect-error
     const complexItemsArr: TCustomData<number>[] = arr
       .filter(({ ISCOMPLEX }) => Number(ISCOMPLEX) === 1)
-      .map(({ SCHID: parent, ID_SCHEMA_IN_COMPLEX: id }) => ({ parent, id }));
+      .map(({
+        SCHID: parent,
+        ID_SCHEMA_IN_COMPLEX: id,
+        KOLVO_IN_COMPLEX: quantity
+      }) => ({ parent, id, quantity }));
     const itemsArr = arr
       .filter(({ ISCAPTION_1 }) => Number(ISCAPTION_1) === 0)
       .map(
@@ -109,7 +119,8 @@ const useFileUploader = (): IFileUploaderHook => {
           SPRICE,
           VIEWINCOMPLEX_ONLY,
           ISCOMPLEX,
-          VIEWINWEB
+          VIEWINWEB,
+          SORTIROVKA_SPEC
         }, _, array) => {
           const { ids, summ } = handleComplexItem(array, complexItemsArr, SCHID as number);
 
@@ -123,7 +134,8 @@ const useFileUploader = (): IFileUploaderHook => {
             [IS_COMPLEX_ITEM_KEY]: VIEWINCOMPLEX_ONLY || 0,
             [IS_COMPLEX_KEY]: ISCOMPLEX || 0,
             [COMPLEX_KEY]: JSON.stringify(ids),
-            [IS_VISIBLE_KEY]: VIEWINWEB || 1
+            [IS_VISIBLE_KEY]: VIEWINWEB || 1,
+            [INDEX_KEY]: SORTIROVKA_SPEC
           }
         }
       );
@@ -157,12 +169,25 @@ const useFileUploader = (): IFileUploaderHook => {
     reader.addEventListener('load', handleUploadedFile);
   };
 
+  const getRowData = ({key, id}: TCustomData<string | number>): void => {
+    const parsedData = [
+      depts,
+      subdepts,
+      groups,
+      items
+    ].reduce((acc, item) => ({...acc, [Object.keys(item[0]).length]: item}), {});
+
+    setRowData(parsedData[key].find((item: TCustomData<string | number>) => item[ID_KEY] === id));
+  }
+
   return {
     depts,
     subdepts,
     groups,
     items,
-    uploadFile
+    rowData,
+    uploadFile,
+    getRowData
   }
 }
 
