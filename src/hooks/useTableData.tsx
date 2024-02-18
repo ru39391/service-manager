@@ -3,6 +3,7 @@ import { sortArray } from '../utils';
 import { GridValidRowModel, GridColDef } from '@mui/x-data-grid';
 import {
   INDEX_KEY,
+  ITEM_KEY,
   ID_KEY,
   NAME_KEY,
   DEPT_KEY,
@@ -12,7 +13,8 @@ import {
   IS_COMPLEX_KEY,
   COMPLEX_KEY,
   IS_VISIBLE_KEY,
-  CAPTIONS
+  CAPTIONS,
+  TYPES
 } from '../utils/constants';
 
 import type { TCustomData } from '../types';
@@ -59,7 +61,7 @@ const useTableData = (): ITableData => {
   const handleArr = (data: TCustomData<TCustomData<string | number>[]>, key: string): TTableData => {
     if(!data[key].length) {
       return null;
-    }    
+    }
 
     const {depts, subdepts, groups, items} = data;
     const rows: GridValidRowModel[] = sortArray(data[key], NAME_KEY)
@@ -99,11 +101,11 @@ const useTableData = (): ITableData => {
     };
   }
 
-  const setTableData = (data: TCustomData<TCustomData<string | number>[]>): void => {    
-    setDeptsTableData(handleArr(data, `${DEPT_KEY}s`));
-    setSubeptsTableData(handleArr(data, `${SUBDEPT_KEY}s`));
-    setGroupsTableData(handleArr(data, `${GROUP_KEY}s`));
-    setItemsTableData(handleArr(data, `items`));
+  const setTableData = (data: TCustomData<TCustomData<string | number>[]>): void => {
+    setDeptsTableData(handleArr(data, TYPES[DEPT_KEY]));
+    setSubeptsTableData(handleArr(data, TYPES[SUBDEPT_KEY]));
+    setGroupsTableData(handleArr(data, TYPES[GROUP_KEY]));
+    setItemsTableData(handleArr(data, ITEM_KEY));
   }
 
   return {

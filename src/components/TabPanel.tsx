@@ -4,7 +4,7 @@ interface ITabPanel {
   index: number;
   value: number;
   children: ReactNode;
-};
+}
 
 const TabPanel: FC<ITabPanel> = ({ value, index, children }) => {
   return (

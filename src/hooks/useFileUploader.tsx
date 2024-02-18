@@ -24,7 +24,7 @@ interface IFileUploaderHook {
   items: TCustomData<string | number>[];
   rowData: TCustomData<string | number> | null;
   uploadFile: (event: ChangeEvent<HTMLInputElement>) => void;
-  getRowData: (data: TCustomData<string | number>) => void;
+  getRowData: (data: TCustomData<string | number> | null) => void;
 }
 
 const useFileUploader = (): IFileUploaderHook => {
@@ -169,7 +169,7 @@ const useFileUploader = (): IFileUploaderHook => {
     reader.addEventListener('load', handleUploadedFile);
   };
 
-  const getRowData = ({key, id}: TCustomData<string | number>): void => {
+  const getRowData = (data: TCustomData<string | number> | null = null): void => {
     const parsedData = [
       depts,
       subdepts,
@@ -177,7 +177,9 @@ const useFileUploader = (): IFileUploaderHook => {
       items
     ].reduce((acc, item) => ({...acc, [Object.keys(item[0]).length]: item}), {});
 
-    setRowData(parsedData[key].find((item: TCustomData<string | number>) => item[ID_KEY] === id));
+    data
+      ? setRowData(parsedData[data.key].find((item: TCustomData<string | number>) => item[ID_KEY] === data.id))
+      : setRowData(data);
   }
 
   return {

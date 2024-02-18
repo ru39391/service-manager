@@ -5,11 +5,13 @@ import { DataGrid } from '@mui/x-data-grid';
 import { CloudUpload } from '@mui/icons-material';
 
 import TabPanel from './TabPanel';
+import Popup from './Popup';
 
 import useTableData from '../hooks/useTableData';
 import useFileUploader from '../hooks/useFileUploader';
 
 import { TITLES } from '../utils/constants';
+import deptsApi from '../utils/deptsApi';
 
 const InvisibleInput = styled('input')({
   overflow: 'hidden',
@@ -40,7 +42,7 @@ const Parser: FC = () => {
     uploadFile,
     getRowData
   } = useFileUploader();
-  
+
   //@ts-expect-error
   const handleTab = (event: SyntheticEvent, value: number) => {
     setTabValue(value);
@@ -56,7 +58,7 @@ const Parser: FC = () => {
   ]);
 
   useEffect(() => {
-    console.log(rowData);
+    //console.log(rowData);
   }, [
     rowData
   ]);
@@ -90,6 +92,7 @@ const Parser: FC = () => {
               aria-controls={`vertical-tabpanel-${index}`}
               sx={{ alignItems: 'flex-start' }} />)}
           </Tabs>
+          {Boolean(depts.length) && <Button component="label" variant="contained" onClick={() => deptsApi.create(depts)}>Сохранить</Button>}
         </Grid>
         <Grid item xs={10}>
           {[
@@ -116,7 +119,9 @@ const Parser: FC = () => {
         </Grid>
       </Grid>
 
-      {/*      
+      {Boolean(rowData) && <Popup data={rowData} close={() => getRowData(null)} />}
+
+      {/*
         slots={{ noRowsOverlay: NoRowsOverlay }}
       */}
     </>

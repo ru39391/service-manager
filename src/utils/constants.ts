@@ -32,6 +32,8 @@ const TITLES = {
   [RES_KEY]: 'Ресурсы'
 };
 
+const SORT_CAPTION = 'Порядок сортировки';
+
 const CAPTIONS = {
   [INDEX_KEY]: '№',
   [ID_KEY]: 'ID',
@@ -46,6 +48,15 @@ const CAPTIONS = {
   [IS_VISIBLE_KEY]: 'Показывать на сайте',
 };
 
+const TYPES = {
+  [DEPT_KEY]: `${DEPT_KEY}s`,
+  [SUBDEPT_KEY]: `${SUBDEPT_KEY}s`,
+  [GROUP_KEY]: `${GROUP_KEY}s`,
+  [ITEM_KEY]: 'pricelist'
+};
+
+const API_URL = 'http://stomistok.local/api/';
+
 export {
   DEFAULT_DOC_TITLE,
   DEPTS_ERROR_MSG,
@@ -54,6 +65,7 @@ export {
   POPUP_TITLE,
   CATEGORY_TITLE,
   INDEX_KEY,
+  ITEM_KEY,
   ID_KEY,
   NAME_KEY,
   PRICE_KEY,
@@ -64,6 +76,9 @@ export {
   IS_COMPLEX_KEY,
   COMPLEX_KEY,
   IS_VISIBLE_KEY,
+  SORT_CAPTION,
   CAPTIONS,
-  TITLES
+  TITLES,
+  TYPES,
+  API_URL
 };
