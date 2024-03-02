@@ -5,6 +5,7 @@ const CATEGORY_TITLE = 'Категория';
 const DEPTS_ERROR_MSG = 'Ошибка при получении списка отделений';
 const PRICELIST_ERROR_MSG = 'Ошибка при получении списка услуг';
 const RESOURCES_ERROR_MSG = 'Ошибка при получении списка ресурсов';
+const FILE_UPLOADING_ERROR_MSG = 'Ошибка при обработке файла';
 
 const POPUP_TITLE = 'Изменить данные';
 
@@ -62,6 +63,7 @@ export {
   DEPTS_ERROR_MSG,
   PRICELIST_ERROR_MSG,
   RESOURCES_ERROR_MSG,
+  FILE_UPLOADING_ERROR_MSG,
   POPUP_TITLE,
   CATEGORY_TITLE,
   INDEX_KEY,

@@ -12,8 +12,13 @@ import {
   IS_COMPLEX_ITEM_KEY,
   IS_COMPLEX_KEY,
   COMPLEX_KEY,
-  IS_VISIBLE_KEY
+  IS_VISIBLE_KEY,
+  TYPES,
+  ITEM_KEY
 } from '../utils/constants';
+
+import { useDispatch } from '../services/hooks';
+import { handleFile } from '../services/actions/file';
 
 import type { TCustomData } from '../types';
 
@@ -33,6 +38,8 @@ const useFileUploader = (): IFileUploaderHook => {
   const [groups, setGroups] = useState<TCustomData<string | number>[]>([]);
   const [items, setItems] = useState<TCustomData<string | number>[]>([]);
   const [rowData, setRowData] = useState<TCustomData<string | number> | null>(null);
+
+  const dispatch = useDispatch();
 
   const handleComplexItem = (
     items: TCustomData<string | number>[],
@@ -57,7 +64,7 @@ const useFileUploader = (): IFileUploaderHook => {
     };
   };
 
-  const handleDepts = (arr: TCustomData<string | number>[]): void => {
+  const handleDepts = (arr: TCustomData<string | number>[]): TCustomData<TCustomData<string | number>[]> => {
     const deptsdArr = arr
       .map(
         ({ RAZDID, RAZDNAME }) => ({
@@ -66,10 +73,11 @@ const useFileUploader = (): IFileUploaderHook => {
         })
       );
 
-    setDepts(fetchArray(deptsdArr, ID_KEY));
+    return { [TYPES[DEPT_KEY]]: fetchArray(deptsdArr, ID_KEY) };
+    //setDepts(fetchArray(deptsdArr, ID_KEY));
   };
 
-  const handleSubdepts = (arr: TCustomData<string | number>[]): void => {
+  const handleSubdepts = (arr: TCustomData<string | number>[]): TCustomData<TCustomData<string | number>[]> => {
     const subdeptsArr = arr
       .map(
         ({ SPECID, SPECNAME, RAZDID }) => ({
@@ -79,10 +87,11 @@ const useFileUploader = (): IFileUploaderHook => {
         })
       );
 
-    setSubdepts(fetchArray(subdeptsArr, ID_KEY));
+    return { [TYPES[SUBDEPT_KEY]]: fetchArray(subdeptsArr, ID_KEY) };
+    //setSubdepts(fetchArray(subdeptsArr, ID_KEY));
   };
 
-  const handleGroups = (arr: TCustomData<string | number>[]): void => {
+  const handleGroups = (arr: TCustomData<string | number>[]): TCustomData<TCustomData<string | number>[]> => {
     const groupsArr = arr
       .filter(({ ISCAPTION_1 }) => Number(ISCAPTION_1) === 1)
       .map(
@@ -95,10 +104,11 @@ const useFileUploader = (): IFileUploaderHook => {
         })
       );
 
-    setGroups(fetchArray(groupsArr, ID_KEY));
+    return { [TYPES[GROUP_KEY]]: fetchArray(groupsArr, ID_KEY) };
+    //setGroups(fetchArray(groupsArr, ID_KEY));
   };
 
-  const handleItems = (arr: TCustomData<string | number>[]): void => {
+  const handleItems = (arr: TCustomData<string | number>[]): TCustomData<TCustomData<string | number>[]> => {
     //@ts-expect-error
     const complexItemsArr: TCustomData<number>[] = arr
       .filter(({ ISCOMPLEX }) => Number(ISCOMPLEX) === 1)
@@ -140,7 +150,8 @@ const useFileUploader = (): IFileUploaderHook => {
         }
       );
 
-    setItems(fetchArray(itemsArr, ID_KEY));
+    return { [ITEM_KEY]: fetchArray(itemsArr, ID_KEY) };
+    //setItems(fetchArray(itemsArr, ID_KEY));
   };
 
   const handleUploadedFile = (event: Event): void => {
@@ -151,10 +162,12 @@ const useFileUploader = (): IFileUploaderHook => {
     const ws = wb.Sheets[wb.SheetNames[0]];
     const parsedData: TCustomData<string | number>[] = utils.sheet_to_json((ws), { defval: '' });
 
-    handleDepts(parsedData);
-    handleSubdepts(parsedData);
-    handleGroups(parsedData);
-    handleItems(parsedData);
+    dispatch(handleFile({
+      ...handleDepts(parsedData),
+      ...handleSubdepts(parsedData),
+      ...handleGroups(parsedData),
+      ...handleItems(parsedData)
+    }));
   }
 
   const uploadFile = (event: ChangeEvent<HTMLInputElement>): void => {
