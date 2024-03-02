@@ -1,9 +1,8 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { sortArray } from '../utils';
 import { GridValidRowModel, GridColDef } from '@mui/x-data-grid';
 import {
   INDEX_KEY,
-  ITEM_KEY,
   ID_KEY,
   NAME_KEY,
   DEPT_KEY,
@@ -13,9 +12,10 @@ import {
   IS_COMPLEX_KEY,
   COMPLEX_KEY,
   IS_VISIBLE_KEY,
-  CAPTIONS,
-  TYPES
+  CAPTIONS
 } from '../utils/constants';
+
+import { useSelector } from '../services/hooks';
 
 import type { TCustomData } from '../types';
 
@@ -29,7 +29,6 @@ interface ITableData {
   subdeptsTableData: TTableData | null;
   groupsTableData: TTableData | null;
   itemsTableData: TTableData | null;
-  setTableData: (data: TCustomData<TCustomData<string | number>[]>) => void;
 }
 
 const useTableData = (): ITableData => {
@@ -37,6 +36,12 @@ const useTableData = (): ITableData => {
   const [subdeptsTableData, setSubeptsTableData] = useState<TTableData>(null);
   const [groupsTableData, setGroupsTableData] = useState<TTableData>(null);
   const [itemsTableData, setItemsTableData] = useState<TTableData>(null);
+  const {
+    depts,
+    subdepts,
+    groups,
+    items
+  } = useSelector(state => state.file);
 
   const setBooleanCaption =(item: TCustomData<string | number>, key: string): TCustomData<string> => ({ [key]: item[key] ? 'Да' : 'Нет' });
 
@@ -58,13 +63,12 @@ const useTableData = (): ITableData => {
    }, []).join(', ')
    : '';
 
-  const handleArr = (data: TCustomData<TCustomData<string | number>[]>, key: string): TTableData => {
-    if(!data[key].length) {
+  const handleArr = (arr: TCustomData<string | number>[]): TTableData => {
+    if(!(Array.isArray(arr) && arr.length)) {
       return null;
     }
 
-    const {depts, subdepts, groups, items} = data;
-    const rows: GridValidRowModel[] = sortArray(data[key], NAME_KEY)
+    const rows: GridValidRowModel[] = sortArray([...arr], NAME_KEY)
       .map(item => {
         const data = {...item};
 
@@ -101,19 +105,27 @@ const useTableData = (): ITableData => {
     };
   }
 
-  const setTableData = (data: TCustomData<TCustomData<string | number>[]>): void => {
-    setDeptsTableData(handleArr(data, TYPES[DEPT_KEY]));
-    setSubeptsTableData(handleArr(data, TYPES[SUBDEPT_KEY]));
-    setGroupsTableData(handleArr(data, TYPES[GROUP_KEY]));
-    setItemsTableData(handleArr(data, ITEM_KEY));
+  const setTableData = (): void => {
+    setDeptsTableData(handleArr(depts));
+    setSubeptsTableData(handleArr(subdepts));
+    setGroupsTableData(handleArr(groups));
+    setItemsTableData(handleArr(items));
   }
+
+  useEffect(() => {
+    setTableData();
+  }, [
+    depts,
+    subdepts,
+    groups,
+    items
+  ]);
 
   return {
     deptsTableData,
     subdeptsTableData,
     groupsTableData,
-    itemsTableData,
-    setTableData
+    itemsTableData
   }
 }
 

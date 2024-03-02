@@ -17,28 +17,24 @@ import {
   ITEM_KEY
 } from '../utils/constants';
 
-import { useDispatch } from '../services/hooks';
+import { useSelector, useDispatch } from '../services/hooks';
 import { handleFile } from '../services/actions/file';
+import { setRowData } from '../services/slices/file-slice';
 
 import type { TCustomData } from '../types';
 
 interface IFileUploaderHook {
-  depts: TCustomData<string | number>[];
-  subdepts: TCustomData<string | number>[];
-  groups: TCustomData<string | number>[];
-  items: TCustomData<string | number>[];
-  rowData: TCustomData<string | number> | null;
   uploadFile: (event: ChangeEvent<HTMLInputElement>) => void;
   getRowData: (data: TCustomData<string | number> | null) => void;
 }
 
 const useFileUploader = (): IFileUploaderHook => {
-  const [depts, setDepts] = useState<TCustomData<string | number>[]>([]);
-  const [subdepts, setSubdepts] = useState<TCustomData<string | number>[]>([]);
-  const [groups, setGroups] = useState<TCustomData<string | number>[]>([]);
-  const [items, setItems] = useState<TCustomData<string | number>[]>([]);
-  const [rowData, setRowData] = useState<TCustomData<string | number> | null>(null);
-
+  const {
+    depts,
+    subdepts,
+    groups,
+    items
+  } = useSelector(state => state.file);
   const dispatch = useDispatch();
 
   const handleComplexItem = (
@@ -74,7 +70,6 @@ const useFileUploader = (): IFileUploaderHook => {
       );
 
     return { [TYPES[DEPT_KEY]]: fetchArray(deptsdArr, ID_KEY) };
-    //setDepts(fetchArray(deptsdArr, ID_KEY));
   };
 
   const handleSubdepts = (arr: TCustomData<string | number>[]): TCustomData<TCustomData<string | number>[]> => {
@@ -88,7 +83,6 @@ const useFileUploader = (): IFileUploaderHook => {
       );
 
     return { [TYPES[SUBDEPT_KEY]]: fetchArray(subdeptsArr, ID_KEY) };
-    //setSubdepts(fetchArray(subdeptsArr, ID_KEY));
   };
 
   const handleGroups = (arr: TCustomData<string | number>[]): TCustomData<TCustomData<string | number>[]> => {
@@ -105,7 +99,6 @@ const useFileUploader = (): IFileUploaderHook => {
       );
 
     return { [TYPES[GROUP_KEY]]: fetchArray(groupsArr, ID_KEY) };
-    //setGroups(fetchArray(groupsArr, ID_KEY));
   };
 
   const handleItems = (arr: TCustomData<string | number>[]): TCustomData<TCustomData<string | number>[]> => {
@@ -151,7 +144,6 @@ const useFileUploader = (): IFileUploaderHook => {
       );
 
     return { [ITEM_KEY]: fetchArray(itemsArr, ID_KEY) };
-    //setItems(fetchArray(itemsArr, ID_KEY));
   };
 
   const handleUploadedFile = (event: Event): void => {
@@ -191,16 +183,11 @@ const useFileUploader = (): IFileUploaderHook => {
     ].reduce((acc, item) => ({...acc, [Object.keys(item[0]).length]: item}), {});
 
     data
-      ? setRowData(parsedData[data.key].find((item: TCustomData<string | number>) => item[ID_KEY] === data.id))
-      : setRowData(data);
+      ? dispatch(setRowData({ data: parsedData[data.key].find((item: TCustomData<string | number>) => item[ID_KEY] === data.id) }))
+      : dispatch(setRowData({ data }));
   }
 
   return {
-    depts,
-    subdepts,
-    groups,
-    items,
-    rowData,
     uploadFile,
     getRowData
   }
