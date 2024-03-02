@@ -38,7 +38,7 @@ const initialState: TFileState = {
 };
 
 const fileSlice = createSlice({
-  name: 'order',
+  name: 'file',
   initialState,
   reducers: {
     getFileUploading: (state) => ({
