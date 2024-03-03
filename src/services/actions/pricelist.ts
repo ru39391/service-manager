@@ -43,10 +43,10 @@ const createPricelistData = (priceListData: TCustomData<TCustomData<string | num
   dispatch(getPricelistLoading());
 
   try {
-    const response = await Promise.all([Object.values(TYPES)[0]].map(alias => {
-      console.log('data[alias]: ', priceListData[alias]);
-      return axios.post(`${API_URL}${alias}`, { data: priceListData[alias] });
-    }));
+    const response = await Promise.all(
+      [Object.values(TYPES)[0]]
+        .map(alias => axios.post(`${API_URL}${alias}`, {...priceListData[alias].reduce((acc, item, index) => ({...acc, [index]: item}), {})}))
+    );
     console.log(response);
 
     const { success, data }: TResponseData = response
