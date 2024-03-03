@@ -7,10 +7,7 @@ export type TPricelistAction = {
     depts?: TCustomData<string | number>[];
     subdepts?: TCustomData<string | number>[];
     groups?: TCustomData<string | number>[];
-    items?: TCustomData<string | number>[];
-    data?: TCustomData<string | number> | null;
-    item?: TCustomData<string | number>;
-    key?: string;
+    pricelist?: TCustomData<string | number>[];
     errorMsg?: string;
   };
 };
@@ -19,9 +16,9 @@ export type TPricelistState = {
   depts: TCustomData<string | number>[];
   subdepts: TCustomData<string | number>[];
   groups: TCustomData<string | number>[];
-  items: TCustomData<string | number>[];
-  rowData: TCustomData<string | number> | null;
+  pricelist: TCustomData<string | number>[];
   isPricelistLoading: boolean;
+  isPricelistSucceed: boolean;
   isPricelistFailed: boolean;
   errorMsg: string;
 };
@@ -30,9 +27,9 @@ const initialState: TPricelistState = {
   depts: [],
   subdepts: [],
   groups: [],
-  items: [],
-  rowData: null,
+  pricelist: [],
   isPricelistLoading: false,
+  isPricelistSucceed: false,
   isPricelistFailed: false,
   errorMsg: '',
 };
@@ -41,6 +38,28 @@ const pricelistSlice = createSlice({
   name: 'pricelist',
   initialState,
   reducers: {
+    getPricelistLoading: (state) => ({
+      ...state,
+      isPricelistLoading: true
+    }),
+    getPricelistSucceed: (state, action: TPricelistAction) => ({
+      ...state,
+      depts: action.payload.depts || [],
+      subdepts: action.payload.subdepts || [],
+      groups: action.payload.groups || [],
+      pricelist: action.payload.pricelist || [],
+      isPricelistLoading: false,
+      isPricelistSucceed: true,
+      isPricelistFailed: false,
+      errorMsg: ''
+    }),
+    getPricelistFailed: (state, action: TPricelistAction) => ({
+      ...state,
+      isPricelistLoading: false,
+      isPricelistSucceed: false,
+      isPricelistFailed: true,
+      errorMsg: action.payload.errorMsg || ''
+    }),
   }
 });
 
@@ -49,4 +68,7 @@ export const {
   actions: pricelistActions
 } = pricelistSlice;
 export const {
+  getPricelistLoading,
+  getPricelistSucceed,
+  getPricelistFailed,
 } = pricelistSlice.actions;

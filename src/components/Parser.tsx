@@ -13,7 +13,6 @@ import useFileUploader from '../hooks/useFileUploader';
 import { useSelector } from '../services/hooks';
 
 import { TITLES } from '../utils/constants';
-import deptsApi from '../utils/deptsApi';
 
 const InvisibleInput = styled('input')({
   overflow: 'hidden',

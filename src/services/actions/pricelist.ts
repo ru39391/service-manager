@@ -1,33 +1,41 @@
 import axios from 'axios';
-/*
 import {
-
+  getPricelistLoading,
+  getPricelistSucceed,
+  getPricelistFailed,
 } from '../slices/pricelist-slice';
-*/
-import type { TCustomData } from '../../types';
+
+import type { TResponseData, TResponseDefault } from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';
 
-/*
-function getUserAccount() {
-  return axios.get('/user/12345');
-}
-
-function getUserPermissions() {
-  return axios.get('/user/12345/permissions');
-}
-
-const [acct, perm] = await Promise.all([getUserAccount(), getUserPermissions()]);
-*/
+import { PRICELIST_ERROR_MSG, API_URL, TYPES } from '../../utils/constants';
 
 const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch) => {
-
-  // dispatch(); // isLoading = true
+  dispatch(getPricelistLoading());
 
   try {
-    const response = await axios.get('/api/pricelist');
-    console.log(response);
+    const response = await Promise.all(Object.values(TYPES).map(alias => axios.get(`${API_URL}${alias}`)));
+    const { success, data }: TResponseData = response
+      .map(({ data }) => data)
+      .reduce((acc: TResponseData, item: TResponseDefault, index ) => ({
+        ...acc,
+        success: [...acc.success, item.success],
+        data: {
+          ...acc.data,
+          [Object.values(TYPES)[index]]: item.data
+        }
+      }), {
+        success: [],
+        data: {}
+      });
+
+    if(success.every(item => item)) {
+      dispatch(getPricelistSucceed({ ...data }));
+    } else {
+      dispatch(getPricelistFailed({ errorMsg: PRICELIST_ERROR_MSG }));
+    }
   } catch(error) {
-    console.error(error);
+    dispatch(getPricelistFailed({ errorMsg: PRICELIST_ERROR_MSG }));
   }
 };
 
