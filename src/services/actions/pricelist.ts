@@ -5,7 +5,7 @@ import {
   getPricelistFailed,
 } from '../slices/pricelist-slice';
 
-import type { TResponseData, TResponseDefault } from '../../types';
+import type { TCustomData, TResponseData, TResponseDefault } from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';
 
 import { PRICELIST_ERROR_MSG, API_URL, TYPES } from '../../utils/constants';
@@ -39,6 +39,41 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
   }
 };
 
+const createPricelistData = (priceListData: TCustomData<TCustomData<string | number>[]>): TAppThunk<void> => async (dispatch: TAppDispatch) => {
+  dispatch(getPricelistLoading());
+
+  try {
+    const response = await Promise.all([Object.values(TYPES)[0]].map(alias => {
+      console.log('data[alias]: ', priceListData[alias]);
+      return axios.post(`${API_URL}${alias}`, { data: priceListData[alias] });
+    }));
+    console.log(response);
+
+    const { success, data }: TResponseData = response
+      .map(({ data }) => data)
+      .reduce((acc: TResponseData, item: TResponseDefault, index ) => ({
+        ...acc,
+        success: [...acc.success, item.success],
+        data: {
+          ...acc.data,
+          [Object.values(TYPES)[index]]: item.data
+        }
+      }), {
+        success: [],
+        data: {}
+      });
+
+    if(success.every(item => item)) {
+      dispatch(getPricelistSucceed({ ...data }));
+    } else {
+      dispatch(getPricelistFailed({ errorMsg: 'ошибка при создании' }));
+    }
+  } catch(error) {
+    dispatch(getPricelistFailed({ errorMsg: 'ошибка при создании' }));
+  }
+};
+
 export {
-  fetchPricelistData
+  fetchPricelistData,
+  createPricelistData
 }

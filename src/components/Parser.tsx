@@ -10,7 +10,8 @@ import Popup from './Popup';
 import useTableData from '../hooks/useTableData';
 import useFileUploader from '../hooks/useFileUploader';
 
-import { useSelector } from '../services/hooks';
+import { useSelector, useDispatch } from '../services/hooks';
+import { createPricelistData } from '../services/actions/pricelist';
 
 import { TITLES } from '../utils/constants';
 
@@ -26,7 +27,9 @@ const InvisibleInput = styled('input')({
 
 const Parser: FC = () => {
   const [tabValue, setTabValue] = useState(0);
-  const { rowData } = useSelector(state => state.file);
+
+  const { depts, rowData } = useSelector(state => state.file);
+  const dispatch = useDispatch();
 
   const {
     deptsTableData,
@@ -42,6 +45,10 @@ const Parser: FC = () => {
   //@ts-expect-error
   const handleTab = (event: SyntheticEvent, value: number) => {
     setTabValue(value);
+  };
+
+  const createDepts = () => {
+    dispatch(createPricelistData({ depts }));
   };
 
   useEffect(() => {
@@ -79,7 +86,7 @@ const Parser: FC = () => {
               aria-controls={`vertical-tabpanel-${index}`}
               sx={{ alignItems: 'flex-start' }} />)}
           </Tabs>
-          {/*Boolean(depts.length) && <Button component="label" variant="contained" onClick={() => deptsApi.create(depts)}>Сохранить</Button>*/}
+          {Boolean(deptsTableData) && <Button component="label" variant="contained" onClick={createDepts}>Сохранить</Button>}
         </Grid>
         <Grid item xs={10}>
           {[

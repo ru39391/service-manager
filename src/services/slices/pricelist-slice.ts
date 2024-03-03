@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 import type { TCustomData } from '../../types';
 
+// TODO: поправить структуру элементов (см. в php-файлах) - или отказаться от структуры ответа get-запроса?
 export type TPricelistAction = {
   payload: {
     depts?: TCustomData<string | number>[];
