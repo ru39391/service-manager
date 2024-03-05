@@ -44,8 +44,9 @@ const createPricelistData = (priceListData: TCustomData<TCustomData<string | num
 
   try {
     const response = await Promise.all(
-      [Object.values(TYPES)[0]]
-        .map(alias => axios.post(`${API_URL}${alias}`, {...priceListData[alias].reduce((acc, item, index) => ({...acc, [index]: item}), {})}))
+      Object.values(TYPES).map(alias => axios.post(`${API_URL}${alias}`, {
+        ...priceListData[alias].reduce((acc, item, index) => ({...acc, [index]: item}), {})
+      }))
     );
     console.log(response);
 

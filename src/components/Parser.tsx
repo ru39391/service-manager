@@ -11,9 +11,9 @@ import useTableData from '../hooks/useTableData';
 import useFileUploader from '../hooks/useFileUploader';
 
 import { useSelector, useDispatch } from '../services/hooks';
-import { createPricelistData } from '../services/actions/pricelist';
+import { fetchPricelistData, createPricelistData } from '../services/actions/pricelist';
 
-import { TITLES } from '../utils/constants';
+import { TITLES, TYPES, ITEM_KEY } from '../utils/constants';
 
 const InvisibleInput = styled('input')({
   overflow: 'hidden',
@@ -28,7 +28,7 @@ const InvisibleInput = styled('input')({
 const Parser: FC = () => {
   const [tabValue, setTabValue] = useState(0);
 
-  const { depts, rowData } = useSelector(state => state.file);
+  const { depts, subdepts, groups, items, rowData } = useSelector(state => state.file);
   const dispatch = useDispatch();
 
   const {
@@ -48,7 +48,12 @@ const Parser: FC = () => {
   };
 
   const createDepts = () => {
-    dispatch(createPricelistData({ depts }));
+    dispatch(createPricelistData({
+      depts,
+      subdepts,
+      groups,
+      [TYPES[ITEM_KEY]]: items
+    }));
   };
 
   useEffect(() => {
