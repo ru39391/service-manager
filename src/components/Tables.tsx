@@ -25,7 +25,7 @@ const InvisibleInput = styled('input')({
   opacity: 0
 });
 
-const Parser: FC = () => {
+const Tables: FC = () => {
   const [tabValue, setTabValue] = useState(0);
 
   const { depts, subdepts, groups, items, rowData } = useSelector(state => state.file);
@@ -127,4 +127,4 @@ const Parser: FC = () => {
   );
 }
 
-export default Parser;
+export default Tables;

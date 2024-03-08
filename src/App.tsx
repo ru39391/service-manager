@@ -1,12 +1,14 @@
 import { FC, useEffect } from 'react';
-import { Box } from '@mui/material';
+import {
+  Routes,
+  Route
+} from 'react-router-dom';
 import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import '@fontsource/roboto/400.css';
 
-import Parser from './components/Parser';
-import Preloader from './components/Preloader';
-import AlertError from './components/AlertError';
+import Home from './pages/home/Home';
+import Parser from './pages/parser/Parser';
 
 import { useSelector, useDispatch } from './services/hooks';
 import { fetchPricelistData } from './services/actions/pricelist';
@@ -42,11 +44,10 @@ const App: FC = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <Box sx={{ bgcolor: 'background.body', height: '100vh' }}>
-        <Preloader />
-        <AlertError />
-        <Box sx={{ p: 2 }}><Parser /></Box>
-      </Box>
+      <Routes>
+        <Route path='/' element={<Home />} />
+        <Route path='/parser' element={<Parser />} />
+      </Routes>
       <CssBaseline />
     </ThemeProvider>
   )

@@ -5,6 +5,14 @@ import {
   getPricelistFailed,
 } from '../slices/pricelist-slice';
 
+import {
+  getDepts,
+  getSubdepts,
+  getGroups,
+  getPricelist,
+  postDepts
+} from '../../mocks';
+
 import type { TCustomData, TResponseData, TResponseDefault } from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';
 
@@ -14,9 +22,10 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
   dispatch(getPricelistLoading());
 
   try {
-    const response = await Promise.all(Object.values(TYPES).map(alias => axios.get(`${API_URL}${alias}`)));
+    // Object.values(TYPES).map(alias => axios.get(`${API_URL}${alias}`))
+    const response = await Promise.all([postDepts(), getSubdepts(), getGroups(), getPricelist()]);
     const { success, data }: TResponseData = response
-      .map(({ data }) => data)
+      //.map(({ data }) => data)
       .reduce((acc: TResponseData, item: TResponseDefault, index ) => ({
         ...acc,
         success: [...acc.success, item.success],
@@ -30,6 +39,7 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
       });
 
     if(success.every(item => item)) {
+      // console.log(Object.values(data.depts).filter((item) => typeof item !== 'boolean'));
       dispatch(getPricelistSucceed({ ...data }));
     } else {
       dispatch(getPricelistFailed({ errorMsg: PRICELIST_ERROR_MSG }));
@@ -51,7 +61,10 @@ const createPricelistData = (priceListData: TCustomData<TCustomData<string | num
     console.log(response);
 
     const { success, data }: TResponseData = response
-      .map(({ data }) => data)
+      .map(({ data }) => {
+        console.log(data);
+        return data;
+      })
       .reduce((acc: TResponseData, item: TResponseDefault, index ) => ({
         ...acc,
         success: [...acc.success, item.success],
