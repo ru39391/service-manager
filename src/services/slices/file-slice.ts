@@ -67,6 +67,7 @@ const fileSlice = createSlice({
     }),
     updateItems: (state, action: TFileAction) => ({
       ...state,
+      //@ts-expect-error
       ...(action.payload.key && {[action.payload.key]: [...state[action.payload.key], action.payload.item]})
     }),
   }

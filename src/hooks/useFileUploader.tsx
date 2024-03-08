@@ -1,4 +1,4 @@
-import { useState, ChangeEvent } from 'react';
+import { ChangeEvent } from 'react';
 import { read, utils } from 'xlsx';
 import { fetchArray } from '../utils';
 import {
@@ -183,6 +183,7 @@ const useFileUploader = (): IFileUploaderHook => {
     ].reduce((acc, item) => ({...acc, [Object.keys(item[0]).length]: item}), {});
 
     data
+      //@ts-expect-error
       ? dispatch(setRowData({ data: parsedData[data.key].find((item: TCustomData<string | number>) => item[ID_KEY] === data.id) }))
       : dispatch(setRowData({ data }));
   }

@@ -2,9 +2,7 @@ import { FILE_UPLOADING_ERROR_MSG } from '../../utils/constants';
 import {
   getFileUploading,
   getFileUploadingSucceed,
-  getFileUploadingFailed,
-  setRowData,
-  updateItems
+  getFileUploadingFailed
 } from '../slices/file-slice';
 import type { TCustomData } from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';

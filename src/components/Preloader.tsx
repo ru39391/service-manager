@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { LinearProgress } from '@mui/material';
 
 import { useSelector } from '../services/hooks';

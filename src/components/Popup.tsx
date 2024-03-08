@@ -1,4 +1,4 @@
-import React, { FC, forwardRef } from 'react';
+import { FC, forwardRef } from 'react';
 import {
   Dialog,
   DialogActions,
@@ -43,6 +43,7 @@ interface IPopup {
 }
 
 const Transition = forwardRef(function Transition(props, ref) {
+  //@ts-expect-error
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
@@ -53,6 +54,7 @@ const Popup: FC<IPopup> = ({ data, close }) => {
       maxWidth="sm"
       fullWidth={true}
       onClose={close}
+      //@ts-expect-error
       TransitionComponent={Transition}
       keepMounted
     >
@@ -64,6 +66,7 @@ const Popup: FC<IPopup> = ({ data, close }) => {
           <TextField
             key={index.toString()}
             id={data[ID_KEY].toString()}
+            //@ts-expect-error
             label={key === INDEX_KEY ? SORT_CAPTION : CAPTIONS[key]}
             defaultValue={data[key].toString()}
             fullWidth

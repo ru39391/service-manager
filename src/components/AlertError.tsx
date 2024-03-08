@@ -1,4 +1,4 @@
-import React, { FC } from 'react';
+import { FC } from 'react';
 import { Snackbar, Alert } from '@mui/material';
 
 import { useSelector } from '../services/hooks';

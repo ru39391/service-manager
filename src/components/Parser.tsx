@@ -1,4 +1,4 @@
-import React, { FC, useState, useEffect, SyntheticEvent } from 'react';
+import { FC, useState, useEffect, SyntheticEvent } from 'react';
 import { styled } from '@mui/material/styles';
 import { Grid, Tab, Tabs, Box, Button } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -11,7 +11,7 @@ import useTableData from '../hooks/useTableData';
 import useFileUploader from '../hooks/useFileUploader';
 
 import { useSelector, useDispatch } from '../services/hooks';
-import { fetchPricelistData, createPricelistData } from '../services/actions/pricelist';
+import { createPricelistData } from '../services/actions/pricelist';
 
 import { TITLES, TYPES, ITEM_KEY } from '../utils/constants';
 
