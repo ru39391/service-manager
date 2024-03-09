@@ -26,7 +26,7 @@ const InvisibleInput = styled('input')({
 });
 
 const Tables: FC = () => {
-  const [tabValue, setTabValue] = useState(0);
+  const [tabValue, setTabValue] = useState<number>(0);
 
   const { depts, subdepts, groups, items, rowData } = useSelector(state => state.file);
   const dispatch = useDispatch();

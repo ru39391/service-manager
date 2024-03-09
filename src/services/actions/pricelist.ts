@@ -23,7 +23,7 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
 
   try {
     // Object.values(TYPES).map(alias => axios.get(`${API_URL}${alias}`))
-    const response = await Promise.all([postDepts(), getSubdepts(), getGroups(), getPricelist()]);
+    const response = await Promise.all([getDepts(), getSubdepts(), getGroups(), getPricelist()]);
     const { success, data }: TResponseData = response
       //.map(({ data }) => data)
       .reduce((acc: TResponseData, item: TResponseDefault, index ) => ({
@@ -31,7 +31,7 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
         success: [...acc.success, item.success],
         data: {
           ...acc.data,
-          [Object.values(TYPES)[index]]: item.data
+          [Object.values(TYPES)[index]]: Object.values(item.data).filter((value) => typeof value !== 'boolean')
         }
       }), {
         success: [],
