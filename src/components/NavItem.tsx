@@ -1,4 +1,5 @@
-import { FC } from 'react';
+import { FC, useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import {
   Box,
   Collapse,
@@ -14,7 +15,9 @@ import {
   ExpandMore
 } from '@mui/icons-material';
 
-import type { TCustomData, TSubMenuData } from '../types';
+import type { TCustomData } from '../types';
+
+import { DEPT_KEY, SUBDEPT_KEY, TYPES } from '../utils/constants';
 
 interface INavItem {
   id: number;
@@ -33,6 +36,18 @@ const NavItem: FC<INavItem> = ({
   categoryData,
   setSubNav
 }) => {
+  const [currSubCategoryId, setCurrSubCategoryId] = useState<number | null>(null);
+  const navigate = useNavigate();
+
+  const changeLoc = (id: number, key: string): void => {
+    navigate(`/${TYPES[key]}/${id.toString()}`, { replace: true });
+    setCurrSubCategoryId(id);
+
+    if(key === DEPT_KEY) {
+      setSubNav(id);
+    }
+  }
+
   return (
     <>
       <ListItemButton selected={currCategoryId === id} sx={{ py: 0.5 }}>
@@ -43,10 +58,13 @@ const NavItem: FC<INavItem> = ({
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          onClick={() => console.log(categoryIds)}
         >
           <ListItemIcon><FolderOpen fontSize="small" sx={{ color: 'info.light' }} /></ListItemIcon>
-          <ListItemText sx={{ mr: 1 }} primary={name} />
+          <ListItemText
+            primary={name}
+            sx={{ mr: 1 }}
+            onClick={() => changeLoc(id as number, DEPT_KEY)}
+          />
         </Box>
         {categoryIds.includes(id) && <IconButton onClick={() => setSubNav(id)}>
           { currCategoryId === id ? <ExpandLess /> : <ExpandMore /> }
@@ -58,18 +76,18 @@ const NavItem: FC<INavItem> = ({
             ({ item_id, name }) =>
             <ListItemButton
               key={item_id.toString()}
-              selected={false}
+              selected={currSubCategoryId === item_id}
               sx={{
                 pl: 6,
                 color: 'grey.600',
                 fontSize: 14,
               }}
-              onClick={() => console.log(item_id)}
+              onClick={() => changeLoc(item_id as number, SUBDEPT_KEY)}
             >
               <ListItemText
                 disableTypography
-                sx={{ m: 0 }}
                 primary={name}
+                sx={{ m: 0 }}
               />
             </ListItemButton>
           )}

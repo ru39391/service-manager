@@ -1,5 +1,6 @@
 import { FC, useEffect } from 'react';
 import {
+  Outlet,
   Routes,
   Route
 } from 'react-router-dom';
@@ -7,13 +8,22 @@ import CssBaseline from '@mui/material/CssBaseline';
 import { ThemeProvider, createTheme } from '@mui/material/styles';
 import '@fontsource/roboto/400.css';
 
-import Home from './pages/home/Home';
-import Parser from './pages/parser/Parser';
+import Home from './pages/Home';
+import Parser from './pages/Parser';
+import Category from './pages/Category';
+import SubdeptsList from './pages/SubdeptsList';
 
 import { useSelector, useDispatch } from './services/hooks';
 import { fetchPricelistData } from './services/actions/pricelist';
 
-import { DEFAULT_DOC_TITLE } from './utils/constants';
+import {
+  DEPT_KEY,
+  SUBDEPT_KEY,
+  GROUP_KEY,
+  ITEM_KEY,
+  TYPES,
+  DEFAULT_DOC_TITLE
+} from './utils/constants';
 
 const App: FC = () => {
   const dispatch = useDispatch();
@@ -46,6 +56,22 @@ const App: FC = () => {
     <ThemeProvider theme={theme}>
       <Routes>
         <Route path='/' element={<Home />} />
+        <Route path={`/${TYPES[DEPT_KEY]}`} element={<Outlet />}>
+          <Route index element={<SubdeptsList />} />
+          <Route path=':id' element={<Category />} />
+        </Route>
+        <Route path={`/${TYPES[SUBDEPT_KEY]}`} element={<Outlet />}>
+          <Route index element={<SubdeptsList />} />
+          <Route path=':id' element={<Category />} />
+        </Route>
+        <Route path={`/${TYPES[GROUP_KEY]}`} element={<Outlet />}>
+          <Route index element={<SubdeptsList />} />
+          <Route path=':id' element={<Category />} />
+        </Route>
+        <Route path={`/${TYPES[ITEM_KEY]}`} element={<Outlet />}>
+          <Route index element={<SubdeptsList />} />
+          <Route path=':id' element={<Category />} />
+        </Route>
         <Route path='/parser' element={<Parser />} />
       </Routes>
       <CssBaseline />

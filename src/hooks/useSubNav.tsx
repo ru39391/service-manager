@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { fetchArray, sortArray } from '../utils';
 import { NAME_KEY, DEPT_KEY } from '../utils/constants';
 
-import type { TCustomData, TSubMenuData } from '../types';
+import type { TCustomData } from '../types';
 
 interface ISubNav {
   categoryIds: number[];

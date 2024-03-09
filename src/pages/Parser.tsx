@@ -1,8 +1,7 @@
 import { FC } from 'react';
 
-import Layout from '../layout/Layout';
-
-import Tables from '../../components/Tables';
+import Layout from '../components/Layout';
+import Tables from '../components/Tables';
 
 const Parser: FC = () => {
   return (

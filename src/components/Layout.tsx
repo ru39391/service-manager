@@ -1,8 +1,8 @@
 import { FC, ReactNode } from 'react';
 import { Box, Grid } from '@mui/material';
 
-import Preloader from '../../components/Preloader';
-import AlertError from '../../components/AlertError';
+import Preloader from './Preloader';
+import AlertError from './AlertError';
 
 interface ILayout {
   children: ReactNode;
@@ -13,7 +13,7 @@ const Layout: FC<ILayout> = ({ children }) => {
     <Box sx={{ height: '100vh', bgcolor: 'background.body' }}>
       <Preloader />
       <AlertError />
-      <Grid container sx={{ height: '100%', p: 2 }}>{children}</Grid>
+      <Grid container sx={{ height: '100%', px: 2, py: 3 }}>{children}</Grid>
     </Box>
   )
 };
