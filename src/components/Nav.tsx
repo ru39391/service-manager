@@ -14,6 +14,7 @@ const Nav: FC = () => {
   } = useSelector(state => state.pricelist);
 
   const {
+    categoryIds,
     currCategory,
     categoryData,
     setSubNav
@@ -45,12 +46,12 @@ const Nav: FC = () => {
         }}
       >
         {depts.map(
-          ({ item_id, name, subdepts: deptChildren }) =>
+          ({ item_id, name }) =>
             <NavItem
               key={item_id.toString()}
               id={item_id as number}
               name={name.toString()}
-              deptChildren={deptChildren as number[]}
+              categoryIds={categoryIds}
               currCategoryId={currCategory as number}
               categoryData={categoryData}
               setSubNav={setSubNav}

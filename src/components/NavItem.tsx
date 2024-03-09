@@ -19,23 +19,23 @@ import type { TCustomData, TSubMenuData } from '../types';
 interface INavItem {
   id: number;
   name: string;
-  deptChildren: number[];
+  categoryIds: number[];
   currCategoryId: number;
   categoryData: TCustomData<number | string>[];
-  setSubNav: (data: TSubMenuData) => void;
+  setSubNav: (id: number) => void;
 }
 
 const NavItem: FC<INavItem> = ({
   id,
   name,
-  deptChildren,
+  categoryIds,
   currCategoryId,
   categoryData,
   setSubNav
 }) => {
   return (
     <>
-      <ListItemButton selected={true} sx={{ py: 0.5 }}>
+      <ListItemButton selected={currCategoryId === id} sx={{ py: 0.5 }}>
         <Box
           sx={{
             flexGrow: 1,
@@ -43,12 +43,12 @@ const NavItem: FC<INavItem> = ({
             alignItems: 'center',
             justifyContent: 'center',
           }}
-          onClick={() => console.log(deptChildren)}
+          onClick={() => console.log(categoryIds)}
         >
           <ListItemIcon><FolderOpen fontSize="small" sx={{ color: 'info.light' }} /></ListItemIcon>
           <ListItemText sx={{ mr: 1 }} primary={name} />
         </Box>
-        {deptChildren.length && <IconButton onClick={() => setSubNav({  parentId: id, childrenIds: deptChildren })}>
+        {categoryIds.includes(id) && <IconButton onClick={() => setSubNav(id)}>
           { currCategoryId === id ? <ExpandLess /> : <ExpandMore /> }
         </IconButton>}
       </ListItemButton>
