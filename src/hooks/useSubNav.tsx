@@ -33,6 +33,7 @@ const useSubNav = (arr: TCustomData<string | number>[]): ISubNav => {
 
   useEffect(() => {
     handleCategoryIds();
+    setSubNav(categoryIds[0]);
   }, [
     arr
   ]);

@@ -52,7 +52,7 @@ const NavItem: FC<INavItem> = ({
           { currCategoryId === id ? <ExpandLess /> : <ExpandMore /> }
         </IconButton>}
       </ListItemButton>
-      {categoryData.length ? <Collapse in={currCategoryId === id} timeout="auto" unmountOnExit>
+      {categoryData.length > 0 && <Collapse in={currCategoryId === id} timeout="auto" unmountOnExit>
         <List component="div" disablePadding>
           {categoryData.map(
             ({ item_id, name }) =>
@@ -74,7 +74,7 @@ const NavItem: FC<INavItem> = ({
             </ListItemButton>
           )}
         </List>
-      </Collapse> : ''}
+      </Collapse>}
     </>
   )
 };

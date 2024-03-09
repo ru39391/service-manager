@@ -21,7 +21,7 @@ const Nav: FC = () => {
   } = useSubNav(subdepts);
 
   return (
-    <Box
+    depts.length > 0 && <Box
       sx={{
         flexGrow: 1,
         width: '100%',
