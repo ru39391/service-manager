@@ -20,7 +20,7 @@ const useSubNav = (arr: TCustomData<string | number>[]): ISubNav => {
     const fetchedArr: number[] = fetchArray(arr, DEPT_KEY).map(({ dept }) => dept as number);
 
     setCategoryIds(fetchedArr);
-  }
+  };
 
   const setSubNav = (parentId: number): void => {
     setCurrCategory(parentId === currCategory ? null : parentId);

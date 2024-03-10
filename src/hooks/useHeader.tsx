@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
-import { useLocation } from 'react-router-dom';
-
 import { useSelector } from '../services/hooks';
+import useUrlHandler from './useUrlHandler';
 
 import type { TCustomData } from '../types';
 
@@ -17,17 +16,13 @@ const useHeader = (): IHeader => {
   const [pageTitle, setPageTitle] = useState<string>('');
   const [categoryData, setCategoryData] = useState<TCustomData<string>>({});
 
-  const { pathname } = useLocation();
   const pricelist = useSelector(state => state.pricelist);
+  const { currUrlData } = useUrlHandler();
 
   const handlePageTitle = (): void => {
-    const urlArr = pathname.split('/');
-    const type = urlArr[1];
-    const id = urlArr[urlArr.length - 1] === type
-      ? null
-      : Number(urlArr[urlArr.length - 1]);
+    const { type, id } = currUrlData;
     const category = Object.values(TITLES)[Object.values(TYPES).indexOf(type)];
-    const pagetitle = id !== null && pricelist[type].length
+    const pagetitle = id !== null && Boolean(type) && pricelist[type].length
       ? pricelist[type].find(({ item_id }) => item_id === id)[NAME_KEY]
       : '';
 
@@ -36,12 +31,12 @@ const useHeader = (): IHeader => {
       category,
       alias: type
     });
-  }
+  };
 
   useEffect(() => {
     handlePageTitle();
   }, [
-    pathname,
+    currUrlData,
     pricelist
   ]);
 

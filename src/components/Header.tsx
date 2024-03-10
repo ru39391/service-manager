@@ -5,10 +5,11 @@ import useHeader from '../hooks/useHeader';
 
 const Header: FC = () => {
   const { pageTitle, categoryData } = useHeader();
+  const title = pageTitle || categoryData.category;
 
   return (
-    <>
-      <Typography variant="h5" sx={{ mb: 1 }}>{pageTitle || categoryData.category}</Typography>
+    title && <>
+      <Typography variant="h5" sx={{ mb: 1 }}>{title}</Typography>
       <Breadcrumbs
         aria-label="breadcrumb"
         sx={{ mb: 4, typography: 'subtitle2' }}

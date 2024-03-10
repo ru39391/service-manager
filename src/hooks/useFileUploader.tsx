@@ -160,7 +160,7 @@ const useFileUploader = (): IFileUploaderHook => {
       ...handleGroups(parsedData),
       ...handleItems(parsedData)
     }));
-  }
+  };
 
   const uploadFile = (event: ChangeEvent<HTMLInputElement>): void => {
     const { files } = event.target;

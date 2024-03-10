@@ -12,7 +12,9 @@ import {
   IS_COMPLEX_KEY,
   COMPLEX_KEY,
   IS_VISIBLE_KEY,
-  CAPTIONS
+  CAPTIONS,
+  TYPES,
+  ITEM_KEY
 } from '../utils/constants';
 
 import { useSelector } from '../services/hooks';
@@ -111,7 +113,11 @@ const useTableData = (): ITableData => {
     setGroupsTableData(handleArr(groups));
     setItemsTableData(handleArr(items));
   }
+/*
+  const setGridData = (arr: TCustomData<string | number>[]) => {
 
+  }
+*/
   useEffect(() => {
     setTableData();
   }, [
