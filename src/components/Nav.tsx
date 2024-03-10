@@ -23,10 +23,9 @@ const Nav: FC = () => {
   return (
     depts.length > 0 && <Box
       sx={{
-        flexGrow: 1,
-        width: '100%',
-        maxWidth: 450,
-        position: 'relative',
+        top: 24,
+        height: '100vh',
+        position: 'sticky',
         overflow: 'hidden',
         boxShadow: '4px 0 16px 0 rgba(0,0,0,.045)',
         bgcolor: 'background.default',

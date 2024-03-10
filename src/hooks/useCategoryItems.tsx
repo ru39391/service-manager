@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-//import { useSelector } from '../services/hooks';
 import useUrlHandler from './useUrlHandler';
 
 import type { TCustomData } from '../types';
@@ -9,12 +8,13 @@ import {
   SUBDEPT_KEY,
   GROUP_KEY,
   ITEM_KEY,
+  TITLES,
   TYPES
 } from '../utils/constants';
 
 interface ICategoryItems {
   currSubcategory: string;
-  subCategoryItems: string[];
+  subCategoryItems: TCustomData<string>[];
   categoryParams: TCustomData<number | null> | null;
   setCurrSubcategory: (value: string) => void
 }
@@ -22,22 +22,23 @@ interface ICategoryItems {
 const useCategoryItems = (): ICategoryItems => {
   const [currSubcategory, setCurrSubcategory] = useState<string>(TYPES[ITEM_KEY]);
   const [categoryParams, setCategoryParams] = useState<TCustomData<number | null> | null>(null);
-  const [subCategoryItems, setSubCategoryItems] = useState<string[]>([]);
+  const [subCategoryItems, setSubCategoryItems] = useState<TCustomData<string>[]>([]);
 
-  //const pricelist = useSelector(state => state.pricelist);
   const { currUrlData } = useUrlHandler();
 
   const keysData = Object.values(TYPES).reduce((acc, key, index) => ({ ...acc, [key]: Object.keys(TYPES)[index] }), {});
   const categoryData = {
-    [TYPES[DEPT_KEY]]: [SUBDEPT_KEY, GROUP_KEY, TYPES[ITEM_KEY]],
-    [TYPES[SUBDEPT_KEY]]: [GROUP_KEY, TYPES[ITEM_KEY]],
+    [TYPES[DEPT_KEY]]: [TYPES[SUBDEPT_KEY], TYPES[GROUP_KEY], TYPES[ITEM_KEY]],
+    [TYPES[SUBDEPT_KEY]]: [TYPES[GROUP_KEY], TYPES[ITEM_KEY]],
     [TYPES[GROUP_KEY]]: [TYPES[ITEM_KEY]],
   };
 
   const handleCategoryItems = () => {
     const { type, id } = currUrlData;
+    const subCategoryArr = type ? categoryData[type] : [TYPES[ITEM_KEY]];
+    const subCategoryData = subCategoryArr.map((item) => ({ [item]: Object.values(TITLES)[Object.values(TYPES).indexOf(item)] }));
 
-    setSubCategoryItems(type ? categoryData[type] : [TYPES[ITEM_KEY]]);
+    setSubCategoryItems(subCategoryData);
     setCategoryParams(type ? { [keysData[type]]: id || null } : null);
   }
 
@@ -45,8 +46,7 @@ const useCategoryItems = (): ICategoryItems => {
     handleCategoryItems();
     setCurrSubcategory(TYPES[ITEM_KEY]);
   }, [
-    currUrlData,
-    //pricelist
+    currUrlData
   ]);
 
   return {

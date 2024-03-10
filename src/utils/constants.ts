@@ -1,13 +1,13 @@
 const DEFAULT_DOC_TITLE = 'Управление услугами';
 
 const CATEGORY_TITLE = 'Категория';
+const POPUP_TITLE = 'Изменить данные';
+const NO_ITEMS_TITLE = 'Подходящих записей не найдено';
 
 const DEPTS_ERROR_MSG = 'Ошибка при получении списка отделений';
 const PRICELIST_ERROR_MSG = 'Ошибка при получении списка услуг';
 const RESOURCES_ERROR_MSG = 'Ошибка при получении списка ресурсов';
 const FILE_UPLOADING_ERROR_MSG = 'Ошибка при обработке файла';
-
-const POPUP_TITLE = 'Изменить данные';
 
 const INDEX_KEY = 'index';
 const ID_KEY = 'item_id';
@@ -21,6 +21,9 @@ const IS_COMPLEX_ITEM_KEY = 'isComplexItem';
 const IS_COMPLEX_KEY = 'isComplex';
 const COMPLEX_KEY = 'complex';
 const IS_VISIBLE_KEY = 'isVisible';
+
+const CREATEDON_KEY = 'createdon';
+const UPDATEDON_KEY = 'updatedon';
 
 const ITEM_KEY = 'items';
 const RES_KEY = 'res';
@@ -47,6 +50,8 @@ const CAPTIONS = {
   [IS_COMPLEX_KEY]: 'Комплекс услуг',
   [COMPLEX_KEY]: 'Услуги в комплексе',
   [IS_VISIBLE_KEY]: 'Показывать на сайте',
+  [CREATEDON_KEY]: 'Дата создания',
+  [UPDATEDON_KEY]: 'Дата обновления',
 };
 
 const TYPES = {
@@ -66,6 +71,7 @@ export {
   FILE_UPLOADING_ERROR_MSG,
   POPUP_TITLE,
   CATEGORY_TITLE,
+  NO_ITEMS_TITLE,
   INDEX_KEY,
   ITEM_KEY,
   ID_KEY,
@@ -78,6 +84,8 @@ export {
   IS_COMPLEX_KEY,
   COMPLEX_KEY,
   IS_VISIBLE_KEY,
+  CREATEDON_KEY,
+  UPDATEDON_KEY,
   SORT_CAPTION,
   CAPTIONS,
   TITLES,

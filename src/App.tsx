@@ -11,7 +11,6 @@ import '@fontsource/roboto/400.css';
 import Home from './pages/Home';
 import Parser from './pages/Parser';
 import Category from './pages/Category';
-import SubdeptsList from './pages/SubdeptsList';
 
 import { useSelector, useDispatch } from './services/hooks';
 import { fetchPricelistData } from './services/actions/pricelist';
@@ -57,19 +56,19 @@ const App: FC = () => {
       <Routes>
         <Route path='/' element={<Home />} />
         <Route path={`/${TYPES[DEPT_KEY]}`} element={<Outlet />}>
-          <Route index element={<SubdeptsList />} />
+          <Route index element={<Category />} />
           <Route path=':id' element={<Category />} />
         </Route>
         <Route path={`/${TYPES[SUBDEPT_KEY]}`} element={<Outlet />}>
-          <Route index element={<SubdeptsList />} />
+          <Route index element={<Category />} />
           <Route path=':id' element={<Category />} />
         </Route>
         <Route path={`/${TYPES[GROUP_KEY]}`} element={<Outlet />}>
-          <Route index element={<SubdeptsList />} />
+          <Route index element={<Category />} />
           <Route path=':id' element={<Category />} />
         </Route>
         <Route path={`/${TYPES[ITEM_KEY]}`} element={<Outlet />}>
-          <Route index element={<SubdeptsList />} />
+          <Route index element={<Category />} />
           <Route path=':id' element={<Category />} />
         </Route>
         <Route path='/parser' element={<Parser />} />

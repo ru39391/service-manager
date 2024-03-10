@@ -10,11 +10,20 @@ interface ILayout {
 
 const Layout: FC<ILayout> = ({ children }) => {
   return (
-    <Box sx={{ height: '100vh', bgcolor: 'background.body' }}>
+    <>
       <Preloader />
       <AlertError />
-      <Grid container sx={{ height: '100%', px: 2, py: 3 }}>{children}</Grid>
-    </Box>
+      <Grid
+        container
+        sx={{
+          px: 2,
+          py: 3,
+          bgcolor: 'background.body'
+        }}
+      >
+        {children}
+      </Grid>
+    </>
   )
 };
 

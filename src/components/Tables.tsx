@@ -103,7 +103,7 @@ const Tables: FC = () => {
             <DataGrid
               sx={{
                 border: 0,
-                flexGrow: 1,
+                height: 'auto',
                 boxShadow: '0 2px 10px 0 rgba(0,0,0,.045)',
                 bgcolor: 'background.default',
               }}

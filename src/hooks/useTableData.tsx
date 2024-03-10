@@ -12,6 +12,8 @@ import {
   IS_COMPLEX_KEY,
   COMPLEX_KEY,
   IS_VISIBLE_KEY,
+  CREATEDON_KEY,
+  UPDATEDON_KEY,
   CAPTIONS,
   TYPES,
   ITEM_KEY
@@ -21,19 +23,31 @@ import { useSelector } from '../services/hooks';
 
 import type { TCustomData } from '../types';
 
+type TCategoryData = {
+  data: TCustomData<TCustomData<string | number>[]>;
+  category: string | undefined;
+  params: TCustomData<number | null> | null;
+};
+
 export type TTableData = {
   cols: GridColDef<GridValidRowModel>[];
   rows: GridValidRowModel[];
 } | null;
 
 interface ITableData {
+  tableData: TTableData | null;
+  handleTableData: (data: TCategoryData) => void;
+  /*
   deptsTableData: TTableData | null;
   subdeptsTableData: TTableData | null;
   groupsTableData: TTableData | null;
   itemsTableData: TTableData | null;
+  */
 }
 
 const useTableData = (): ITableData => {
+  const [tableData, setTableData] = useState<TTableData>(null);
+  /*
   const [deptsTableData, setDeptsTableData] = useState<TTableData>(null);
   const [subdeptsTableData, setSubeptsTableData] = useState<TTableData>(null);
   const [groupsTableData, setGroupsTableData] = useState<TTableData>(null);
@@ -44,6 +58,7 @@ const useTableData = (): ITableData => {
     groups,
     items
   } = useSelector(state => state.file);
+  */
 
   const setBooleanCaption =(item: TCustomData<string | number>, key: string): TCustomData<string> => ({ [key]: item[key] ? 'Да' : 'Нет' });
 
@@ -65,7 +80,7 @@ const useTableData = (): ITableData => {
    }, []).join(', ')
    : '';
 
-  const handleArr = (arr: TCustomData<string | number>[]): TTableData => {
+  const handleArr = (arr: TCustomData<string | number>[], items: TCustomData<TCustomData<string | number>[]>): TTableData => {
     if(!(Array.isArray(arr) && arr.length)) {
       return null;
     }
@@ -81,17 +96,17 @@ const useTableData = (): ITableData => {
         id: index,
         [INDEX_KEY]: index + 1,
         ...item,
-        ...(isValueExist(item[DEPT_KEY]) && { [DEPT_KEY]: getCategoryName(depts, item, DEPT_KEY) }),
-        ...(isValueExist(item[SUBDEPT_KEY]) && { [SUBDEPT_KEY]: getCategoryName(subdepts, item, SUBDEPT_KEY) }),
-        ...(isValueExist(item[GROUP_KEY]) && { [GROUP_KEY]: getCategoryName(groups, item, GROUP_KEY) }),
+        ...(isValueExist(item[DEPT_KEY]) && { [DEPT_KEY]: getCategoryName(items[TYPES[DEPT_KEY]], item, DEPT_KEY) }),
+        ...(isValueExist(item[SUBDEPT_KEY]) && { [SUBDEPT_KEY]: getCategoryName(items[TYPES[SUBDEPT_KEY]], item, SUBDEPT_KEY) }),
+        ...(isValueExist(item[GROUP_KEY]) && { [GROUP_KEY]: getCategoryName(items[TYPES[GROUP_KEY]], item, GROUP_KEY) }),
         ...(isValueExist(item[IS_COMPLEX_ITEM_KEY]) && setBooleanCaption(item, IS_COMPLEX_ITEM_KEY)),
         ...(isValueExist(item[IS_COMPLEX_KEY]) && setBooleanCaption(item, IS_COMPLEX_KEY)),
-        ...(isValueExist(item[COMPLEX_KEY]) && { [COMPLEX_KEY]: getItemsName(JSON.parse(item[COMPLEX_KEY]), items) }),
+        ...(isValueExist(item[COMPLEX_KEY]) && { [COMPLEX_KEY]: getItemsName(JSON.parse(item[COMPLEX_KEY]), items[TYPES[ITEM_KEY]]) }),
         ...(isValueExist(item[IS_VISIBLE_KEY]) && setBooleanCaption(item, IS_VISIBLE_KEY))
       }], []);
     const cols: GridColDef<GridValidRowModel>[] = Object.keys(rows[0])
-      .filter(key => key !== 'id')
-      .map(item => ({
+      .filter((key) => ![CAPTIONS[ID_KEY].toLowerCase(), CREATEDON_KEY, UPDATEDON_KEY].includes(key))
+      .map((item) => ({
         field: item,
         //@ts-expect-error
         headerName: CAPTIONS[item],
@@ -107,17 +122,25 @@ const useTableData = (): ITableData => {
     };
   }
 
-  const setTableData = (): void => {
+  const handleTableData = ({data, category, params}: TCategoryData): void => {
+    const key = params !== null ? Object.keys(params)[0] : null;
+    const id = params !== null && key !== null ? params[key] : null;
+    const arr = category ? data[category] : data[TYPES[ITEM_KEY]];
+    const filtredArr = key !== null && id !== null
+      ? arr.filter((item) => item[key] === id)
+      : arr;
+
+    setTableData(handleArr(filtredArr, data));
+
+    /*
     setDeptsTableData(handleArr(depts));
     setSubeptsTableData(handleArr(subdepts));
     setGroupsTableData(handleArr(groups));
     setItemsTableData(handleArr(items));
+    */
   }
-/*
-  const setGridData = (arr: TCustomData<string | number>[]) => {
 
-  }
-*/
+  /*
   useEffect(() => {
     setTableData();
   }, [
@@ -126,12 +149,17 @@ const useTableData = (): ITableData => {
     groups,
     items
   ]);
+  */
 
   return {
+    tableData,
+    handleTableData
+    /*
     deptsTableData,
     subdeptsTableData,
     groupsTableData,
     itemsTableData
+    */
   }
 }
 
