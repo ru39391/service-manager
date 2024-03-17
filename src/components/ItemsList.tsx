@@ -16,20 +16,26 @@ import useModal from '../hooks/useModal';
 import useTableData from '../hooks/useTableData';
 import useCategoryItems from '../hooks/useCategoryItems';
 
-import {
-  ADD_TITLE,
-  CATEGORY_TITLE,
-  NO_ITEMS_TITLE,
-  ID_KEY,
-  TYPES
-} from '../utils/constants';
-
-import { useSelector } from '../services/hooks';
+import { useSelector, useDispatch } from '../services/hooks';
+import { setFormData } from '../services/slices/modal-slice';
 
 import type { TCustomData } from '../types';
 
+import {
+  ADD_TITLE,
+  EDIT_TITLE,
+  CATEGORY_TITLE,
+  NO_ITEMS_TITLE,
+  ID_KEY,
+  NAME_KEY,
+  ADD_ACTION_KEY,
+  EDIT_ACTION_KEY,
+  TYPES
+} from '../utils/constants';
+
 const ItemsList: FC = () => {
   const keys = Object.values(TYPES);
+  const dispatch = useDispatch();
   const pricelistData = useSelector(state => state.pricelist);
   const {
     tableData,
@@ -56,12 +62,27 @@ const ItemsList: FC = () => {
     categoryParams
   ]);
 
-  const handleCurrChapter = () => {
+  const handleCategoryData = () => {
     toggleModal({ title: `${ADD_TITLE} ${categoryTypes && categoryTypes[currSubcategory].toLocaleLowerCase()}`});
-    console.log({
-      type: currSubcategory,
-      data: {...categoryParams}
-    });
+    dispatch(setFormData({
+      data: {
+        action: ADD_ACTION_KEY,
+        type: currSubcategory,
+        data: {...categoryParams}
+      }
+    }));
+  }
+
+  const handleItemData = (values: TCustomData<string | number>) => {
+    toggleModal({ title: `${EDIT_TITLE} «${values[NAME_KEY]}»` });
+    dispatch(setFormData({
+      data: {
+        action: EDIT_ACTION_KEY,
+        type: currSubcategory,
+        data: pricelistData[currSubcategory].find((item: TCustomData<string | number>) => item[ID_KEY] === values[ID_KEY]),
+        values
+      }
+    }));
   }
 
   return (
@@ -92,7 +113,7 @@ const ItemsList: FC = () => {
         >
           <IconButton
             sx={{ p: 0, color: 'text.secondary' }}
-            onClick={() => handleCurrChapter()}
+            onClick={handleCategoryData}
           >
             <AddCircleOutline fontSize="large" />
           </IconButton>
@@ -109,10 +130,7 @@ const ItemsList: FC = () => {
           }}
           columns={tableData ? tableData.cols : []}
           rows={tableData ? tableData.rows : []}
-          onRowClick={({ row }) => console.log({
-            type: currSubcategory,
-            data: pricelistData[currSubcategory].find((item: TCustomData<string | number>) => item[ID_KEY] === row[ID_KEY])
-          })}
+          onRowClick={({ row }: { row: TCustomData<string | number> }) => handleItemData(row)}
         />
         : <Typography sx={{ mb: 1, typography: 'body1' }}>{NO_ITEMS_TITLE}</Typography>
       }

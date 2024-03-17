@@ -8,13 +8,13 @@ import { NAME_KEY, TYPES, TITLES } from '../utils/constants';
 
 interface IHeader {
   pageTitle: string;
-  categoryData: TCustomData<string>;
+  categoryData: TCustomData<string | number | null>;
   handlePageTitle: () => void;
 }
 
 const useHeader = (): IHeader => {
   const [pageTitle, setPageTitle] = useState<string>('');
-  const [categoryData, setCategoryData] = useState<TCustomData<string>>({});
+  const [categoryData, setCategoryData] = useState<TCustomData<string | number | null>>({});
 
   const pricelist = useSelector(state => state.pricelist);
   const { currUrlData } = useUrlHandler();
@@ -29,7 +29,8 @@ const useHeader = (): IHeader => {
     setPageTitle(pagetitle);
     setCategoryData({
       category,
-      alias: type
+      alias: type,
+      id
     });
   };
 

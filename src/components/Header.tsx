@@ -16,18 +16,55 @@ import {
 import useModal from '../hooks/useModal';
 import useHeader from '../hooks/useHeader';
 
+import { useDispatch } from '../services/hooks';
+import { setFormData } from '../services/slices/modal-slice';
+
 import {
   EDIT_TITLE,
   REMOVE_TITLE,
   EDIT_ITEM_TITLE,
   ADD_CATEGORY_TITLE,
+  ADD_ACTION_KEY,
+  EDIT_ACTION_KEY,
+  REMOVE_ACTION_KEY,
   REMOVE_CONFIRM_MSG
 } from '../utils/constants';
 
 const Header: FC = () => {
+  const dispatch = useDispatch();
   const { toggleModal } = useModal();
   const { pageTitle, categoryData } = useHeader();
   const title = pageTitle || categoryData.category;
+
+  const dispatchFormData = (action: string) => {
+    const { alias, id } = categoryData;
+
+    dispatch(setFormData({
+      data: {
+        action,
+        type: alias,
+        data: { [alias as string]: id }
+      }
+    }));
+  }
+
+  const addCategory = () => {
+    toggleModal({ title: `${categoryData.category}, ${ADD_CATEGORY_TITLE.toLocaleLowerCase()}` });
+    dispatchFormData(ADD_ACTION_KEY);
+  }
+
+  const editCategory = () => {
+    toggleModal({ title: `${EDIT_TITLE} ${pageTitle && (`«${pageTitle}»`)}` });
+    dispatchFormData(EDIT_ACTION_KEY);
+  }
+
+  const removeCategory = () => {
+    toggleModal({
+      title: `${REMOVE_TITLE} ${pageTitle && (`«${pageTitle}»`)}`,
+      desc: `${REMOVE_CONFIRM_MSG} ${REMOVE_TITLE.toLocaleLowerCase()} ${pageTitle && (`«${pageTitle}»`)}?`
+    });
+    dispatchFormData(REMOVE_ACTION_KEY);
+  }
 
   return (
     title && <>
@@ -46,7 +83,7 @@ const Header: FC = () => {
         >
           <IconButton
             sx={{ p: 1, color: 'text.secondary' }}
-            onClick={() => toggleModal({ title: `${EDIT_TITLE} ${pageTitle && (`«${pageTitle}»`)}` })}
+            onClick={editCategory}
           >
             <EditOutlined fontSize="medium" />
           </IconButton>
@@ -57,7 +94,7 @@ const Header: FC = () => {
         >
           <IconButton
             sx={{ p: 0, color: 'text.secondary' }}
-            onClick={() => toggleModal({ title: `${categoryData.category}, ${ADD_CATEGORY_TITLE.toLocaleLowerCase()}` })}
+            onClick={addCategory}
           >
             <Add fontSize="large" />
           </IconButton>
@@ -68,10 +105,7 @@ const Header: FC = () => {
         >
           <IconButton
             sx={{ p: 1, color: 'text.secondary' }}
-            onClick={() => toggleModal({
-              title: `${REMOVE_TITLE} ${pageTitle && (`«${pageTitle}»`)}`,
-              desc: `${REMOVE_CONFIRM_MSG} ${REMOVE_TITLE.toLocaleLowerCase()} ${pageTitle && (`«${pageTitle}»`)}?`
-            })}
+            onClick={removeCategory}
           >
             <DeleteOutlined fontSize="medium" />
           </IconButton>

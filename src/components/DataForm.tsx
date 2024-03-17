@@ -1,12 +1,22 @@
-import { FC } from 'react';
+import { FC, useEffect } from 'react';
 import { TextField } from '@mui/material';
+
+import { useSelector, useDispatch } from '../services/hooks';
+
+import type { TCustomData } from '../types';
+
 import {
   ID_KEY,
   NAME_KEY,
   PRICE_KEY,
   INDEX_KEY,
   SORT_CAPTION,
-  CAPTIONS
+  CAPTIONS,
+  DEPT_KEY,
+  SUBDEPT_KEY,
+  GROUP_KEY,
+  ITEM_KEY,
+  TYPES
 } from '../utils/constants';
 
 /*
@@ -24,31 +34,39 @@ isComplexItem - радио (если отмечено, показывать сп
 isComplex - радио (если отмечено, показывать услуги в комплексе complex)
 isVisible - радио
 */
+const DataForm: FC = () => {
+  const { formData } = useSelector(state => state.modal);
+  const formFields = {
+    [TYPES[DEPT_KEY]]: [NAME_KEY],
+    [TYPES[SUBDEPT_KEY]]: [NAME_KEY],
+    [TYPES[GROUP_KEY]]: [NAME_KEY],
+    [TYPES[ITEM_KEY]]: [NAME_KEY, PRICE_KEY, INDEX_KEY]
+  };
 
-import type { TCustomData } from '../types';
+  useEffect(() => {
+    console.log(formData);
+  }, [
+    formData
+  ]);
 
-interface IDataForm {
-  data: TCustomData<string | number> | null;
-}
-
-const DataForm: FC<IDataForm> = ({ data }) => {
   return (
-    <><p>123</p>
-        {data !== null && [INDEX_KEY, NAME_KEY, PRICE_KEY].map(
-          (key, index) =>
-          <TextField
-            key={index.toString()}
-            id={data[ID_KEY].toString()}
-            //@ts-expect-error
-            label={key === INDEX_KEY ? SORT_CAPTION : CAPTIONS[key]}
-            defaultValue={data[key].toString()}
-            fullWidth
-            variant="outlined"
-            margin="dense"
-            type="text"
-          />
-        )}
-        {/*isOpen && <Selecter {...selecterProps} />*/}
+    <>
+      {formData && formFields[formData.type].map(
+        (key, index) =>
+        <TextField
+          key={index.toString()}
+          id={Object.keys(formData.data)[index]}
+          //@ts-expect-error
+          label={key === INDEX_KEY ? SORT_CAPTION : CAPTIONS[key]}
+          defaultValue={formData.data[key] ? formData.data[key].toString() : ''}
+          sx={{ mb: 1 }}
+          fullWidth
+          variant="outlined"
+          margin="dense"
+          type="text"
+        />
+      )}
+      {/*isOpen && <Selecter {...selecterProps} />*/}
     </>
   )
 }

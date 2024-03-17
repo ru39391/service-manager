@@ -35,6 +35,10 @@ const UPDATEDON_KEY = 'updatedon';
 const ITEM_KEY = 'items';
 const RES_KEY = 'res';
 
+const ADD_ACTION_KEY = 'add';
+const EDIT_ACTION_KEY = 'edit';
+const REMOVE_ACTION_KEY = 'remove';
+
 const TITLES = {
   [DEPT_KEY]: 'Отделения',
   [SUBDEPT_KEY]: 'Специализации',
@@ -86,6 +90,9 @@ export {
   NO_ITEMS_TITLE,
   INDEX_KEY,
   ITEM_KEY,
+  ADD_ACTION_KEY,
+  EDIT_ACTION_KEY,
+  REMOVE_ACTION_KEY,
   ID_KEY,
   NAME_KEY,
   PRICE_KEY,

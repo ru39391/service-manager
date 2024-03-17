@@ -6,7 +6,7 @@ export type TModalAction = {
   payload: {
     title?: string;
     desc?: string;
-    data?: TCustomData<string | number> | null;
+    data?: TCustomData<string | number | TCustomData<string | number>> | null;
   };
 };
 
