@@ -1,8 +1,15 @@
 const DEFAULT_DOC_TITLE = 'Управление услугами';
 
 const CATEGORY_TITLE = 'Категория';
-const POPUP_TITLE = 'Изменить данные';
 const NO_ITEMS_TITLE = 'Подходящих записей не найдено';
+
+const ADD_TITLE = 'Добавить';
+const EDIT_TITLE = 'Редактировать';
+const REMOVE_TITLE = 'Удалить';
+const ADD_CATEGORY_TITLE = 'Добавить раздел';
+const EDIT_ITEM_TITLE = 'Изменить данные';
+
+const REMOVE_CONFIRM_MSG = 'Вы действительно хотите';
 
 const DEPTS_ERROR_MSG = 'Ошибка при получении списка отделений';
 const PRICELIST_ERROR_MSG = 'Ошибка при получении списка услуг';
@@ -69,7 +76,12 @@ export {
   PRICELIST_ERROR_MSG,
   RESOURCES_ERROR_MSG,
   FILE_UPLOADING_ERROR_MSG,
-  POPUP_TITLE,
+  ADD_TITLE,
+  EDIT_TITLE,
+  REMOVE_TITLE,
+  ADD_CATEGORY_TITLE,
+  EDIT_ITEM_TITLE,
+  REMOVE_CONFIRM_MSG,
   CATEGORY_TITLE,
   NO_ITEMS_TITLE,
   INDEX_KEY,

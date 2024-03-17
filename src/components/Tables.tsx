@@ -5,7 +5,7 @@ import { DataGrid } from '@mui/x-data-grid';
 import { CloudUpload } from '@mui/icons-material';
 
 import TabPanel from './TabPanel';
-import Popup from './Popup';
+//import Popup from './Popup';
 
 import useTableData from '../hooks/useTableData';
 import useFileUploader from '../hooks/useFileUploader';
@@ -118,9 +118,9 @@ const Tables: FC = () => {
         </Grid>
       </Grid>
 
-      {Boolean(rowData) && <Popup data={rowData} close={() => getRowData(null)} />}
 
       {/*
+      {Boolean(rowData) && <Popup data={rowData} close={() => getRowData(null)} />}
         slots={{ noRowsOverlay: NoRowsOverlay }}
       */}
     </>
