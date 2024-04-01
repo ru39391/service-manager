@@ -16,7 +16,7 @@ import {
 import type { TCustomData, TResponseData, TResponseDefault } from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';
 
-import { PRICELIST_ERROR_MSG, API_URL, TYPES } from '../../utils/constants';
+import { PRICELIST_ERROR_MSG, ID_KEY, API_URL, TYPES } from '../../utils/constants';
 
 const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
@@ -87,7 +87,24 @@ const createPricelistData = (priceListData: TCustomData<TCustomData<string | num
   }
 };
 
+const removePricelistData = (priceListData: TCustomData<TCustomData<string | number>[]>, { type, id }: TCustomData<string | number>): TAppThunk<void> => async (dispatch: TAppDispatch) => {
+  dispatch(getPricelistLoading());
+
+  console.log(`${API_URL}${type}`);
+  console.log(priceListData[type].find((item) => item[ID_KEY] === id));
+  console.log({ [ID_KEY]: id });
+
+  /*
+  try {
+
+  } catch(error) {
+    dispatch(getPricelistFailed({ errorMsg: 'ошибка при удалении' }));
+  }
+  */
+};
+
 export {
   fetchPricelistData,
-  createPricelistData
+  createPricelistData,
+  removePricelistData
 }

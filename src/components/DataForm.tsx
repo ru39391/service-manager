@@ -1,4 +1,4 @@
-import { FC, useEffect } from 'react';
+import { FC, useCallback, useEffect } from 'react';
 import { TextField } from '@mui/material';
 
 import ModalFooter from './ModalFooter';
@@ -6,6 +6,8 @@ import ModalFooter from './ModalFooter';
 import useCategoryCounter from '../hooks/useCategoryCounter';
 
 import { useSelector, useDispatch } from '../services/hooks';
+
+import { removePricelistData } from '../services/actions/pricelist';
 
 import type { TCustomData } from '../types';
 
@@ -41,7 +43,9 @@ isComplex - радио (если отмечено, показывать услу
 isVisible - радио
 */
 const DataForm: FC = () => {
+  const dispatch = useDispatch();
   const { formData } = useSelector(state => state.modal);
+  const { depts, subdepts, groups, pricelist } = useSelector(state => state.pricelist);
   const { subCategoryCounter, setSubCategories } = useCategoryCounter();
   const formFields = {
     [TYPES[DEPT_KEY]]: [NAME_KEY],
@@ -49,6 +53,24 @@ const DataForm: FC = () => {
     [TYPES[GROUP_KEY]]: [NAME_KEY],
     [TYPES[ITEM_KEY]]: [NAME_KEY, PRICE_KEY, INDEX_KEY]
   };
+
+  const removeItem = useCallback(() => {
+    dispatch(removePricelistData(
+      {
+        depts,
+        subdepts,
+        groups,
+        [TYPES[ITEM_KEY]]: pricelist
+      },
+      {
+        type: formData ? formData.type as string : '',
+        id: formData ? Object.values(formData.data)[0] : 0,
+      }
+    ));
+  }, [
+    dispatch,
+    formData
+  ]);
 
   useEffect(() => {
     console.log(formData);
@@ -61,7 +83,7 @@ const DataForm: FC = () => {
   ]);
 
   if(formData && formData.action === REMOVE_ACTION_KEY) {
-    return <ModalFooter actionBtnCaption={REMOVE_TITLE} introText={subCategoryCounter} />;
+    return <ModalFooter actionBtnCaption={REMOVE_TITLE} introText={subCategoryCounter} actionHandler={removeItem} />;
   }
 
   return (

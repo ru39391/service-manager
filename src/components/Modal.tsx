@@ -7,7 +7,9 @@ import {
   DialogTitle,
   Slide,
   Button,
+  IconButton
 } from '@mui/material';
+import { Close } from '@mui/icons-material';
 
 import useModal from '../hooks/useModal';
 
@@ -33,7 +35,28 @@ const Modal: FC = () => {
       TransitionComponent={Transition}
       keepMounted
     >
-      {modalTitle && <DialogTitle>{modalTitle}</DialogTitle>}
+      {modalTitle &&
+        <DialogTitle
+          sx={{
+            display: 'flex',
+            justifyContent: 'space-between',
+            alignItems: 'flex-start'
+          }}
+        >
+          <span>{modalTitle}</span>
+          <IconButton
+            sx={{
+              p: 1,
+              color: 'text.secondary'
+            }}
+            size="small"
+            aria-label="close"
+            onClick={() => toggleModal(null)}
+          >
+            <Close />
+          </IconButton>
+        </DialogTitle>
+      }
       <DialogContent>
         {modalDesc && <DialogContentText>{modalDesc}</DialogContentText>}
         {modalContent}
