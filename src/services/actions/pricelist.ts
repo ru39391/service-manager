@@ -5,33 +5,34 @@ import {
   getPricelistFailed,
 } from '../slices/pricelist-slice';
 
-import {
-  getDepts,
-  getSubdepts,
-  getGroups,
-  getPricelist,
-  postDepts
-} from '../../mocks';
-
 import type { TCustomData, TResponseData, TResponseDefault } from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';
 
-import { PRICELIST_ERROR_MSG, ID_KEY, API_URL, TYPES } from '../../utils/constants';
+import {
+  FETCHING_ERROR_MSG,
+  REMOVING_ERROR_MSG,
+  UPDATEDON_KEY,
+  NAME_KEY,
+  ID_KEY,
+  API_URL,
+  TYPES
+} from '../../utils/constants';
+
+import { deleteDepts } from '../../mocks';
 
 const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
   try {
-    // Object.values(TYPES).map(alias => axios.get(`${API_URL}${alias}`))
-    const response = await Promise.all([getDepts(), getSubdepts(), getGroups(), getPricelist()]);
+    const response = await Promise.all(Object.values(TYPES).map(alias => axios.get(`${API_URL}${alias}`)));
     const { success, data }: TResponseData = response
-      //.map(({ data }) => data)
+      .map(({ data }) => data)
       .reduce((acc: TResponseData, item: TResponseDefault, index ) => ({
         ...acc,
         success: [...acc.success, item.success],
         data: {
           ...acc.data,
-          [Object.values(TYPES)[index]]: Object.values(item.data).filter((value) => typeof value !== 'boolean')
+          [Object.values(TYPES)[index]]: item.data && Object.values(item.data).filter((value) => typeof value !== 'boolean')
         }
       }), {
         success: [],
@@ -39,16 +40,16 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
       });
 
     if(success.every(item => item)) {
-      // console.log(Object.values(data.depts).filter((item) => typeof item !== 'boolean'));
       dispatch(getPricelistSucceed({ ...data }));
     } else {
-      dispatch(getPricelistFailed({ errorMsg: PRICELIST_ERROR_MSG }));
+      dispatch(getPricelistFailed({ errorMsg: FETCHING_ERROR_MSG }));
     }
   } catch(error) {
-    dispatch(getPricelistFailed({ errorMsg: PRICELIST_ERROR_MSG }));
+    dispatch(getPricelistFailed({ errorMsg: FETCHING_ERROR_MSG }));
   }
 };
 
+// TODO: переписать thunk по образцу removePricelistData (чтобы принимал alias/массив alias и массив объектов или массив объектов вида { [alias]: массив объектов })
 const createPricelistData = (priceListData: TCustomData<TCustomData<string | number>[]>): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
@@ -70,7 +71,7 @@ const createPricelistData = (priceListData: TCustomData<TCustomData<string | num
         success: [...acc.success, item.success],
         data: {
           ...acc.data,
-          [Object.values(TYPES)[index]]: item.data
+          [Object.values(TYPES)[index]]: item.data && Object.values(item.data).filter((value) => typeof value !== 'boolean')
         }
       }), {
         success: [],
@@ -87,20 +88,50 @@ const createPricelistData = (priceListData: TCustomData<TCustomData<string | num
   }
 };
 
-const removePricelistData = (priceListData: TCustomData<TCustomData<string | number>[]>, { type, id }: TCustomData<string | number>): TAppThunk<void> => async (dispatch: TAppDispatch) => {
+const removePricelistData = ({ alias, ids }: { alias: string | null; ids: number[] }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
-  console.log(`${API_URL}${type}`);
-  console.log(priceListData[type].find((item) => item[ID_KEY] === id));
-  console.log({ [ID_KEY]: id });
+  console.log(`${API_URL}${alias}`);
+  console.log(ids);
+  console.log({
+    ...ids.reduce((acc, item, index) => ({...acc, [index]: { [ID_KEY]: item }}), {})
+  });
 
-  /*
   try {
+    const {
+      success,
+      data,
+      errors
+    }: TResponseDefault = await deleteDepts();
+    /*
+    axios.delete(`${API_URL}${alias}`, {
+      ...ids.reduce((acc, item, index) => ({...acc, [index]: { [ID_KEY]: item }}), {})
+    });
+    */
 
+    console.log('success: ', success);
+    console.log('data: ', data);
+    console.log('errors: ', errors);
+
+    const itemsArr = data ? Object.values(data).filter((value) => typeof value !== 'boolean' && typeof value !== 'string') : [];
+    const failedItemsArr = itemsArr.filter((item) => item[UPDATEDON_KEY] === null);
+
+    if(success) {
+      failedItemsArr.length
+        // TODO: здесь закрывать текущее модальное окно и открывать новое с перечнем проблемных ресурсов
+        ? dispatch(getPricelistFailed({ errorMsg: REMOVING_ERROR_MSG }))
+        // TODO: здесь вызывать метод для обновления элементов в хранилище, показывать уведомление об успешном завершении операции
+        : console.log(itemsArr.filter((item) => item[UPDATEDON_KEY] !== null));
+
+      console.log('failedItemsArr: ', failedItemsArr.map((item) => item[NAME_KEY]));
+    } else {
+      dispatch(getPricelistFailed({ errorMsg: errors ? errors.message as string : REMOVING_ERROR_MSG }));
+    }
   } catch(error) {
-    dispatch(getPricelistFailed({ errorMsg: 'ошибка при удалении' }));
+    const { errors }: { errors: TCustomData<string | boolean | TCustomData<string | number>>; } = error;
+
+    dispatch(getPricelistFailed({ errorMsg: errors ? errors.message as string : REMOVING_ERROR_MSG }));
   }
-  */
 };
 
 export {

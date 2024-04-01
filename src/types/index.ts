@@ -4,7 +4,8 @@ export type TCustomData<T> = {
 
 export type TResponseDefault = {
   success: boolean;
-  data: TCustomData<string | number>[];
+  data?: TCustomData<boolean | TCustomData<string | number>>;
+  errors?: TCustomData<string | boolean | TCustomData<string | number>>;
   meta: TCustomData<string | number>;
 };
 

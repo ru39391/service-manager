@@ -55,18 +55,11 @@ const DataForm: FC = () => {
   };
 
   const removeItem = useCallback(() => {
-    dispatch(removePricelistData(
-      {
-        depts,
-        subdepts,
-        groups,
-        [TYPES[ITEM_KEY]]: pricelist
-      },
-      {
-        type: formData ? formData.type as string : '',
-        id: formData ? Object.values(formData.data)[0] : 0,
-      }
-    ));
+    dispatch(removePricelistData({
+      alias: formData ? formData.type as string : null,
+      // TODO:
+      ids: [100,111],//formData ? [Object.values(formData.data)[0]] : [],
+    }));
   }, [
     dispatch,
     formData

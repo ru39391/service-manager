@@ -61,6 +61,12 @@ const pricelistSlice = createSlice({
       isPricelistFailed: true,
       errorMsg: action.payload.errorMsg || ''
     }),
+    // TODO: создать методы:
+    /*
+    createItems,
+    removeItems,
+    updateeItems
+    */
   }
 });
 

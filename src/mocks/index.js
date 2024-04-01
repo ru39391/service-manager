@@ -2,10 +2,13 @@ import getDepts from './getDepts';
 import getSubdepts from './getSubdepts';
 import getGroups from './getGroups';
 import getPricelist from './getPricelist';
+
 import postDepts from './postDepts';
 import postSubdepts from './postSubdepts';
 import postGroups from './postGroups';
 import postPricelist from './postPricelist';
+
+import deleteDepts from './deleteDepts';
 
 export {
   getDepts,
@@ -15,5 +18,6 @@ export {
   postDepts,
   postSubdepts,
   postGroups,
-  postPricelist
+  postPricelist,
+  deleteDepts
 };

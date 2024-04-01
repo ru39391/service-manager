@@ -12,8 +12,8 @@ const EDIT_ITEM_TITLE = 'Изменить данные';
 
 const REMOVE_CONFIRM_MSG = 'Вы действительно хотите';
 
-const DEPTS_ERROR_MSG = 'Ошибка при получении списка отделений';
-const PRICELIST_ERROR_MSG = 'Ошибка при получении списка услуг';
+const FETCHING_ERROR_MSG = 'При получении списка услуг произошла ошибка';
+const REMOVING_ERROR_MSG = 'При удалении элементов произошла ошибка';
 const RESOURCES_ERROR_MSG = 'Ошибка при получении списка ресурсов';
 const FILE_UPLOADING_ERROR_MSG = 'Ошибка при обработке файла';
 
@@ -73,12 +73,12 @@ const TYPES = {
   [ITEM_KEY]: 'pricelist'
 };
 
-const API_URL = 'http://stomistok.local/api/';
+const API_URL = 'http://localhost/api/';//'http://stomistok.local/api/';
 
 export {
   DEFAULT_DOC_TITLE,
-  DEPTS_ERROR_MSG,
-  PRICELIST_ERROR_MSG,
+  REMOVING_ERROR_MSG,
+  FETCHING_ERROR_MSG,
   RESOURCES_ERROR_MSG,
   FILE_UPLOADING_ERROR_MSG,
   ADD_TITLE,
