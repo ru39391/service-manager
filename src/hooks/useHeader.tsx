@@ -22,6 +22,7 @@ const useHeader = (): IHeader => {
   const handlePageTitle = (): void => {
     const { type, id } = currUrlData;
     const category = Object.values(TITLES)[Object.values(TYPES).indexOf(type)];
+    const key: string = Object.values(TYPES).reduce((acc, item, index) => ({ ...acc, [item]: Object.keys(TYPES)[index] }), {})[type];
     const pagetitle = id !== null && Boolean(type) && pricelist[type].length
       ? pricelist[type].find(({ item_id }) => item_id === id)[NAME_KEY]
       : '';
@@ -30,7 +31,8 @@ const useHeader = (): IHeader => {
     setCategoryData({
       category,
       alias: type,
-      id
+      id,
+      key
     });
   };
 

@@ -6,7 +6,7 @@ export type TModalAction = {
   payload: {
     title?: string;
     desc?: string;
-    data?: TCustomData<string | number | TCustomData<string | number>> | null;
+    data?: TCustomData<string | TCustomData<number>> | null;
   };
 };
 
@@ -14,7 +14,7 @@ export type TModalState = {
   isOpen: boolean;
   modalTitle: string;
   modalDesc: string;
-  formData: TCustomData<string | number> | null;
+  formData: TCustomData<string | TCustomData<number>> | null;
 };
 
 const initialState: TModalState = {

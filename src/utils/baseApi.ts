@@ -22,7 +22,7 @@ class BaseApi extends Component<{}> {
   }
 
   public _checkResponse(result: Response, resultAlert: string): Promise<any> {
-    if (result.ok) {
+    if(result.ok) {
       return result.json();
     }
 

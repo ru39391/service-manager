@@ -37,13 +37,15 @@ const Header: FC = () => {
   const title = pageTitle || categoryData.category;
 
   const dispatchFormData = (action: string) => {
-    const { alias, id } = categoryData;
+    const { alias, id, key } = categoryData;
 
     dispatch(setFormData({
       data: {
         action,
-        type: alias,
-        data: { [alias as string]: id }
+        type: alias as string,
+        data: {
+          [key as string]: id as number
+        }
       }
     }));
   }

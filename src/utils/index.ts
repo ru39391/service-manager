@@ -15,10 +15,10 @@ const sortArray = (arr: TCustomData<string | number>[], key: string): TCustomDat
     const nameA = a[key].toString().toLowerCase();
     const nameB = b[key].toString().toLowerCase();
 
-    if (nameA < nameB) {
+    if(nameA < nameB) {
       return -1;
     }
-    if (nameA > nameB) {
+    if(nameA > nameB) {
       return 1;
     }
     return 0;

@@ -1,4 +1,4 @@
-import { FC, forwardRef } from 'react';
+import { FC, useEffect, forwardRef } from 'react';
 import {
   Dialog,
   DialogActions,
@@ -38,9 +38,11 @@ const Modal: FC = () => {
         {modalDesc && <DialogContentText>{modalDesc}</DialogContentText>}
         {modalContent}
       </DialogContent>
+      {/*
       <DialogActions>
         <Button onClick={() => toggleModal(null)}>Закрыть</Button>
       </DialogActions>
+      */}
     </Dialog>
   )
 }

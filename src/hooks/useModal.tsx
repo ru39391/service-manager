@@ -12,8 +12,6 @@ import { setModalOpen, setModalClose } from '../services/slices/modal-slice';
 
 import type { TCustomData } from '../types';
 
-import { NAME_KEY, TYPES, TITLES } from '../utils/constants';
-
 interface IModal {
   modalContent: ReactNode | null;
   toggleModal: (data: TCustomData<string> | null) => void;

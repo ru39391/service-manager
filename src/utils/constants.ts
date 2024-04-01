@@ -2,6 +2,7 @@ const DEFAULT_DOC_TITLE = 'Управление услугами';
 
 const CATEGORY_TITLE = 'Категория';
 const NO_ITEMS_TITLE = 'Подходящих записей не найдено';
+const NOT_EMPTY_CATEGORY = 'Категория содержит следующие элементы: ';
 
 const ADD_TITLE = 'Добавить';
 const EDIT_TITLE = 'Редактировать';
@@ -88,6 +89,7 @@ export {
   REMOVE_CONFIRM_MSG,
   CATEGORY_TITLE,
   NO_ITEMS_TITLE,
+  NOT_EMPTY_CATEGORY,
   INDEX_KEY,
   ITEM_KEY,
   ADD_ACTION_KEY,

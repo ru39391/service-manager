@@ -1,6 +1,10 @@
 import { FC, useEffect } from 'react';
 import { TextField } from '@mui/material';
 
+import ModalFooter from './ModalFooter';
+
+import useCategoryCounter from '../hooks/useCategoryCounter';
+
 import { useSelector, useDispatch } from '../services/hooks';
 
 import type { TCustomData } from '../types';
@@ -16,7 +20,9 @@ import {
   SUBDEPT_KEY,
   GROUP_KEY,
   ITEM_KEY,
-  TYPES
+  TYPES,
+  REMOVE_TITLE,
+  REMOVE_ACTION_KEY
 } from '../utils/constants';
 
 /*
@@ -36,6 +42,7 @@ isVisible - радио
 */
 const DataForm: FC = () => {
   const { formData } = useSelector(state => state.modal);
+  const { subCategoryCounter, setSubCategories } = useCategoryCounter();
   const formFields = {
     [TYPES[DEPT_KEY]]: [NAME_KEY],
     [TYPES[SUBDEPT_KEY]]: [NAME_KEY],
@@ -45,13 +52,21 @@ const DataForm: FC = () => {
 
   useEffect(() => {
     console.log(formData);
+    setSubCategories({
+      type: formData ? formData.type as string : null,
+      data: formData ? formData.data as TCustomData<number> : null
+    });
   }, [
     formData
   ]);
 
+  if(formData && formData.action === REMOVE_ACTION_KEY) {
+    return <ModalFooter actionBtnCaption={REMOVE_TITLE} introText={subCategoryCounter} />;
+  }
+
   return (
     <>
-      {formData && formFields[formData.type].map(
+      {formData && formFields[formData.type as string].map(
         (key, index) =>
         <TextField
           key={index.toString()}
