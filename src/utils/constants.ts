@@ -13,9 +13,11 @@ const EDIT_ITEM_TITLE = 'Изменить данные';
 const REMOVE_CONFIRM_MSG = 'Вы действительно хотите';
 
 const FETCHING_ERROR_MSG = 'При получении списка услуг произошла ошибка';
-const REMOVING_ERROR_MSG = 'При удалении элементов произошла ошибка';
+const REMOVING_ERROR_MSG = 'При удалении элементов произошла ошибка, повторите попытку позже';
 const RESOURCES_ERROR_MSG = 'Ошибка при получении списка ресурсов';
 const FILE_UPLOADING_ERROR_MSG = 'Ошибка при обработке файла';
+
+const REMOVING_SUCCESS_MSG = 'Записи успешно удалены';
 
 const INDEX_KEY = 'index';
 const ID_KEY = 'item_id';
@@ -81,6 +83,7 @@ export {
   FETCHING_ERROR_MSG,
   RESOURCES_ERROR_MSG,
   FILE_UPLOADING_ERROR_MSG,
+  REMOVING_SUCCESS_MSG,
   ADD_TITLE,
   EDIT_TITLE,
   REMOVE_TITLE,

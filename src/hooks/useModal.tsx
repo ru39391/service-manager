@@ -2,10 +2,9 @@ import {
   useState,
   useEffect,
   createElement,
-  ReactNode
+  ReactNode,
+  FunctionComponent
 } from 'react';
-
-import DataForm from '../components/DataForm';
 
 import { useDispatch } from '../services/hooks';
 import { setModalOpen, setModalClose } from '../services/slices/modal-slice';
@@ -17,7 +16,7 @@ interface IModal {
   toggleModal: (data: TCustomData<string> | null) => void;
 }
 
-const useModal = (): IModal => {
+const useModal = (fc: FunctionComponent | undefined = undefined): IModal => {
   const [modalContent, setModalContent] = useState<ReactNode | null>(null);
 
   const dispatch = useDispatch();
@@ -26,15 +25,15 @@ const useModal = (): IModal => {
     data ? dispatch(setModalOpen({ title: data.title, desc: data.desc })) : dispatch(setModalClose());
   }
 
-  const handleComponent = ({ el, props }): void => {
-    const component = createElement(el, {...props});
+  const handleComponent = ({ el, props }: { el: FunctionComponent | undefined; props: TCustomData<null>; }): void => {
+    const component = el ? createElement(el, {...props}) : null;
 
     setModalContent(component);
   }
 
   useEffect(() => {
     handleComponent({
-      el: DataForm,
+      el: fc,
       props: {
         data: null,
       },

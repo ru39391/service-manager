@@ -1,40 +1,80 @@
 import { FC } from 'react';
-import { IconButton, Snackbar, Alert } from '@mui/material';
+import {
+  IconButton,
+  Snackbar,
+  Alert,
+  Box
+} from '@mui/material';
 import { Close } from '@mui/icons-material';
+import { OverridableStringUnion } from '@mui/types';
+import { AlertColor, AlertPropsColorOverrides } from '@mui/material/Alert';
 
-import { useSelector } from '../services/hooks';
+import { useSelector, useDispatch } from '../services/hooks';
+import { resetPricelist } from '../services/slices/pricelist-slice';
 
 const AlertError: FC = () => {
+  const dispatch = useDispatch();
   const {
-    fileErrorMsg,
-    pricelistErrorMsg
+    fileAlertMsg,
+    pricelistAlertType,
+    pricelistAlertMsg
   } = useSelector(({ file, pricelist }) => ({
-    fileErrorMsg: file.errorMsg,
-    pricelistErrorMsg: pricelist.errorMsg
+    fileAlertMsg: file.errorMsg,
+    pricelistAlertType: pricelist.alertType,
+    pricelistAlertMsg: pricelist.alertMsg
   }));
-  const errorMsg = fileErrorMsg || pricelistErrorMsg;
+  const alertType: OverridableStringUnion<AlertColor, AlertPropsColorOverrides> = pricelistAlertType as OverridableStringUnion<AlertColor, AlertPropsColorOverrides>;
+  const alertMsg = fileAlertMsg || pricelistAlertMsg;
+
+  const closeAlert = () => {
+    [
+      resetPricelist()
+    ].forEach((action) => dispatch(action));
+  }
 
   return (
     <>
-      {errorMsg && <Snackbar
-        anchorOrigin={{ horizontal: 'right', vertical: 'top' }}
+      {alertMsg && <Snackbar
+        sx={{
+          display: 'flex',
+          alignItems: 'center'
+        }}
+        anchorOrigin={{
+          vertical: 'top',
+          horizontal: 'right'
+        }}
         open
-        autoHideDuration={6000}
-        message={errorMsg}
-        key="error"
+        autoHideDuration={2000}
+        message={alertMsg}
+        onClose={closeAlert}
+        key={alertType || 'info'}
       >
-        <Alert severity="error" variant="filled" sx={{ width: '100%' }}>{errorMsg}</Alert>
-        {/*
-        // TODO: добавить кнопку, чтобы закрывать уведомление, скрывать уведомление через интервал
-        // TODO: настроить поочерёдное отображение группы уведомлений
-        <IconButton
-          size="small"
-          aria-label="close"
-          color="inherit"
+        <Alert
+          sx={{
+            width: '100%',
+            display: 'flex',
+            alignItems: 'center'
+          }}
+          severity={alertType || 'info'}
+          variant={alertType ? 'filled' : 'standard'}
         >
-          <Close fontSize="small" />
-        </IconButton>
-        */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center'
+            }}
+          >
+            <Box sx={{ mr: 3 }}>{alertMsg}</Box>
+            <IconButton
+              size="small"
+              aria-label="close"
+              color="inherit"
+              onClick={closeAlert}
+            >
+              <Close fontSize="small" />
+            </IconButton>
+          </Box>
+        </Alert>
       </Snackbar>}
     </>
   )

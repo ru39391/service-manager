@@ -3,7 +3,13 @@ import {
   getPricelistLoading,
   getPricelistSucceed,
   getPricelistFailed,
+  removeItems,
 } from '../slices/pricelist-slice';
+import {
+  setModalOpen,
+  setModalClose,
+  setFormData
+} from '../slices/modal-slice';
 
 import type { TCustomData, TResponseData, TResponseDefault } from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';
@@ -11,6 +17,7 @@ import type { TAppThunk, TAppDispatch } from '../../services/store';
 import {
   FETCHING_ERROR_MSG,
   REMOVING_ERROR_MSG,
+  REMOVING_SUCCESS_MSG,
   UPDATEDON_KEY,
   NAME_KEY,
   ID_KEY,
@@ -42,10 +49,10 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
     if(success.every(item => item)) {
       dispatch(getPricelistSucceed({ ...data }));
     } else {
-      dispatch(getPricelistFailed({ errorMsg: FETCHING_ERROR_MSG }));
+      dispatch(getPricelistFailed({ alertMsg: FETCHING_ERROR_MSG }));
     }
   } catch(error) {
-    dispatch(getPricelistFailed({ errorMsg: FETCHING_ERROR_MSG }));
+    dispatch(getPricelistFailed({ alertMsg: FETCHING_ERROR_MSG }));
   }
 };
 
@@ -81,21 +88,15 @@ const createPricelistData = (priceListData: TCustomData<TCustomData<string | num
     if(success.every(item => item)) {
       dispatch(getPricelistSucceed({ ...data }));
     } else {
-      dispatch(getPricelistFailed({ errorMsg: 'ошибка при создании' }));
+      dispatch(getPricelistFailed({ alertMsg: 'ошибка при создании' }));
     }
   } catch(error) {
-    dispatch(getPricelistFailed({ errorMsg: 'ошибка при создании' }));
+    dispatch(getPricelistFailed({ alertMsg: 'ошибка при создании' }));
   }
 };
 
 const removePricelistData = ({ alias, ids }: { alias: string | null; ids: number[] }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
-
-  console.log(`${API_URL}${alias}`);
-  console.log(ids);
-  console.log({
-    ...ids.reduce((acc, item, index) => ({...acc, [index]: { [ID_KEY]: item }}), {})
-  });
 
   try {
     const {
@@ -109,28 +110,35 @@ const removePricelistData = ({ alias, ids }: { alias: string | null; ids: number
     });
     */
 
-    console.log('success: ', success);
-    console.log('data: ', data);
-    console.log('errors: ', errors);
-
     const itemsArr = data ? Object.values(data).filter((value) => typeof value !== 'boolean' && typeof value !== 'string') : [];
     const failedItemsArr = itemsArr.filter((item) => item[UPDATEDON_KEY] === null);
 
-    if(success) {
-      failedItemsArr.length
-        // TODO: здесь закрывать текущее модальное окно и открывать новое с перечнем проблемных ресурсов
-        ? dispatch(getPricelistFailed({ errorMsg: REMOVING_ERROR_MSG }))
-        // TODO: здесь вызывать метод для обновления элементов в хранилище, показывать уведомление об успешном завершении операции
-        : console.log(itemsArr.filter((item) => item[UPDATEDON_KEY] !== null));
+    const handleRespData = () => {
+      dispatch(setFormData({}));
 
-      console.log('failedItemsArr: ', failedItemsArr.map((item) => item[NAME_KEY]));
+      // TODO: отредактировать передачу параметров
+      dispatch(setModalOpen({
+        title: 'Не всё удалено',
+        desc: `Не удалось удалить: ${failedItemsArr.map((item, index, arr) => `"${item[NAME_KEY]}" c id ${item[ID_KEY]}${index === arr.length - 1 ? '.': ', '}`)}`
+      }));
+    }
+
+    if(success) {
+      dispatch(removeItems({
+        key: alias as string,
+        ids: itemsArr.filter((item) => item[UPDATEDON_KEY] !== null).map((item) => item[ID_KEY]),
+        alertMsg: REMOVING_SUCCESS_MSG
+      }));
+      failedItemsArr.length
+        ? handleRespData()
+        : dispatch(setModalClose());
     } else {
-      dispatch(getPricelistFailed({ errorMsg: errors ? errors.message as string : REMOVING_ERROR_MSG }));
+      dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : REMOVING_ERROR_MSG }));
     }
   } catch(error) {
     const { errors }: { errors: TCustomData<string | boolean | TCustomData<string | number>>; } = error;
 
-    dispatch(getPricelistFailed({ errorMsg: errors ? errors.message as string : REMOVING_ERROR_MSG }));
+    dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : REMOVING_ERROR_MSG }));
   }
 };
 

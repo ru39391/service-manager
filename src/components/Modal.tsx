@@ -1,4 +1,8 @@
-import { FC, useEffect, forwardRef } from 'react';
+import {
+  FC,
+  forwardRef,
+  FunctionComponent
+} from 'react';
 import {
   Dialog,
   DialogActions,
@@ -15,15 +19,19 @@ import useModal from '../hooks/useModal';
 
 import { useSelector } from '../services/hooks';
 
+interface IModal {
+  fc?: FunctionComponent;
+}
+
 const Transition = forwardRef(function Transition(props, ref) {
   //@ts-expect-error
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const Modal: FC = () => {
+const Modal: FC<IModal> = ({ fc }) => {
   const { isOpen, modalTitle, modalDesc } = useSelector(state => state.modal);
 
-  const { modalContent, toggleModal } = useModal();
+  const { modalContent, toggleModal } = useModal(fc);
 
   return (
     <Dialog

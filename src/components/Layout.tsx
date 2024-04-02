@@ -4,6 +4,7 @@ import { Grid } from '@mui/material';
 import Preloader from './Preloader';
 import AlertError from './AlertError';
 import Modal from './Modal';
+import DataForm from './DataForm';
 
 interface ILayout {
   children: ReactNode;
@@ -24,7 +25,7 @@ const Layout: FC<ILayout> = ({ children }) => {
       >
         {children}
       </Grid>
-      <Modal />
+      <Modal fc={DataForm} />
     </>
   )
 };

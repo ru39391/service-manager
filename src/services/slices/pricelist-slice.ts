@@ -2,6 +2,8 @@ import { createSlice } from '@reduxjs/toolkit'
 
 import type { TCustomData } from '../../types';
 
+import { ID_KEY } from '../../utils/constants';
+
 // TODO: поправить структуру элементов (см. в php-файлах) - или отказаться от структуры ответа get-запроса?
 export type TPricelistAction = {
   payload: {
@@ -9,7 +11,10 @@ export type TPricelistAction = {
     subdepts?: TCustomData<string | number>[];
     groups?: TCustomData<string | number>[];
     pricelist?: TCustomData<string | number>[];
-    errorMsg?: string;
+    alertType?: string;
+    alertMsg?: string;
+    key?: string;
+    ids?: number[];
   };
 };
 
@@ -21,7 +26,8 @@ export type TPricelistState = {
   isPricelistLoading: boolean;
   isPricelistSucceed: boolean;
   isPricelistFailed: boolean;
-  errorMsg: string;
+  alertType: string;
+  alertMsg: string;
 };
 
 const initialState: TPricelistState = {
@@ -32,7 +38,8 @@ const initialState: TPricelistState = {
   isPricelistLoading: false,
   isPricelistSucceed: false,
   isPricelistFailed: false,
-  errorMsg: '',
+  alertType: 'info',
+  alertMsg: '',
 };
 
 const pricelistSlice = createSlice({
@@ -52,21 +59,45 @@ const pricelistSlice = createSlice({
       isPricelistLoading: false,
       isPricelistSucceed: true,
       isPricelistFailed: false,
-      errorMsg: ''
+      alertType: '',
+      alertMsg: ''
     }),
     getPricelistFailed: (state, action: TPricelistAction) => ({
       ...state,
       isPricelistLoading: false,
       isPricelistSucceed: false,
       isPricelistFailed: true,
-      errorMsg: action.payload.errorMsg || ''
+      alertType: 'error',
+      alertMsg: action.payload.alertMsg || ''
     }),
     // TODO: создать методы:
     /*
     createItems,
-    removeItems,
-    updateeItems
+    updateItems
     */
+    removeItems(state, action: TPricelistAction) {
+      const {key, ids} = action.payload;
+
+      return {
+        ...state,
+        ...([key] && {
+          [key as string]: [...state[key as string]].filter((item: TCustomData<string | number>) => ids && !ids.includes(item[ID_KEY] as number))
+        }),
+        isPricelistLoading: false,
+        isPricelistSucceed: true,
+        isPricelistFailed: false,
+        alertType: 'success',
+        alertMsg: action.payload.alertMsg || ''
+      };
+    },
+    resetPricelist: (state) => ({
+      ...state,
+      isPricelistLoading: false,
+      isPricelistSucceed: false,
+      isPricelistFailed: false,
+      alertType: 'info',
+      alertMsg: '',
+    }),
   }
 });
 
@@ -78,4 +109,6 @@ export const {
   getPricelistLoading,
   getPricelistSucceed,
   getPricelistFailed,
+  removeItems,
+  resetPricelist
 } = pricelistSlice.actions;

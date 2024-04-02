@@ -101,7 +101,7 @@ const Header: FC = () => {
             <Add fontSize="large" />
           </IconButton>
         </Tooltip>
-        <Tooltip
+        {categoryData.id && <Tooltip
           placement="top"
           title={REMOVE_TITLE}
         >
@@ -111,7 +111,7 @@ const Header: FC = () => {
           >
             <DeleteOutlined fontSize="medium" />
           </IconButton>
-        </Tooltip>
+        </Tooltip>}
       </Box>
       <Breadcrumbs
         aria-label="breadcrumb"
