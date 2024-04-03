@@ -4,13 +4,12 @@ import type { TCustomData } from '../../types';
 
 import { ID_KEY } from '../../utils/constants';
 
-// TODO: поправить структуру элементов (см. в php-файлах) - или отказаться от структуры ответа get-запроса?
 export type TPricelistAction = {
   payload: {
-    depts?: TCustomData<string | number>[];
-    subdepts?: TCustomData<string | number>[];
-    groups?: TCustomData<string | number>[];
-    pricelist?: TCustomData<string | number>[];
+    depts?: TCustomData<string | number | null>[];
+    subdepts?: TCustomData<string | number | null>[];
+    groups?: TCustomData<string | number | null>[];
+    pricelist?: TCustomData<string | number | null>[];
     alertType?: string;
     alertMsg?: string;
     key?: string;
@@ -19,10 +18,10 @@ export type TPricelistAction = {
 };
 
 export type TPricelistState = {
-  depts: TCustomData<string | number>[];
-  subdepts: TCustomData<string | number>[];
-  groups: TCustomData<string | number>[];
-  pricelist: TCustomData<string | number>[];
+  depts: TCustomData<string | number | null>[];
+  subdepts: TCustomData<string | number | null>[];
+  groups: TCustomData<string | number | null>[];
+  pricelist: TCustomData<string | number | null>[];
   isPricelistLoading: boolean;
   isPricelistSucceed: boolean;
   isPricelistFailed: boolean;

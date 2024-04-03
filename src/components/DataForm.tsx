@@ -2,6 +2,7 @@ import { FC, useCallback, useEffect } from 'react';
 import { Box, TextField } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 
+import Selecter from './Selecter';
 import ModalFooter from './ModalFooter';
 
 import useCategoryCounter from '../hooks/useCategoryCounter';
@@ -50,13 +51,19 @@ isVisible - радио
 const DataForm: FC = () => {
   const dispatch = useDispatch();
   const { formData } = useSelector(state => state.modal);
-  const { depts, subdepts, groups, pricelist } = useSelector(state => state.pricelist);
   const { subCategoryCounter, setSubCategories } = useCategoryCounter();
+
   const formFields = {
     [TYPES[DEPT_KEY]]: [NAME_KEY],
     [TYPES[SUBDEPT_KEY]]: [NAME_KEY],
     [TYPES[GROUP_KEY]]: [NAME_KEY],
     [TYPES[ITEM_KEY]]: [NAME_KEY, PRICE_KEY, INDEX_KEY]
+  };
+  const selecterFields = {
+    [TYPES[DEPT_KEY]]: [],
+    [TYPES[SUBDEPT_KEY]]: [DEPT_KEY],
+    [TYPES[GROUP_KEY]]: [DEPT_KEY, SUBDEPT_KEY],
+    [TYPES[ITEM_KEY]]: [DEPT_KEY, SUBDEPT_KEY, GROUP_KEY]
   };
 
   const handlersData = {
@@ -105,13 +112,11 @@ const DataForm: FC = () => {
 
   return (
     <>
-      {formData && (<Box sx={{ mb: 4 }}>
-        {formFields[formData.type as string].map(
-          (key, index) =>
+      {formData && formFields[formData.type as string].map(
+        (key, index) =>
           <TextField
             key={index.toString()}
             id={Object.keys(formData.data)[index]}
-            //@ts-expect-error
             label={key === INDEX_KEY ? SORT_CAPTION : CAPTIONS[key]}
             defaultValue={formData.data[key] ? formData.data[key].toString() : ''}
             sx={{ mb: 1 }}
@@ -119,15 +124,28 @@ const DataForm: FC = () => {
             variant="outlined"
             margin="dense"
             type="text"
-          />)}
-        </Box>)
+          />
+        )
       }
-      {formData && formData.action !== REMOVE_ACTION_KEY && <ModalFooter
-        actionBtnCaption={SAVE_TITLE}
-        actionHandler={handlersData[formData.action as string]}
-        />
-      }
-      {/*isOpen && <Selecter {...selecterProps} />*/}
+      {formData && formData.action !== REMOVE_ACTION_KEY && (
+        <>
+          <Box sx={{ mb: 4 }}>
+            {selecterFields[formData.type as string].map(
+              (key, index) =>
+                <Selecter
+                  key={index.toString()}
+                  category={key}
+                  categoryData={formData.data}
+                />
+              )
+            }
+          </Box>
+          <ModalFooter
+            actionBtnCaption={SAVE_TITLE}
+            actionHandler={handlersData[formData.action as string]}
+          />
+        </>
+      )}
     </>
   )
 }

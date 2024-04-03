@@ -36,7 +36,7 @@ import {
 const ItemsList: FC = () => {
   const keys = Object.values(TYPES);
   const dispatch = useDispatch();
-  const pricelistData = useSelector(state => state.pricelist);
+  const pricelist = useSelector(state => state.pricelist);
   const {
     tableData,
     handleTableData
@@ -52,12 +52,12 @@ const ItemsList: FC = () => {
 
   useEffect(() => {
     handleTableData({
-      data: keys.reduce((acc, key) => ({...acc, [key]: pricelistData[key]}), {}),
+      data: keys.reduce((acc, key) => ({...acc, [key]: pricelist[key]}), {}),
       category: currSubcategory,
       params: categoryParams
     });
   }, [
-    pricelistData,
+    pricelist,
     currSubcategory,
     categoryParams
   ]);
@@ -79,7 +79,7 @@ const ItemsList: FC = () => {
       data: {
         action: EDIT_ACTION_KEY,
         type: currSubcategory,
-        data: pricelistData[currSubcategory].find((item: TCustomData<string | number>) => item[ID_KEY] === values[ID_KEY]),
+        data: pricelist[currSubcategory].find((item: TCustomData<string | number>) => item[ID_KEY] === values[ID_KEY]),
         values
       }
     }));

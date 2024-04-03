@@ -16,10 +16,13 @@ import {
 import useModal from '../hooks/useModal';
 import useHeader from '../hooks/useHeader';
 
-import { useDispatch } from '../services/hooks';
+import { useSelector, useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/modal-slice';
 
+import type { TCustomData } from '../types';
+
 import {
+  ID_KEY,
   EDIT_TITLE,
   REMOVE_TITLE,
   EDIT_ITEM_TITLE,
@@ -32,6 +35,7 @@ import {
 
 const Header: FC = () => {
   const dispatch = useDispatch();
+  const pricelist = useSelector(state => state.pricelist);
   const { toggleModal } = useModal();
   const { pageTitle, categoryData } = useHeader();
   const title = pageTitle || categoryData.category;
@@ -43,9 +47,9 @@ const Header: FC = () => {
       data: {
         action,
         type: alias as string,
-        data: {
-          [key as string]: id as number
-        }
+        data: action === EDIT_ACTION_KEY
+          ? pricelist[alias as string].find((item: TCustomData<string | number | null>) => item[ID_KEY] === id)
+          : { [key as string]: id }
       }
     }));
   }

@@ -28,7 +28,7 @@ const useCategoryCounter = (): ICategoryCounter => {
   const [subCategoryCounter, setSubCategoryCounter] = useState<string>('');
   const [sortedParams, setSortedParams] = useState<TCustomData<number> | null>(null);
 
-  const pricelistData = useSelector(state => state.pricelist);
+  const pricelist = useSelector(state => state.pricelist);
 
   const subCategories = {
     [TYPES[DEPT_KEY]]: [TYPES[SUBDEPT_KEY], TYPES[GROUP_KEY], TYPES[ITEM_KEY]],
@@ -54,7 +54,7 @@ const useCategoryCounter = (): ICategoryCounter => {
       const countedData: TCustomData<number> = categoryList.reduce((acc, item) => (
         {
           ...acc,
-          [item]: filterData(pricelistData[item]).length
+          [item]: filterData(pricelist[item]).length
         }
       ), {});
       const str = Object.keys(countedData)
