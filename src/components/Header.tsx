@@ -79,7 +79,7 @@ const Header: FC = () => {
         }}
       >
         <Typography variant="h5">{title}</Typography>
-        <Tooltip
+        {categoryData.id && <Tooltip
           placement="top"
           title={EDIT_ITEM_TITLE}
         >
@@ -89,7 +89,7 @@ const Header: FC = () => {
           >
             <EditOutlined fontSize="medium" />
           </IconButton>
-        </Tooltip>
+        </Tooltip>}
         <Tooltip
           placement="top"
           title={ADD_CATEGORY_TITLE}

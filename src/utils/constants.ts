@@ -7,6 +7,7 @@ const NOT_EMPTY_CATEGORY = 'Категория содержит следующи
 const ADD_TITLE = 'Добавить';
 const EDIT_TITLE = 'Редактировать';
 const REMOVE_TITLE = 'Удалить';
+const SAVE_TITLE = 'Сохранить';
 const ADD_CATEGORY_TITLE = 'Добавить раздел';
 const EDIT_ITEM_TITLE = 'Изменить данные';
 
@@ -87,6 +88,7 @@ export {
   ADD_TITLE,
   EDIT_TITLE,
   REMOVE_TITLE,
+  SAVE_TITLE,
   ADD_CATEGORY_TITLE,
   EDIT_ITEM_TITLE,
   REMOVE_CONFIRM_MSG,

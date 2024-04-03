@@ -1,31 +1,45 @@
-import { FC } from 'react';
-import { Box, Button, DialogContent, DialogContentText } from '@mui/material';
-import { Delete } from '@mui/icons-material';
+import { FC, ReactNode } from 'react';
+import { Box, Button, DialogContentText } from '@mui/material';
+import { ButtonOwnProps } from '@mui/material/Button';
+import { LoadingButton } from '@mui/lab';
+import { Check } from '@mui/icons-material';
 
 import useModal from '../hooks/useModal';
-import { NOT_EMPTY_CATEGORY } from '../utils/constants';
+
+import { useSelector } from '../services/hooks';
 
 interface IModalFooter {
+  icon: ReactNode | undefined;
+  color: ButtonOwnProps['color'] | undefined;
   actionBtnCaption: string;
-  introText: string;
+  introText: string | undefined;
   actionHandler: () => void;
 }
 
-const ModalFooter: FC<IModalFooter> = ({ actionBtnCaption, introText, actionHandler }) => {
+const ModalFooter: FC<IModalFooter> = ({
+  icon,
+  color,
+  actionBtnCaption,
+  introText,
+  actionHandler
+}) => {
+  const { isPricelistLoading } = useSelector(state => state.pricelist);
   const { toggleModal } = useModal();
 
   return (
     <>
-      {introText && <DialogContentText sx={{ mb: 4 }}>{NOT_EMPTY_CATEGORY}{introText}.</DialogContentText>}
+      {introText && <DialogContentText sx={{ mb: 4 }}>{introText}.</DialogContentText>}
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
-        <Button
+        <LoadingButton
+          color={color || 'success'}
           variant="outlined"
-          color="error"
-          startIcon={<Delete />}
+          loadingPosition="start"
+          startIcon={icon || <Check />}
+          loading={isPricelistLoading}
           onClick={actionHandler}
         >
           {actionBtnCaption}
-        </Button>
+        </LoadingButton>
         <Button
           variant="outlined"
           onClick={() => toggleModal(null)}

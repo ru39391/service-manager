@@ -1,5 +1,6 @@
 import { FC, useCallback, useEffect } from 'react';
-import { TextField } from '@mui/material';
+import { Box, TextField } from '@mui/material';
+import { Delete } from '@mui/icons-material';
 
 import ModalFooter from './ModalFooter';
 
@@ -24,7 +25,11 @@ import {
   ITEM_KEY,
   TYPES,
   REMOVE_TITLE,
-  REMOVE_ACTION_KEY
+  SAVE_TITLE,
+  ADD_ACTION_KEY,
+  EDIT_ACTION_KEY,
+  REMOVE_ACTION_KEY,
+  NOT_EMPTY_CATEGORY
 } from '../utils/constants';
 
 /*
@@ -54,15 +59,29 @@ const DataForm: FC = () => {
     [TYPES[ITEM_KEY]]: [NAME_KEY, PRICE_KEY, INDEX_KEY]
   };
 
-  const removeItem = useCallback(() => {
-    dispatch(removePricelistData({
-      alias: formData ? formData.type as string : null,
-      ids: formData ? [Object.values(formData.data)[0]] : [],
-    }));
-  }, [
-    dispatch,
-    formData
-  ]);
+  const handlersData = {
+    [ADD_ACTION_KEY]: useCallback(() => {
+      console.log(ADD_ACTION_KEY);
+    }, [
+      dispatch,
+      formData
+    ]),
+    [EDIT_ACTION_KEY]: useCallback(() => {
+      console.log(EDIT_ACTION_KEY);
+    }, [
+      dispatch,
+      formData
+    ]),
+    [REMOVE_ACTION_KEY]: useCallback(() => {
+      dispatch(removePricelistData({
+        alias: formData ? formData.type as string : null,
+        ids: formData ? [Object.values(formData.data)[0]] : [],
+      }));
+    }, [
+      dispatch,
+      formData
+    ]),
+  }
 
   useEffect(() => {
     console.log(formData);
@@ -75,26 +94,39 @@ const DataForm: FC = () => {
   ]);
 
   if(formData && formData.action === REMOVE_ACTION_KEY) {
-    return <ModalFooter actionBtnCaption={REMOVE_TITLE} introText={subCategoryCounter} actionHandler={removeItem} />;
+    return <ModalFooter
+      icon={<Delete />}
+      color='error'
+      actionBtnCaption={REMOVE_TITLE}
+      introText={`${NOT_EMPTY_CATEGORY}${subCategoryCounter}`}
+      actionHandler={handlersData[formData.action]}
+    />;
   }
 
   return (
     <>
-      {formData && formFields[formData.type as string].map(
-        (key, index) =>
-        <TextField
-          key={index.toString()}
-          id={Object.keys(formData.data)[index]}
-          //@ts-expect-error
-          label={key === INDEX_KEY ? SORT_CAPTION : CAPTIONS[key]}
-          defaultValue={formData.data[key] ? formData.data[key].toString() : ''}
-          sx={{ mb: 1 }}
-          fullWidth
-          variant="outlined"
-          margin="dense"
-          type="text"
+      {formData && (<Box sx={{ mb: 4 }}>
+        {formFields[formData.type as string].map(
+          (key, index) =>
+          <TextField
+            key={index.toString()}
+            id={Object.keys(formData.data)[index]}
+            //@ts-expect-error
+            label={key === INDEX_KEY ? SORT_CAPTION : CAPTIONS[key]}
+            defaultValue={formData.data[key] ? formData.data[key].toString() : ''}
+            sx={{ mb: 1 }}
+            fullWidth
+            variant="outlined"
+            margin="dense"
+            type="text"
+          />)}
+        </Box>)
+      }
+      {formData && formData.action !== REMOVE_ACTION_KEY && <ModalFooter
+        actionBtnCaption={SAVE_TITLE}
+        actionHandler={handlersData[formData.action as string]}
         />
-      )}
+      }
       {/*isOpen && <Selecter {...selecterProps} />*/}
     </>
   )
