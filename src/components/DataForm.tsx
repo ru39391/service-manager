@@ -130,6 +130,9 @@ const DataForm: FC = () => {
       {formData && formData.action !== REMOVE_ACTION_KEY && (
         <>
           <Box sx={{ mb: 4 }}>
+            {/*
+            TODO: установить зависимости между значениями выпадающих списков
+            */}
             {selecterFields[formData.type as string].map(
               (key, index) =>
                 <Selecter

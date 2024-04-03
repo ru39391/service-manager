@@ -64,6 +64,7 @@ const Header: FC = () => {
     dispatchFormData(EDIT_ACTION_KEY);
   }
 
+  // TODO: отследить баг удаления категории
   const removeCategory = () => {
     toggleModal({
       title: `${REMOVE_TITLE} ${pageTitle && (`«${pageTitle}»`)}`,

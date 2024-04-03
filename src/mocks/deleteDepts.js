@@ -12,13 +12,13 @@ const deleteDepts = () => {
             "data": {
               "0": {
                   "item_id": 1,
-                  "name": "Медицина",
+                  "name": "Стоматология",
                   "updatedon": null
                   //"updatedon": "2024-03-31 23:17:21"
               },
               "1": {
                   "item_id": 4,
-                  "name": "Гомеопатия",
+                  "name": "Медицина",
                   //"updatedon": null
                   "updatedon": "2024-03-31 23:17:21"
               },

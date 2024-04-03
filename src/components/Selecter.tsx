@@ -25,7 +25,11 @@ const Selecter: FC<ISelecter> = ({
   category,
   categoryData
 }) => {
-  const { categoryList } = useSelecter({
+  const {
+    selectedItem,
+    selecterList,
+    handleSelectedValue
+  } = useSelecter({
     ...Object.keys(categoryData).reduce(
       (acc, item) => ({
         ...acc,
@@ -36,17 +40,23 @@ const Selecter: FC<ISelecter> = ({
     category
   });
 
+  //console.log(`${category}: `, selecterList);
+
   return (
-    categoryList.length && <FormControl sx={{ my: 1 }} fullWidth>
+    selecterList.length > 0 && <FormControl sx={{ my: 1 }} fullWidth>
       <InputLabel id={`${category}-select-label`}>{TITLES[category]} - {category}</InputLabel>
       <Select
         labelId={`${category}-select-label`}
         id={`${category}-select`}
-        value={categoryList[0][ID_KEY]}
+        value={selectedItem[ID_KEY]}
         label={TITLES[category]}
-        onChange={({ target }) => console.log(target.value)}
+        onChange={({ target }) => handleSelectedValue({
+          key: category,
+          value: target.value as number,
+          category
+        })}
       >
-        {categoryList.map(
+        {selecterList.map(
           (item: TCustomData<string | number | null>) =>
             <MenuItem
               key={item[ID_KEY] && item[ID_KEY].toString()}
