@@ -79,8 +79,7 @@ const ItemsList: FC = () => {
       data: {
         action: EDIT_ACTION_KEY,
         type: currSubcategory,
-        data: pricelist[currSubcategory].find((item: TCustomData<string | number>) => item[ID_KEY] === values[ID_KEY]),
-        values
+        data: pricelist[currSubcategory].find((item: TCustomData<string | number>) => item[ID_KEY] === values[ID_KEY])
       }
     }));
   }

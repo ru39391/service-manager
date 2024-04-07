@@ -44,6 +44,7 @@ dept - список
 subdept - список
 group - список
 
+// TODO: настроить радиокнопки
 isComplexItem - радио (если отмечено, показывать список доступных комплексов и поле ввода количества)
 isComplex - радио (если отмечено, показывать услуги в комплексе complex)
 isVisible - радио
@@ -133,18 +134,6 @@ const DataForm: FC = () => {
             <Selecter
               keys={selecterFields[formData.type as string]}
             />
-            {/*
-            TODO: установить зависимости между значениями выпадающих списков
-            {selecterFields[formData.type as string].map(
-              (key, index) =>
-                <Selecter
-                  key={index.toString()}
-                  category={key}
-                  categoryData={formData.data}
-                />
-              )
-            }
-            */}
           </Box>
           <ModalFooter
             actionBtnCaption={SAVE_TITLE}

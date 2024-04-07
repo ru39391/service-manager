@@ -6,12 +6,10 @@ import type { TCustomData } from '../types';
 
 import {
   ID_KEY,
-  NAME_KEY,
   DEPT_KEY,
   SUBDEPT_KEY,
   GROUP_KEY,
-  TYPES,
-  TITLES
+  TYPES
 } from '../utils/constants';
 
 interface ISelecter {
@@ -33,7 +31,15 @@ const useSelecter = (): ISelecter => {
   const [selectedSubdept, setSelectedSubdept] = useState<TCustomData<string | number | null>>({});
   const [selectedGroup, setSelectedGroup] = useState<TCustomData<string | number | null>>({});
 
-  const pricelist = useSelector(state => state.pricelist);
+  const [selectedData, setSelectedData] = useState<TCustomData<TCustomData<string | number | null> | null>>({});
+
+  const {
+    pricelist,
+    formData
+  } = useSelector(state => ({
+    pricelist: state.pricelist,
+    formData: state.modal.formData
+  }));
 
   const handleSelectedItem = (
     data: TCustomData<string | number>
@@ -44,6 +50,10 @@ const useSelecter = (): ISelecter => {
     key: string,
     id: number
   ): TCustomData<string | number | null>[] => arr.filter((item) => item[key] === id);
+
+  const handleFormData = (type: string): TCustomData<string | number | null> | null => formData
+    ? handleSelectedItem({ type, [ID_KEY]: formData.data[type] as number })
+    : null;
 
   const handleDeptsList = () => {
     setDeptsList(pricelist[TYPES[DEPT_KEY]]);
@@ -72,6 +82,8 @@ const useSelecter = (): ISelecter => {
   const selectOption = (data: TCustomData<string | number>) => {
     const optionData = handleSelectedItem(data);
 
+    setSelectedData({});
+
     switch(data.type) {
       case `${SUBDEPT_KEY}`:
         setSelectedSubdept(optionData);
@@ -88,13 +100,26 @@ const useSelecter = (): ISelecter => {
   }
 
   useEffect(() => {
+    setSelectedData({
+      [DEPT_KEY]: handleFormData(DEPT_KEY),
+      [SUBDEPT_KEY]: handleFormData(SUBDEPT_KEY),
+      [GROUP_KEY]: handleFormData(GROUP_KEY),
+    });
+  }, [
+    formData
+  ]);
+
+  useEffect(() => {
     handleDeptsList();
   }, []);
 
   useEffect(() => {
-    setSelectedDept(deptsList[0]);
+    setSelectedDept(
+      selectedData[DEPT_KEY] || deptsList[0]
+    );
   }, [
-    deptsList
+    deptsList,
+    formData
   ]);
 
   /**/
@@ -105,9 +130,12 @@ const useSelecter = (): ISelecter => {
   ]);
 
   useEffect(() => {
-    setSelectedSubdept(subdeptsList[0]);
+    setSelectedSubdept(
+      selectedData[SUBDEPT_KEY] || subdeptsList[0]
+    );
   }, [
-    subdeptsList
+    subdeptsList,
+    formData
   ]);
 
   /**/
@@ -118,7 +146,9 @@ const useSelecter = (): ISelecter => {
   ]);
 
   useEffect(() => {
-    setSelectedGroup(groupsList[0]);
+    setSelectedGroup(
+      selectedData[GROUP_KEY] || groupsList[0]
+    );
   }, [
     groupsList
   ]);

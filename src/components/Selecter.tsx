@@ -18,12 +18,9 @@ import {
 
 interface ISelecter {
   keys: string[];
-  //categoryData: TCustomData<number>;
 }
 
-const Selecter: FC<ISelecter> = ({
-  keys
-}) => {
+const Selecter: FC<ISelecter> = ({ keys }) => {
   const {
     deptsList,
     subdeptsList,
@@ -49,9 +46,9 @@ const Selecter: FC<ISelecter> = ({
         selected: selectedGroup
       }
     ].map(({ list, selected }, index) =>
-      list.length > 0 && selected && <FormControl sx={{ my: 1 }} fullWidth>
-      <InputLabel id={`${keys[index]}-select-label`}>{TITLES[keys[index]]} - {keys[index]}</InputLabel>
-      <Select
+      list.length > 0 && keys[index] && <FormControl sx={{ my: 1 }} fullWidth>
+      <InputLabel id={`${keys[index]}-select-label`}>{TITLES[keys[index]]}</InputLabel>
+      {selected && <Select
         labelId={`${keys[index]}-select-label`}
         id={`${keys[index]}-select`}
         value={selected[ID_KEY]}
@@ -71,43 +68,10 @@ const Selecter: FC<ISelecter> = ({
             </MenuItem>
           )
         }
-      </Select>
+      </Select>}
     </FormControl>
     )
   )
-
-  /*
-  const {
-    selectedItem,
-    selecterList,
-    handleSelectedValue
-  } = useSelecter({
-    ...Object.keys(categoryData).reduce(
-      (acc, item) => ({
-        ...acc,
-        key: item,
-        value: categoryData[item]
-      }),
-    {}),
-    category
-  });
-
-  console.log(
-    [
-      {
-        list: deptsList,
-        selected: selectedDept,
-      },
-      {
-        list: subdeptsList,
-        selected: selectedSubdept,
-      },
-      {
-        list: groupsList,
-        selected: selectedGroup
-      }
-    ]);
-  */
 };
 
 export default Selecter;
