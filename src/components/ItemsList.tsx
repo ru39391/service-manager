@@ -17,7 +17,7 @@ import useTableData from '../hooks/useTableData';
 import useCategoryItems from '../hooks/useCategoryItems';
 
 import { useSelector, useDispatch } from '../services/hooks';
-import { setFormData } from '../services/slices/modal-slice';
+import { setFormData } from '../services/slices/form-slice';
 
 import type { TCustomData } from '../types';
 

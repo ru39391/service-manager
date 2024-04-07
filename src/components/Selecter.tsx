@@ -47,10 +47,11 @@ const Selecter: FC<ISelecter> = ({ keys }) => {
       }
     ].map(({ list, selected }, index) =>
       list.length > 0 && keys[index] && <FormControl sx={{ my: 1 }} fullWidth>
-      <InputLabel id={`${keys[index]}-select-label`}>{TITLES[keys[index]]}</InputLabel>
+      <InputLabel id={`${keys[index]}-label`}>{TITLES[keys[index]]}</InputLabel>
       {selected && <Select
-        labelId={`${keys[index]}-select-label`}
-        id={`${keys[index]}-select`}
+        labelId={`${keys[index]}-label`}
+        id={keys[index]}
+        name={keys[index]}
         value={selected[ID_KEY]}
         label={TITLES[keys[index]]}
         onChange={({ target }) => selectOption({

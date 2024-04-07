@@ -1,12 +1,12 @@
 import { fileReducer, fileActions } from './file-slice';
 import { pricelistReducer, pricelistActions } from './pricelist-slice';
-import { modalReducer, modalActions } from './modal-slice';
+import { formReducer, formActions } from './form-slice';
 
 const reducer = {
   file: fileReducer,
   pricelist: pricelistReducer,
-  modal: modalReducer,
+  form: formReducer,
 };
 
-export type TAppActions = typeof fileActions | typeof pricelistActions | typeof modalActions;
+export type TAppActions = typeof fileActions | typeof pricelistActions | typeof formActions;
 export default reducer;

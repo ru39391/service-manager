@@ -6,10 +6,10 @@ import {
   removeItems,
 } from '../slices/pricelist-slice';
 import {
-  setModalOpen,
-  setModalClose,
+  setFormVisible,
+  setFormHidden,
   setFormData
-} from '../slices/modal-slice';
+} from '../slices/form-slice';
 
 import type { TCustomData, TResponseData, TResponseDefault } from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';
@@ -117,7 +117,7 @@ const removePricelistData = ({ alias, ids }: { alias: string | null; ids: number
       dispatch(setFormData({}));
 
       // TODO: отредактировать передачу параметров
-      dispatch(setModalOpen({
+      dispatch(setFormVisible({
         title: 'Не всё удалено',
         desc: `Не удалось удалить: ${failedItemsArr.map((item, index, arr) => `"${item[NAME_KEY]}" c id ${item[ID_KEY]}${index === arr.length - 1 ? '.': ', '}`)}`
       }));
@@ -131,7 +131,7 @@ const removePricelistData = ({ alias, ids }: { alias: string | null; ids: number
       }));
       failedItemsArr.length
         ? handleRespData()
-        : dispatch(setModalClose());
+        : dispatch(setFormHidden());
     } else {
       dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : REMOVING_ERROR_MSG }));
     }

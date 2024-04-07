@@ -51,7 +51,7 @@ isVisible - радио
 */
 const DataForm: FC = () => {
   const dispatch = useDispatch();
-  const { formData } = useSelector(state => state.modal);
+  const { formData } = useSelector(state => state.form);
   const { subCategoryCounter, setSubCategories } = useCategoryCounter();
 
   const formFields = {
@@ -117,7 +117,8 @@ const DataForm: FC = () => {
         (key, index) =>
           <TextField
             key={index.toString()}
-            id={Object.keys(formData.data)[index]}
+            id={key}
+            name={key}
             label={key === INDEX_KEY ? SORT_CAPTION : CAPTIONS[key]}
             defaultValue={formData.data[key] ? formData.data[key].toString() : ''}
             sx={{ mb: 1 }}
@@ -125,6 +126,11 @@ const DataForm: FC = () => {
             variant="outlined"
             margin="dense"
             type="text"
+            onChange={({ target }) => console.log({
+              key,
+              name: target.name,
+              value: target.value
+            })}
           />
         )
       }

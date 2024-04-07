@@ -17,7 +17,7 @@ import useModal from '../hooks/useModal';
 import useHeader from '../hooks/useHeader';
 
 import { useSelector, useDispatch } from '../services/hooks';
-import { setFormData } from '../services/slices/modal-slice';
+import { setFormData } from '../services/slices/form-slice';
 
 import type { TCustomData } from '../types';
 

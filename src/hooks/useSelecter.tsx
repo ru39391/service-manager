@@ -38,7 +38,7 @@ const useSelecter = (): ISelecter => {
     formData
   } = useSelector(state => ({
     pricelist: state.pricelist,
-    formData: state.modal.formData
+    formData: state.form.formData
   }));
 
   const handleSelectedItem = (

@@ -7,7 +7,7 @@ import {
 } from 'react';
 
 import { useDispatch } from '../services/hooks';
-import { setModalOpen, setModalClose } from '../services/slices/modal-slice';
+import { setFormVisible, setFormHidden } from '../services/slices/form-slice';
 
 import type { TCustomData } from '../types';
 
@@ -22,7 +22,7 @@ const useModal = (fc: FunctionComponent | undefined = undefined): IModal => {
   const dispatch = useDispatch();
 
   const toggleModal = (data: TCustomData<string> | null): void => {
-    data ? dispatch(setModalOpen({ title: data.title, desc: data.desc })) : dispatch(setModalClose());
+    data ? dispatch(setFormVisible({ title: data.title, desc: data.desc })) : dispatch(setFormHidden());
   }
 
   const handleComponent = ({ el, props }: { el: FunctionComponent | undefined; props: TCustomData<null>; }): void => {

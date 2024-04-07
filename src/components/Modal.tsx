@@ -29,13 +29,13 @@ const Transition = forwardRef(function Transition(props, ref) {
 });
 
 const Modal: FC<IModal> = ({ fc }) => {
-  const { isOpen, modalTitle, modalDesc } = useSelector(state => state.modal);
+  const { isVisible, formTitle, formDesc } = useSelector(state => state.form);
 
   const { modalContent, toggleModal } = useModal(fc);
 
   return (
     <Dialog
-      open={isOpen}
+      open={isVisible}
       maxWidth="sm"
       fullWidth={true}
       onClose={() => toggleModal(null)}
@@ -43,7 +43,7 @@ const Modal: FC<IModal> = ({ fc }) => {
       TransitionComponent={Transition}
       keepMounted
     >
-      {modalTitle &&
+      {formTitle &&
         <DialogTitle
           sx={{
             display: 'flex',
@@ -51,7 +51,7 @@ const Modal: FC<IModal> = ({ fc }) => {
             alignItems: 'flex-start'
           }}
         >
-          <span>{modalTitle}</span>
+          <span>{formTitle}</span>
           <IconButton
             sx={{
               p: 1,
@@ -66,14 +66,9 @@ const Modal: FC<IModal> = ({ fc }) => {
         </DialogTitle>
       }
       <DialogContent>
-        {modalDesc && <DialogContentText>{modalDesc}</DialogContentText>}
+        {formDesc && <DialogContentText>{formDesc}</DialogContentText>}
         {modalContent}
       </DialogContent>
-      {/*
-      <DialogActions>
-        <Button onClick={() => toggleModal(null)}>Закрыть</Button>
-      </DialogActions>
-      */}
     </Dialog>
   )
 }
