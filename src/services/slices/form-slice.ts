@@ -7,24 +7,24 @@ export type TFormAction = {
     title?: string;
     desc?: string;
     data?: TCustomData<string | TCustomData<number | string | null>> | null;
-    values?: TCustomData<number | string> | null;
+    values?: TCustomData<number | string | null> | null;
   };
 };
 
-export type TModalState = {
+export type TFormState = {
   isVisible: boolean;
   formTitle: string;
   formDesc: string;
   formData: TCustomData<string | TCustomData<number | string | null>> | null;
-  formValues: TCustomData<number | string> | null;
+  formValues: TCustomData<number | string | null>;
 };
 
-const initialState: TModalState = {
+const initialState: TFormState = {
   isVisible: false,
   formTitle: '',
   formDesc: '',
   formData: null,
-  formValues: null
+  formValues: {}
 };
 
 const formSlice = createSlice({
@@ -42,7 +42,8 @@ const formSlice = createSlice({
       isVisible: false,
       formTitle: '',
       formDesc: '',
-      formData: null
+      formData: null,
+      formValues: {}
     }),
     setFormData: (state, action: TFormAction) => ({
       ...state,
@@ -50,7 +51,7 @@ const formSlice = createSlice({
     }),
     setFormValues: (state, action: TFormAction) => ({
       ...state,
-      formValues: action.payload.values || null
+      formValues: action.payload.values || {}
     }),
   }
 });

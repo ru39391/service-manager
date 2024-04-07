@@ -46,7 +46,7 @@ const Selecter: FC<ISelecter> = ({ keys }) => {
         selected: selectedGroup
       }
     ].map(({ list, selected }, index) =>
-      list.length > 0 && keys[index] && <FormControl sx={{ my: 1 }} fullWidth>
+      list.length > 0 && keys[index] && <FormControl key={keys[index]} sx={{ my: 1 }} fullWidth>
       <InputLabel id={`${keys[index]}-label`}>{TITLES[keys[index]]}</InputLabel>
       {selected && <Select
         labelId={`${keys[index]}-label`}
@@ -65,7 +65,7 @@ const Selecter: FC<ISelecter> = ({ keys }) => {
               key={item[ID_KEY] && item[ID_KEY].toString()}
               value={item[ID_KEY] as number}
             >
-              {item[NAME_KEY]}
+              {item[NAME_KEY]} - {item[ID_KEY]}
             </MenuItem>
           )
         }

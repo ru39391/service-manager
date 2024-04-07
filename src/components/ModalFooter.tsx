@@ -13,18 +13,20 @@ interface IModalFooter {
   color: ButtonOwnProps['color'] | undefined;
   actionBtnCaption: string;
   introText: string | undefined;
+  disabled: boolean;
   actionHandler: () => void;
 }
 // TODO: настроить disabled кнопки submit
-// values для modal
 const ModalFooter: FC<IModalFooter> = ({
   icon,
   color,
   actionBtnCaption,
   introText,
+  disabled,
   actionHandler
 }) => {
   const { isPricelistLoading } = useSelector(state => state.pricelist);
+
   const { toggleModal } = useModal();
 
   return (
@@ -37,6 +39,7 @@ const ModalFooter: FC<IModalFooter> = ({
           loadingPosition="start"
           startIcon={icon || <Check />}
           loading={isPricelistLoading}
+          disabled={disabled}
           onClick={actionHandler}
         >
           {actionBtnCaption}

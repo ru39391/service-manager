@@ -5,9 +5,11 @@ import { Delete } from '@mui/icons-material';
 import Selecter from './Selecter';
 import ModalFooter from './ModalFooter';
 
+import useForm from '../hooks/useForm';
 import useCategoryCounter from '../hooks/useCategoryCounter';
 
 import { useSelector, useDispatch } from '../services/hooks';
+import { setFormValues } from '../services/slices/form-slice';
 
 import { removePricelistData } from '../services/actions/pricelist';
 
@@ -51,7 +53,8 @@ isVisible - радио
 */
 const DataForm: FC = () => {
   const dispatch = useDispatch();
-  const { formData } = useSelector(state => state.form);
+  const { formData, formValues } = useSelector(state => state.form);
+  const { isDisabled } = useForm();
   const { subCategoryCounter, setSubCategories } = useCategoryCounter();
 
   const formFields = {
@@ -83,13 +86,13 @@ const DataForm: FC = () => {
     [REMOVE_ACTION_KEY]: useCallback(() => {
       dispatch(removePricelistData({
         alias: formData ? formData.type as string : null,
-        ids: formData ? [Object.values(formData.data)[0]] : [],
+        ids: formData ? [Object.values(formData.data)[0] as number] : [],
       }));
     }, [
       dispatch,
       formData
     ]),
-  }
+  };
 
   useEffect(() => {
     console.log(formData);
@@ -101,10 +104,17 @@ const DataForm: FC = () => {
     formData
   ]);
 
+  useEffect(() => {
+    console.log(formValues);
+  }, [
+    formValues
+  ]);
+
   if(formData && formData.action === REMOVE_ACTION_KEY) {
     return <ModalFooter
       icon={<Delete />}
       color='error'
+      disabled={false}
       actionBtnCaption={REMOVE_TITLE}
       introText={`${NOT_EMPTY_CATEGORY}${subCategoryCounter}`}
       actionHandler={handlersData[formData.action]}
@@ -126,11 +136,15 @@ const DataForm: FC = () => {
             variant="outlined"
             margin="dense"
             type="text"
-            onChange={({ target }) => console.log({
-              key,
-              name: target.name,
-              value: target.value
-            })}
+            required={key === NAME_KEY}
+            onChange={({ target }) => dispatch(
+              setFormValues({
+                values: {
+                  ...formValues,
+                  [key]: key === NAME_KEY ? target.value : Number(target.value)
+                }
+              })
+            )}
           />
         )
       }
@@ -142,6 +156,7 @@ const DataForm: FC = () => {
             />
           </Box>
           <ModalFooter
+            disabled={isDisabled}
             actionBtnCaption={SAVE_TITLE}
             actionHandler={handlersData[formData.action as string]}
           />

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 
-import { useSelector } from '../services/hooks';
+import { useSelector, useDispatch } from '../services/hooks';
+import { setFormValues } from '../services/slices/form-slice';
 
 import type { TCustomData } from '../types';
 
@@ -33,12 +34,15 @@ const useSelecter = (): ISelecter => {
 
   const [selectedData, setSelectedData] = useState<TCustomData<TCustomData<string | number | null> | null>>({});
 
+  const dispatch = useDispatch();
   const {
     pricelist,
-    formData
+    formData,
+    formValues
   } = useSelector(state => ({
     pricelist: state.pricelist,
-    formData: state.form.formData
+    formData: state.form.formData,
+    formValues: state.form.formValues
   }));
 
   const handleSelectedItem = (
@@ -67,6 +71,14 @@ const useSelecter = (): ISelecter => {
         selectedDept && selectedDept[ID_KEY] as number
       )
     );
+    dispatch(
+      setFormValues({
+        values: {
+          ...formValues,
+          [DEPT_KEY]: selectedDept ? selectedDept[ID_KEY] as number : null
+        }
+      })
+    );
   }
 
   const handleGroupsList = () => {
@@ -76,6 +88,14 @@ const useSelecter = (): ISelecter => {
         SUBDEPT_KEY,
         selectedSubdept && selectedSubdept[ID_KEY] as number
       )
+    );
+    dispatch(
+      setFormValues({
+        values: {
+          ...formValues,
+          [SUBDEPT_KEY]: selectedSubdept ? selectedSubdept[ID_KEY] as number : null
+        }
+      })
     );
   }
 
@@ -151,6 +171,19 @@ const useSelecter = (): ISelecter => {
     );
   }, [
     groupsList
+  ]);
+
+  useEffect(() => {
+    dispatch(
+      setFormValues({
+        values: {
+          ...formValues,
+          [GROUP_KEY]: selectedGroup ? selectedGroup[ID_KEY] as number : null
+        }
+      })
+    );
+  }, [
+    selectedGroup
   ]);
 
 
