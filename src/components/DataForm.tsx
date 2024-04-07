@@ -130,9 +130,11 @@ const DataForm: FC = () => {
       {formData && formData.action !== REMOVE_ACTION_KEY && (
         <>
           <Box sx={{ mb: 4 }}>
+            <Selecter
+              keys={selecterFields[formData.type as string]}
+            />
             {/*
             TODO: установить зависимости между значениями выпадающих списков
-            */}
             {selecterFields[formData.type as string].map(
               (key, index) =>
                 <Selecter
@@ -142,6 +144,7 @@ const DataForm: FC = () => {
                 />
               )
             }
+            */}
           </Box>
           <ModalFooter
             actionBtnCaption={SAVE_TITLE}

@@ -7,6 +7,7 @@ import type { TCustomData } from '../types';
 import {
   ID_KEY,
   NAME_KEY,
+  DEPT_KEY,
   SUBDEPT_KEY,
   GROUP_KEY,
   TYPES,
@@ -14,67 +15,123 @@ import {
 } from '../utils/constants';
 
 interface ISelecter {
-  selectedItem: TCustomData<string | number>;
-  selecterList: TCustomData<string | number | null>[];
-  handleSelectedValue: (options: TCustomData<string | number>) => void;
+  deptsList: TCustomData<string | number | null>[];
+  subdeptsList: TCustomData<string | number | null>[];
+  groupsList: TCustomData<string | number | null>[];
+  selectedDept: TCustomData<string | number | null>;
+  selectedSubdept: TCustomData<string | number | null>;
+  selectedGroup: TCustomData<string | number | null>;
+  selectOption: (data: TCustomData<string | number>) => void;
 }
 
-const useSelecter = (data: TCustomData<string | number>): ISelecter => {
-  const [selectedItem, setSelectedItem] = useState<TCustomData<string | number>>({});
-  const [selecterList, setSelecterList] = useState<TCustomData<string | number | null>[]>([]);
+const useSelecter = (): ISelecter => {
+  const [deptsList, setDeptsList] = useState<TCustomData<string | number | null>[]>([]);
+  const [subdeptsList, setSubdeptsList] = useState<TCustomData<string | number | null>[]>([]);
+  const [groupsList, setGroupsList] = useState<TCustomData<string | number | null>[]>([]);
+
+  const [selectedDept, setSelectedDept] = useState<TCustomData<string | number | null>>({});
+  const [selectedSubdept, setSelectedSubdept] = useState<TCustomData<string | number | null>>({});
+  const [selectedGroup, setSelectedGroup] = useState<TCustomData<string | number | null>>({});
 
   const pricelist = useSelector(state => state.pricelist);
 
-  const handleSelecterList = ({ key, value, category }: TCustomData<string | number>) => {
-    const currSubdepts = pricelist[TYPES[SUBDEPT_KEY]].filter(
-      (item: TCustomData<string | number | null>) => item[key] === value
-    );
+  const handleSelectedItem = (
+    data: TCustomData<string | number>
+  ): TCustomData<string | number | null> => pricelist[TYPES[data.type]].find((item: TCustomData<string | number | null>[]) => item[ID_KEY] === data[ID_KEY]);
 
-    switch(category) {
+  const handleItemsList = (
+    arr: TCustomData<string | number | null>[],
+    key: string,
+    id: number
+  ): TCustomData<string | number | null>[] => arr.filter((item) => item[key] === id);
+
+  const handleDeptsList = () => {
+    setDeptsList(pricelist[TYPES[DEPT_KEY]]);
+  }
+
+  const handleSubeptsList = () => {
+    setSubdeptsList(
+      handleItemsList(
+        pricelist[TYPES[SUBDEPT_KEY]],
+        DEPT_KEY,
+        selectedDept && selectedDept[ID_KEY] as number
+      )
+    );
+  }
+
+  const handleGroupsList = () => {
+    setGroupsList(
+      handleItemsList(
+        pricelist[TYPES[GROUP_KEY]],
+        SUBDEPT_KEY,
+        selectedSubdept && selectedSubdept[ID_KEY] as number
+      )
+    );
+  }
+
+  const selectOption = (data: TCustomData<string | number>) => {
+    const optionData = handleSelectedItem(data);
+
+    switch(data.type) {
       case `${SUBDEPT_KEY}`:
-        console.log(1);
-        setSelecterList(currSubdepts);
+        setSelectedSubdept(optionData);
         break;
 
       case `${GROUP_KEY}`:
-        console.log(2);
-        setSelecterList(pricelist[TYPES[category]].filter(
-          (item: TCustomData<string | number | null>) => item[key] === value && item[SUBDEPT_KEY] === currSubdepts[0][ID_KEY])
-        );
+        setSelectedGroup(optionData);
         break;
 
       default:
-        console.log(3);
-        setSelecterList(pricelist[TYPES[category]]);
+        setSelectedDept(optionData);
         break;
     }
-
-    console.log({ key, value, category });
-  }
-
-  const handleSelectedValue = ({ key, value, category }: TCustomData<string | number>) => {
-    setSelectedItem(selecterList.find((item: TCustomData<string | number>) => item[ID_KEY] === value));
-    //handleSelecterList({ key, value, category });
   }
 
   useEffect(() => {
-    handleSelecterList(data);
+    handleDeptsList();
   }, []);
 
   useEffect(() => {
-    setSelectedItem(
-      selecterList.length
-        ? selecterList[0] as TCustomData<string | number>
-        : { [ID_KEY]: 0, [NAME_KEY]: '' }
-    );
+    setSelectedDept(deptsList[0]);
   }, [
-    selecterList
+    deptsList
   ]);
 
+  /**/
+  useEffect(() => {
+    handleSubeptsList();
+  }, [
+    selectedDept
+  ]);
+
+  useEffect(() => {
+    setSelectedSubdept(subdeptsList[0]);
+  }, [
+    subdeptsList
+  ]);
+
+  /**/
+  useEffect(() => {
+    handleGroupsList();
+  }, [
+    selectedSubdept
+  ]);
+
+  useEffect(() => {
+    setSelectedGroup(groupsList[0]);
+  }, [
+    groupsList
+  ]);
+
+
   return {
-    selectedItem,
-    selecterList,
-    handleSelectedValue
+    deptsList,
+    subdeptsList,
+    groupsList,
+    selectedDept,
+    selectedSubdept,
+    selectedGroup,
+    selectOption
   };
 }
 

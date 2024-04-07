@@ -17,14 +17,66 @@ import {
 } from '../utils/constants';
 
 interface ISelecter {
-  category: string;
-  categoryData: TCustomData<number>;
+  keys: string[];
+  //categoryData: TCustomData<number>;
 }
 
 const Selecter: FC<ISelecter> = ({
-  category,
-  categoryData
+  keys
 }) => {
+  const {
+    deptsList,
+    subdeptsList,
+    groupsList,
+    selectedDept,
+    selectedSubdept,
+    selectedGroup,
+    selectOption
+  } = useSelecter();
+
+  return (
+    [
+      {
+        list: deptsList,
+        selected: selectedDept,
+      },
+      {
+        list: subdeptsList,
+        selected: selectedSubdept,
+      },
+      {
+        list: groupsList,
+        selected: selectedGroup
+      }
+    ].map(({ list, selected }, index) =>
+      list.length > 0 && selected && <FormControl sx={{ my: 1 }} fullWidth>
+      <InputLabel id={`${keys[index]}-select-label`}>{TITLES[keys[index]]} - {keys[index]}</InputLabel>
+      <Select
+        labelId={`${keys[index]}-select-label`}
+        id={`${keys[index]}-select`}
+        value={selected[ID_KEY]}
+        label={TITLES[keys[index]]}
+        onChange={({ target }) => selectOption({
+          type: keys[index],
+          [ID_KEY]: target.value as number
+        })}
+      >
+        {list.map(
+          (item: TCustomData<string | number | null>) =>
+            <MenuItem
+              key={item[ID_KEY] && item[ID_KEY].toString()}
+              value={item[ID_KEY] as number}
+            >
+              {item[NAME_KEY]}
+            </MenuItem>
+          )
+        }
+      </Select>
+    </FormControl>
+    )
+  )
+
+  /*
   const {
     selectedItem,
     selecterList,
@@ -40,35 +92,22 @@ const Selecter: FC<ISelecter> = ({
     category
   });
 
-  //console.log(`${category}: `, selecterList);
-
-  return (
-    selecterList.length > 0 && <FormControl sx={{ my: 1 }} fullWidth>
-      <InputLabel id={`${category}-select-label`}>{TITLES[category]} - {category}</InputLabel>
-      <Select
-        labelId={`${category}-select-label`}
-        id={`${category}-select`}
-        value={selectedItem[ID_KEY]}
-        label={TITLES[category]}
-        onChange={({ target }) => handleSelectedValue({
-          key: category,
-          value: target.value as number,
-          category
-        })}
-      >
-        {selecterList.map(
-          (item: TCustomData<string | number | null>) =>
-            <MenuItem
-              key={item[ID_KEY] && item[ID_KEY].toString()}
-              value={item[ID_KEY] as number}
-            >
-              {item[NAME_KEY]}
-            </MenuItem>
-          )
-        }
-      </Select>
-    </FormControl>
-  )
+  console.log(
+    [
+      {
+        list: deptsList,
+        selected: selectedDept,
+      },
+      {
+        list: subdeptsList,
+        selected: selectedSubdept,
+      },
+      {
+        list: groupsList,
+        selected: selectedGroup
+      }
+    ]);
+  */
 };
 
 export default Selecter;
