@@ -55,7 +55,7 @@ isVisible - радио
 const DataForm: FC = () => {
   const dispatch = useDispatch();
   const { formData, formValues } = useSelector(state => state.form);
-  const { isDisabled } = useForm();
+  const { isDisabled, requiredFieldKeys } = useForm();
   const { subCategoryCounter, setSubCategories } = useCategoryCounter();
 
   const formFields = {
@@ -94,6 +94,18 @@ const DataForm: FC = () => {
       formData
     ]),
   };
+
+  const handleInput = (input: EventTarget & (HTMLInputElement | HTMLTextAreaElement), key: string) => {
+    input.value = key === NAME_KEY ? input.value : input.value.replace(/\D/g, '');
+    dispatch(
+      setFormValues({
+        values: {
+          ...formValues,
+          [key]: key === NAME_KEY ? input.value : Number(input.value)
+        }
+      })
+    )
+  }
 
   useEffect(() => {
     console.log('formData: ', formData);
@@ -137,15 +149,8 @@ const DataForm: FC = () => {
             variant="outlined"
             margin="dense"
             type="text"
-            required={key === NAME_KEY}
-            onChange={({ target }) => dispatch(
-              setFormValues({
-                values: {
-                  ...formValues,
-                  [key]: key === NAME_KEY ? target.value : Number(target.value)
-                }
-              })
-            )}
+            required={requiredFieldKeys.includes(key)}
+            onChange={({ target }) => handleInput(target, key)}
           />
         )
       }

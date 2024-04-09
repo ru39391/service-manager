@@ -5,19 +5,20 @@ import {
 
 import { useSelector, useDispatch } from '../services/hooks';
 
-import type { TCustomData } from '../types';
+import { NAME_KEY, PRICE_KEY } from '../utils/constants';
 
 interface IForm {
   isDisabled: boolean;
+  requiredFieldKeys: string[]
 }
 
-// TODO: настроить зависимость isDisabled и заполнения обязательных полей
-// TODO: настроить валидацию полей по содержимому
 // TODO: настроить isDisabled для формы создания ресурса
 const useForm = (): IForm => {
   const [isDisabled, setDisabled] = useState<boolean>(true);
 
   const { formData, formValues } = useSelector(state => state.form);
+
+  const requiredFieldKeys = [NAME_KEY, PRICE_KEY];
 
   const handleFormValues = () => {
     const [keys, values] = [Object.keys(formValues), Object.values(formValues)];
@@ -33,11 +34,22 @@ const useForm = (): IForm => {
           : acc,
         {}
       );
+    const requiredFieldValues: (string | number)[] = requiredFieldKeys
+      .map((key) => editedValuesArr[key])
+      .filter((item: string | number | undefined) => item !== undefined && !item);
 
+    /*
     console.log('keys: ', keys);
     console.log('values: ', values);
     console.log('editedValuesArr: ', editedValuesArr);
-    setDisabled(!Object.values(editedValuesArr).length);
+    console.log(
+      'requiredFieldValues: ',
+      requiredFieldKeys
+        .map((key) => editedValuesArr[key])
+    );
+    */
+
+    setDisabled(!Object.values(editedValuesArr).length || Boolean(requiredFieldValues.length));
   }
 
   useEffect(() => {
@@ -48,6 +60,7 @@ const useForm = (): IForm => {
 
   return {
     isDisabled,
+    requiredFieldKeys
   };
 }
 
