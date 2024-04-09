@@ -19,7 +19,7 @@ import useHeader from '../hooks/useHeader';
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
 
-import type { TCustomData } from '../types';
+import type { TItemData } from '../types';
 
 import {
   ID_KEY,
@@ -48,7 +48,7 @@ const Header: FC = () => {
         action,
         type: alias as string,
         data: action === EDIT_ACTION_KEY
-          ? pricelist[alias as string].find((item: TCustomData<string | number | null>) => item[ID_KEY] === id)
+          ? pricelist[alias as string].find((item: TItemData) => item[ID_KEY] === id)
           : { [key as string]: id }
       }
     }));

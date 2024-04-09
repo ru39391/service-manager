@@ -3,10 +3,12 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormValues } from '../services/slices/form-slice';
 
-import type { TCustomData } from '../types';
+import type { TCustomData, TItemData, TItemsArr } from '../types';
 
+import { sortStrArray } from '../utils';
 import {
   ID_KEY,
+  NAME_KEY,
   DEPT_KEY,
   SUBDEPT_KEY,
   GROUP_KEY,
@@ -14,25 +16,25 @@ import {
 } from '../utils/constants';
 
 interface ISelecter {
-  deptsList: TCustomData<string | number | null>[];
-  subdeptsList: TCustomData<string | number | null>[];
-  groupsList: TCustomData<string | number | null>[];
-  selectedDept: TCustomData<string | number | null>;
-  selectedSubdept: TCustomData<string | number | null>;
-  selectedGroup: TCustomData<string | number | null>;
+  deptsList: TItemsArr;
+  subdeptsList: TItemsArr;
+  groupsList: TItemsArr;
+  selectedDept: TItemData;
+  selectedSubdept: TItemData;
+  selectedGroup: TItemData;
   selectOption: (data: TCustomData<string | number>) => void;
 }
 
 const useSelecter = (): ISelecter => {
-  const [deptsList, setDeptsList] = useState<TCustomData<string | number | null>[]>([]);
-  const [subdeptsList, setSubdeptsList] = useState<TCustomData<string | number | null>[]>([]);
-  const [groupsList, setGroupsList] = useState<TCustomData<string | number | null>[]>([]);
+  const [deptsList, setDeptsList] = useState<TItemsArr>([]);
+  const [subdeptsList, setSubdeptsList] = useState<TItemsArr>([]);
+  const [groupsList, setGroupsList] = useState<TItemsArr>([]);
 
-  const [selectedDept, setSelectedDept] = useState<TCustomData<string | number | null>>({});
-  const [selectedSubdept, setSelectedSubdept] = useState<TCustomData<string | number | null>>({});
-  const [selectedGroup, setSelectedGroup] = useState<TCustomData<string | number | null>>({});
+  const [selectedDept, setSelectedDept] = useState<TItemData>({});
+  const [selectedSubdept, setSelectedSubdept] = useState<TItemData>({});
+  const [selectedGroup, setSelectedGroup] = useState<TItemData>({});
 
-  const [selectedData, setSelectedData] = useState<TCustomData<TCustomData<string | number | null> | null>>({});
+  const [selectedData, setSelectedData] = useState<TCustomData<TItemData | null>>({});
 
   const dispatch = useDispatch();
   const {
@@ -47,20 +49,22 @@ const useSelecter = (): ISelecter => {
 
   const handleSelectedItem = (
     data: TCustomData<string | number>
-  ): TCustomData<string | number | null> => pricelist[TYPES[data.type]].find((item: TCustomData<string | number | null>[]) => item[ID_KEY] === data[ID_KEY]);
+  ): TItemData => pricelist[TYPES[data.type]].find((item: TItemsArr) => item[ID_KEY] === data[ID_KEY]);
 
   const handleItemsList = (
-    arr: TCustomData<string | number | null>[],
+    arr: TItemsArr,
     key: string,
     id: number
-  ): TCustomData<string | number | null>[] => arr.filter((item) => item[key] === id);
+  ): TItemsArr => sortStrArray([...arr.filter((item) => item[key] === id)], NAME_KEY);
 
-  const handleFormData = (type: string): TCustomData<string | number | null> | null => formData
+  const handleFormData = (type: string): TItemData | null => formData
     ? handleSelectedItem({ type, [ID_KEY]: formData.data[type] as number })
     : null;
 
   const handleDeptsList = () => {
-    setDeptsList(pricelist[TYPES[DEPT_KEY]]);
+    setDeptsList(
+      sortStrArray([...pricelist[TYPES[DEPT_KEY]]], NAME_KEY)
+    );
   }
 
   const handleSubeptsList = () => {
@@ -75,7 +79,7 @@ const useSelecter = (): ISelecter => {
       setFormValues({
         values: {
           ...formValues,
-          [DEPT_KEY]: selectedDept ? selectedDept[ID_KEY] as number : null
+          [DEPT_KEY]: selectedDept ? selectedDept[ID_KEY] as number : 0
         }
       })
     );
@@ -93,7 +97,7 @@ const useSelecter = (): ISelecter => {
       setFormValues({
         values: {
           ...formValues,
-          [SUBDEPT_KEY]: selectedSubdept ? selectedSubdept[ID_KEY] as number : null
+          [SUBDEPT_KEY]: selectedSubdept ? selectedSubdept[ID_KEY] as number : 0
         }
       })
     );
@@ -178,7 +182,7 @@ const useSelecter = (): ISelecter => {
       setFormValues({
         values: {
           ...formValues,
-          [GROUP_KEY]: selectedGroup ? selectedGroup[ID_KEY] as number : null
+          [GROUP_KEY]: selectedGroup ? selectedGroup[ID_KEY] as number : 0
         }
       })
     );

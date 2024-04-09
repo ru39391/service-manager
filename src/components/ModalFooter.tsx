@@ -16,7 +16,7 @@ interface IModalFooter {
   disabled: boolean;
   actionHandler: () => void;
 }
-// TODO: настроить disabled кнопки submit
+
 const ModalFooter: FC<IModalFooter> = ({
   icon,
   color,

@@ -1,20 +1,20 @@
 import { useEffect, useState } from 'react';
-import { fetchArray, sortArray } from '../utils';
+import { fetchArray, sortStrArray } from '../utils';
 import { NAME_KEY, DEPT_KEY } from '../utils/constants';
 
-import type { TCustomData } from '../types';
+import type { TItemsArr } from '../types';
 
 interface ISubNav {
   categoryIds: number[];
   currCategory: number | null;
-  categoryData: TCustomData<string | number>[];
+  categoryData: TItemsArr;
   setSubNav: (parentId: number) => void;
 }
 
-const useSubNav = (arr: TCustomData<string | number>[]): ISubNav => {
+const useSubNav = (arr: TItemsArr): ISubNav => {
   const [categoryIds, setCategoryIds] = useState<number[]>([]);
   const [currCategory, setCurrCategory] = useState<number | null>(null);
-  const [categoryData, setCategoryData] = useState<TCustomData<string | number>[]>([]);
+  const [categoryData, setCategoryData] = useState<TItemsArr>([]);
 
   const handleCategoryIds = (): void => {
     const fetchedArr: number[] = fetchArray(arr, DEPT_KEY).map(({ dept }) => dept as number);
@@ -24,10 +24,11 @@ const useSubNav = (arr: TCustomData<string | number>[]): ISubNav => {
 
   const setSubNav = (parentId: number): void => {
     setCurrCategory(parentId === currCategory ? null : parentId);
+
     setCategoryData(
       parentId === currCategory
         ? []
-        : sortArray(arr.filter(({ dept }) => dept === parentId), NAME_KEY)
+        : sortStrArray([...arr.filter(({ dept }) => dept === parentId)], NAME_KEY)
     );
   };
 

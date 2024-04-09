@@ -2,19 +2,19 @@ import { useState, useEffect } from 'react';
 import { useSelector } from '../services/hooks';
 import useUrlHandler from './useUrlHandler';
 
-import type { TCustomData } from '../types';
+import type { TItemData } from '../types';
 
 import { NAME_KEY, TYPES, TITLES } from '../utils/constants';
 
 interface IHeader {
   pageTitle: string;
-  categoryData: TCustomData<string | number | null>;
+  categoryData: TItemData;
   handlePageTitle: () => void;
 }
 
 const useHeader = (): IHeader => {
   const [pageTitle, setPageTitle] = useState<string>('');
-  const [categoryData, setCategoryData] = useState<TCustomData<string | number | null>>({});
+  const [categoryData, setCategoryData] = useState<TItemData>({});
 
   const pricelist = useSelector(state => state.pricelist);
   const { currUrlData } = useUrlHandler();

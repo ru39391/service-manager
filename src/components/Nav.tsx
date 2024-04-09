@@ -47,9 +47,9 @@ const Nav: FC = () => {
         {depts.map(
           ({ item_id, name }) =>
             <NavItem
-              key={item_id.toString()}
+              key={Number(item_id as number).toString()}
               id={item_id as number}
-              name={name.toString()}
+              name={name as string}
               categoryIds={categoryIds}
               currCategoryId={currCategory as number}
               categoryData={categoryData}

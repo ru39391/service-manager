@@ -51,6 +51,7 @@ isComplexItem - радио (если отмечено, показывать сп
 isComplex - радио (если отмечено, показывать услуги в комплексе complex)
 isVisible - радио
 */
+// TODO: настроить disabled кнопки submit
 const DataForm: FC = () => {
   const dispatch = useDispatch();
   const { formData, formValues } = useSelector(state => state.form);
@@ -95,7 +96,7 @@ const DataForm: FC = () => {
   };
 
   useEffect(() => {
-    console.log(formData);
+    console.log('formData: ', formData);
     setSubCategories({
       type: formData ? formData.type as string : null,
       data: formData ? formData.data as TCustomData<number> : null
@@ -105,7 +106,7 @@ const DataForm: FC = () => {
   ]);
 
   useEffect(() => {
-    console.log(formValues);
+    console.log('formValues: ', formValues);
   }, [
     formValues
   ]);

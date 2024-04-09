@@ -1,15 +1,15 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import type { TCustomData } from '../../types';
+import type { TItemData, TItemsArr } from '../../types';
 
 import { ID_KEY } from '../../utils/constants';
 
 export type TPricelistAction = {
   payload: {
-    depts?: TCustomData<string | number | null>[];
-    subdepts?: TCustomData<string | number | null>[];
-    groups?: TCustomData<string | number | null>[];
-    pricelist?: TCustomData<string | number | null>[];
+    depts?: TItemsArr;
+    subdepts?: TItemsArr;
+    groups?: TItemsArr;
+    pricelist?: TItemsArr;
     alertType?: string;
     alertMsg?: string;
     key?: string;
@@ -18,10 +18,10 @@ export type TPricelistAction = {
 };
 
 export type TPricelistState = {
-  depts: TCustomData<string | number | null>[];
-  subdepts: TCustomData<string | number | null>[];
-  groups: TCustomData<string | number | null>[];
-  pricelist: TCustomData<string | number | null>[];
+  depts: TItemsArr;
+  subdepts: TItemsArr;
+  groups: TItemsArr;
+  pricelist: TItemsArr;
   isPricelistLoading: boolean;
   isPricelistSucceed: boolean;
   isPricelistFailed: boolean;
@@ -80,7 +80,7 @@ const pricelistSlice = createSlice({
       return {
         ...state,
         ...([key] && {
-          [key as string]: [...state[key as string]].filter((item: TCustomData<string | number>) => ids && !ids.includes(item[ID_KEY] as number))
+          [key as string]: [...state[key as string]].filter((item: TItemData) => ids && !ids.includes(item[ID_KEY] as number))
         }),
         isPricelistLoading: false,
         isPricelistSucceed: true,

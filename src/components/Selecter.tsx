@@ -8,7 +8,7 @@ import {
 
 import useSelecter from '../hooks/useSelecter';
 
-import type { TCustomData } from '../types';
+import type { TItemData } from '../types';
 
 import {
   ID_KEY,
@@ -60,7 +60,7 @@ const Selecter: FC<ISelecter> = ({ keys }) => {
         })}
       >
         {list.map(
-          (item: TCustomData<string | number | null>) =>
+          (item: TItemData) =>
             <MenuItem
               key={item[ID_KEY] && item[ID_KEY].toString()}
               value={item[ID_KEY] as number}

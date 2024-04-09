@@ -1,7 +1,7 @@
-import type { TCustomData } from '../types';
+import type { TItemData, TItemsArr } from '../types';
 
-const fetchArray = (arr: TCustomData<string | number>[], param: string): TCustomData<string | number>[] => {
-  return arr.reduce((acc: TCustomData<string | number>[], item: TCustomData<string | number>) => {
+const fetchArray = (arr: TItemsArr, param: string): TItemsArr => {
+  return arr.reduce((acc: TItemsArr, item: TItemData) => {
     if(acc.find(data => data[param] === item[param])) {
       return acc;
     } else {
@@ -10,10 +10,12 @@ const fetchArray = (arr: TCustomData<string | number>[], param: string): TCustom
   }, []);
 };
 
-const sortArray = (arr: TCustomData<string | number>[], key: string): TCustomData<string | number>[] => {
+const sortStrArray = (arr: TItemsArr, key: string): TItemsArr => {
+  const handleValue = (value: string): string => value !== null ? value.toString().toLowerCase() : '';
+
   return arr.sort((a, b) => {
-    const nameA = a[key].toString().toLowerCase();
-    const nameB = b[key].toString().toLowerCase();
+    const nameA = handleValue(a[key] as string);
+    const nameB = handleValue(b[key] as string);
 
     if(nameA < nameB) {
       return -1;
@@ -27,5 +29,5 @@ const sortArray = (arr: TCustomData<string | number>[], key: string): TCustomDat
 
 export {
   fetchArray,
-  sortArray
+  sortStrArray
 };

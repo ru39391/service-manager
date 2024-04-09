@@ -11,7 +11,11 @@ import {
   setFormData
 } from '../slices/form-slice';
 
-import type { TCustomData, TResponseData, TResponseDefault } from '../../types';
+import type {
+  TPricelistData,
+  TResponseData,
+  TResponseDefault
+} from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';
 
 import {
@@ -57,7 +61,7 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
 };
 
 // TODO: переписать thunk по образцу removePricelistData (чтобы принимал alias/массив alias и массив объектов или массив объектов вида { [alias]: массив объектов })
-const createPricelistData = (priceListData: TCustomData<TCustomData<string | number>[]>): TAppThunk<void> => async (dispatch: TAppDispatch) => {
+const createPricelistData = (priceListData: TPricelistData): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
   try {
@@ -136,7 +140,7 @@ const removePricelistData = ({ alias, ids }: { alias: string | null; ids: number
       dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : REMOVING_ERROR_MSG }));
     }
   } catch(error) {
-    const { errors }: { errors: TCustomData<string | boolean | TCustomData<string | number>>; } = error;
+    const { errors }: { errors: TResponseDefault['errors']; } = error;
 
     dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : REMOVING_ERROR_MSG }));
   }

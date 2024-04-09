@@ -34,8 +34,10 @@ const useForm = (): IForm => {
         {}
       );
 
-    console.log(editedValuesArr);
-    setDisabled(!Object.keys(editedValuesArr).length);
+    console.log('keys: ', keys);
+    console.log('values: ', values);
+    console.log('editedValuesArr: ', editedValuesArr);
+    setDisabled(!Object.values(editedValuesArr).length);
   }
 
   useEffect(() => {
