@@ -1,39 +1,55 @@
 import { useState, useEffect } from 'react';
 import { useSelector } from '../services/hooks';
+
+import useForm from './useForm';
 import useUrlHandler from './useUrlHandler';
 
-import type { TItemData } from '../types';
+import type { TCustomData, TItemData } from '../types';
 
-import { NAME_KEY, TYPES, TITLES } from '../utils/constants';
+import {
+  ID_KEY,
+  NAME_KEY,
+  DEPT_KEY,
+  SUBDEPT_KEY,
+  GROUP_KEY,
+  ITEM_KEY,
+  TYPES,
+  TITLES
+} from '../utils/constants';
 
 interface IHeader {
   pageTitle: string;
-  categoryData: TItemData;
+  currentItem: TItemData;
+  categoryData: TCustomData<string | number | null | TItemData>;
   handlePageTitle: () => void;
 }
 
 const useHeader = (): IHeader => {
   const [pageTitle, setPageTitle] = useState<string>('');
-  const [categoryData, setCategoryData] = useState<TItemData>({});
+  const [currentItem, setCurrentItem] = useState<TItemData>({});
+  const [categoryData, setCategoryData] = useState<TCustomData<string | number | null | TItemData>>({});
 
   const pricelist = useSelector(state => state.pricelist);
   const { currUrlData } = useUrlHandler();
+  const { formFields, selecterFields } = useForm();
 
   const handlePageTitle = (): void => {
     const { type, id } = currUrlData;
-    const category = Object.values(TITLES)[Object.values(TYPES).indexOf(type)];
-    const key: string = Object.values(TYPES).reduce((acc, item, index) => ({ ...acc, [item]: Object.keys(TYPES)[index] }), {})[type];
-    const pagetitle = id !== null && Boolean(type) && pricelist[type].length
-      ? pricelist[type].find(({ item_id }) => item_id === id)[NAME_KEY]
-      : '';
+    const isCategory = id !== null && Boolean(type) && Boolean(pricelist[type].length);
+    const itemData: TItemData = isCategory ? pricelist[type].find((item: TItemData) => item[ID_KEY] === id) : {};
 
-    setPageTitle(pagetitle);
+    setPageTitle(isCategory ? itemData[NAME_KEY] as string : '');
     setCategoryData({
-      category,
-      alias: type,
-      id,
-      key
+      ...currUrlData,
+      caption: Object.values(TITLES)[Object.values(TYPES).indexOf(type)],
+      category: isCategory
+        ? {
+          ...formFields[type].reduce((acc, item) => ({ ...acc, [item]: '' }), {}),
+          ...selecterFields[type].reduce((acc, item) => ({ ...acc, [item]: itemData[item] }), {})
+        }
+        : {}
     });
+    setCurrentItem(itemData);
   };
 
   useEffect(() => {
@@ -45,6 +61,7 @@ const useHeader = (): IHeader => {
 
   return {
     pageTitle,
+    currentItem,
     categoryData,
     handlePageTitle
   }

@@ -16,13 +16,12 @@ import {
 import useModal from '../hooks/useModal';
 import useHeader from '../hooks/useHeader';
 
-import { useSelector, useDispatch } from '../services/hooks';
+import { useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
 
 import type { TItemData } from '../types';
 
 import {
-  ID_KEY,
   EDIT_TITLE,
   REMOVE_TITLE,
   EDIT_ITEM_TITLE,
@@ -35,27 +34,28 @@ import {
 
 const Header: FC = () => {
   const dispatch = useDispatch();
-  const pricelist = useSelector(state => state.pricelist);
   const { toggleModal } = useModal();
-  const { pageTitle, categoryData } = useHeader();
-  const title = pageTitle || categoryData.category;
+  const {
+    pageTitle,
+    currentItem,
+    categoryData
+  } = useHeader();
+  const title = pageTitle || categoryData.caption;
 
   const dispatchFormData = (action: string) => {
-    const { alias, id, key } = categoryData;
+    const { type, category } = categoryData;
 
     dispatch(setFormData({
       data: {
         action,
-        type: alias as string,
-        data: action === EDIT_ACTION_KEY
-          ? pricelist[alias as string].find((item: TItemData) => item[ID_KEY] === id)
-          : { [key as string]: id }
+        type: type as string,
+        data: action === EDIT_ACTION_KEY ? currentItem : category as TItemData
       }
     }));
   }
 
   const addCategory = () => {
-    toggleModal({ title: `${categoryData.category}, ${ADD_CATEGORY_TITLE.toLocaleLowerCase()}` });
+    toggleModal({ title: `${categoryData.caption}, ${ADD_CATEGORY_TITLE.toLocaleLowerCase()}` });
     dispatchFormData(ADD_ACTION_KEY);
   }
 
@@ -131,12 +131,12 @@ const Header: FC = () => {
           Главная
         </Link>
         <Link
-          href={`/${categoryData.alias}`}
+          href={`/${categoryData.type}`}
           color="inherit"
           underline="hover"
           sx={{ display: 'flex', alignItems: 'center' }}
         >
-          {categoryData.category}
+          {categoryData.caption}
         </Link>
         {pageTitle && <Typography
           variant="subtitle2"

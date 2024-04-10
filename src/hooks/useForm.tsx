@@ -5,11 +5,24 @@ import {
 
 import { useSelector, useDispatch } from '../services/hooks';
 
-import { NAME_KEY, PRICE_KEY } from '../utils/constants';
+import type { TCustomData } from '../types';
+
+import {
+  NAME_KEY,
+  PRICE_KEY,
+  INDEX_KEY,
+  DEPT_KEY,
+  SUBDEPT_KEY,
+  GROUP_KEY,
+  ITEM_KEY,
+  TYPES,
+} from '../utils/constants';
 
 interface IForm {
   isDisabled: boolean;
-  requiredFieldKeys: string[]
+  formFields: TCustomData<string[]>;
+  selecterFields: TCustomData<string[]>;
+  requiredFormFields: string[];
 }
 
 // TODO: настроить isDisabled для формы создания ресурса
@@ -18,7 +31,19 @@ const useForm = (): IForm => {
 
   const { formData, formValues } = useSelector(state => state.form);
 
-  const requiredFieldKeys = [NAME_KEY, PRICE_KEY];
+  const formFields = {
+    [TYPES[DEPT_KEY]]: [NAME_KEY],
+    [TYPES[SUBDEPT_KEY]]: [NAME_KEY],
+    [TYPES[GROUP_KEY]]: [NAME_KEY],
+    [TYPES[ITEM_KEY]]: [NAME_KEY, PRICE_KEY, INDEX_KEY]
+  };
+  const selecterFields = {
+    [TYPES[DEPT_KEY]]: [],
+    [TYPES[SUBDEPT_KEY]]: [DEPT_KEY],
+    [TYPES[GROUP_KEY]]: [DEPT_KEY, SUBDEPT_KEY],
+    [TYPES[ITEM_KEY]]: [DEPT_KEY, SUBDEPT_KEY, GROUP_KEY]
+  };
+  const requiredFormFields = [NAME_KEY, PRICE_KEY];
 
   const handleFormValues = () => {
     const [keys, values] = [Object.keys(formValues), Object.values(formValues)];
@@ -34,21 +59,20 @@ const useForm = (): IForm => {
           : acc,
         {}
       );
-    const requiredFieldValues: (string | number)[] = requiredFieldKeys
+    const requiredFieldValues: (string | number)[] = requiredFormFields
       .map((key) => editedValuesArr[key])
       .filter((item: string | number | undefined) => item !== undefined && !item);
 
     /*
-    console.log('keys: ', keys);
-    console.log('values: ', values);
-    console.log('editedValuesArr: ', editedValuesArr);
     console.log(
       'requiredFieldValues: ',
-      requiredFieldKeys
+      requiredFormFields
         .map((key) => editedValuesArr[key])
     );
+    console.log('values: ', values);
+    console.log('formData: ', formData);
+    console.log('editedValuesArr: ', editedValuesArr);
     */
-
     setDisabled(!Object.values(editedValuesArr).length || Boolean(requiredFieldValues.length));
   }
 
@@ -60,7 +84,9 @@ const useForm = (): IForm => {
 
   return {
     isDisabled,
-    requiredFieldKeys
+    formFields,
+    selecterFields,
+    requiredFormFields
   };
 }
 

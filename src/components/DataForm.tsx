@@ -16,17 +16,10 @@ import { removePricelistData } from '../services/actions/pricelist';
 import type { TCustomData } from '../types';
 
 import {
-  ID_KEY,
   NAME_KEY,
-  PRICE_KEY,
   INDEX_KEY,
   SORT_CAPTION,
   CAPTIONS,
-  DEPT_KEY,
-  SUBDEPT_KEY,
-  GROUP_KEY,
-  ITEM_KEY,
-  TYPES,
   REMOVE_TITLE,
   SAVE_TITLE,
   ADD_ACTION_KEY,
@@ -55,21 +48,13 @@ isVisible - радио
 const DataForm: FC = () => {
   const dispatch = useDispatch();
   const { formData, formValues } = useSelector(state => state.form);
-  const { isDisabled, requiredFieldKeys } = useForm();
   const { subCategoryCounter, setSubCategories } = useCategoryCounter();
-
-  const formFields = {
-    [TYPES[DEPT_KEY]]: [NAME_KEY],
-    [TYPES[SUBDEPT_KEY]]: [NAME_KEY],
-    [TYPES[GROUP_KEY]]: [NAME_KEY],
-    [TYPES[ITEM_KEY]]: [NAME_KEY, PRICE_KEY, INDEX_KEY]
-  };
-  const selecterFields = {
-    [TYPES[DEPT_KEY]]: [],
-    [TYPES[SUBDEPT_KEY]]: [DEPT_KEY],
-    [TYPES[GROUP_KEY]]: [DEPT_KEY, SUBDEPT_KEY],
-    [TYPES[ITEM_KEY]]: [DEPT_KEY, SUBDEPT_KEY, GROUP_KEY]
-  };
+  const {
+    isDisabled,
+    formFields,
+    selecterFields,
+    requiredFormFields
+  } = useForm();
 
   const handlersData = {
     [ADD_ACTION_KEY]: useCallback(() => {
@@ -118,7 +103,7 @@ const DataForm: FC = () => {
   ]);
 
   useEffect(() => {
-    console.log('formValues: ', formValues);
+    //console.log('formValues: ', formValues);
   }, [
     formValues
   ]);
@@ -149,7 +134,7 @@ const DataForm: FC = () => {
             variant="outlined"
             margin="dense"
             type="text"
-            required={requiredFieldKeys.includes(key)}
+            required={requiredFormFields.includes(key)}
             onChange={({ target }) => handleInput(target, key)}
           />
         )
