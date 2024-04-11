@@ -13,15 +13,15 @@ import {
 } from '../utils/constants';
 
 interface ICategoryItems {
-  currSubcategory: string;
+  currSubCategory: string;
   subCategoryItems: TCustomData<string>[];
   categoryTypes: TCustomData<string> | null;
   categoryParams: TCustomData<number | null> | null;
-  setCurrSubcategory: (value: string) => void
+  setCurrSubCategory: (value: string) => void
 }
 
 const useCategoryItems = (): ICategoryItems => {
-  const [currSubcategory, setCurrSubcategory] = useState<string>(TYPES[ITEM_KEY]);
+  const [currSubCategory, setCurrSubCategory] = useState<string>(TYPES[ITEM_KEY]);
   const [categoryTypes, setCategoryTypes] = useState<TCustomData<string> | null>(null);
   const [categoryParams, setCategoryParams] = useState<TCustomData<number | null> | null>(null);
   const [subCategoryItems, setSubCategoryItems] = useState<TCustomData<string>[]>([]);
@@ -48,17 +48,17 @@ const useCategoryItems = (): ICategoryItems => {
 
   useEffect(() => {
     handleCategoryItems();
-    setCurrSubcategory(TYPES[ITEM_KEY]);
+    setCurrSubCategory(TYPES[ITEM_KEY]);
   }, [
     currUrlData
   ]);
 
   return {
-    currSubcategory,
+    currSubCategory,
     subCategoryItems,
     categoryTypes,
     categoryParams,
-    setCurrSubcategory,
+    setCurrSubCategory,
   }
 }
 

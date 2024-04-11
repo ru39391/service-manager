@@ -43,35 +43,37 @@ const ItemsList: FC = () => {
     handleTableData
   } = useTableData();
   const {
-    currSubcategory,
+    currSubCategory,
     subCategoryItems,
     categoryTypes,
     categoryParams,
-    setCurrSubcategory
+    setCurrSubCategory
   } = useCategoryItems();
   const { toggleModal } = useModal();
-  const { currentData } = useCurrentData();
+  const { currentFormData, setCategoryType } = useCurrentData();
 
   useEffect(() => {
+    console.log('currSubCategory: ', currSubCategory);
+    setCategoryType(currSubCategory);
     handleTableData({
       data: keys.reduce((acc, key) => ({...acc, [key]: pricelist[key]}), {}),
-      category: currSubcategory,
+      category: currSubCategory,
       params: categoryParams
     });
   }, [
     pricelist,
-    currSubcategory,
+    currSubCategory,
     categoryParams
   ]);
 
   // TODO: избавиться от бага с подстановкой значений по умолчанию http://localhost:5173/groups/7937 и http://localhost:5173/depts/4
   const handleCategoryData = () => {
-    toggleModal({ title: `${ADD_TITLE} ${categoryTypes && categoryTypes[currSubcategory].toLocaleLowerCase()}`});
+    toggleModal({ title: `${ADD_TITLE} ${categoryTypes && categoryTypes[currSubCategory].toLocaleLowerCase()}`});
     dispatch(setFormData({
       data: {
         action: ADD_ACTION_KEY,
-        type: currSubcategory,
-        data: currentData ? currentData.values as TItemData : {}
+        type: currSubCategory,
+        data: currentFormData ? currentFormData.values as TItemData : {}
       }
     }));
   }
@@ -81,8 +83,8 @@ const ItemsList: FC = () => {
     dispatch(setFormData({
       data: {
         action: EDIT_ACTION_KEY,
-        type: currSubcategory,
-        data: pricelist[currSubcategory].find((item: TCustomData<string | number>) => item[ID_KEY] === values[ID_KEY])
+        type: currSubCategory,
+        data: pricelist[currSubCategory].find((item: TCustomData<string | number>) => item[ID_KEY] === values[ID_KEY])
       }
     }));
   }
@@ -102,9 +104,9 @@ const ItemsList: FC = () => {
           <Select
             labelId="demo-select-small-label"
             id="demo-select-small"
-            value={currSubcategory}
+            value={currSubCategory}
             label={CATEGORY_TITLE}
-            onChange={({ target }) => setCurrSubcategory(target.value)}
+            onChange={({ target }) => setCurrSubCategory(target.value)}
           >
             {subCategoryItems.map((item) => <MenuItem key={Object.keys(item)[0]} value={Object.keys(item)[0]}>{Object.values(item)[0]}</MenuItem>)}
           </Select>

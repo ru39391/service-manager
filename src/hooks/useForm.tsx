@@ -72,6 +72,12 @@ const useForm = (): IForm => {
     console.log('formData: ', formData);
     console.log('editedValuesArr: ', editedValuesArr);
     */
+    console.log('formValues: ', formValues);
+    console.log('requiredFormFields: ', requiredFormFields.map((key) => editedValuesArr[key]));
+    console.log('requiredFieldValues: ', requiredFieldValues.length);
+    console.log('requiredFieldValues: ', Object.values(editedValuesArr).length);
+
+    // TODO: поправить активное состояние кнопки
     setDisabled(!Object.values(editedValuesArr).length || Boolean(requiredFieldValues.length));
   }
 

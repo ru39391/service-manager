@@ -37,27 +37,27 @@ const Header: FC = () => {
   const { toggleModal } = useModal();
   const {
     pageTitle,
-    currentItem,
-    currentData,
-    handleSubCategory
+    currentCategory,
+    currentFormData,
+    setCategoryType
   } = useCurrentData();
-  const title = pageTitle || currentData.caption as string;
+  const title = pageTitle || currentFormData.caption as string;
 
   const dispatchFormData = (action: string) => {
-    const { type, values } = currentData;
+    const { type, values } = currentFormData;
 
-    handleSubCategory(null);
+    setCategoryType(null);
     dispatch(setFormData({
       data: {
         action,
         type: type as string,
-        data: action === EDIT_ACTION_KEY ? currentItem : values as TItemData
+        data: action === EDIT_ACTION_KEY ? currentCategory : values as TItemData
       }
     }));
   }
 
   const addCategory = () => {
-    toggleModal({ title: `${currentData.caption}, ${ADD_CATEGORY_TITLE.toLocaleLowerCase()}` });
+    toggleModal({ title: `${currentFormData.caption}, ${ADD_CATEGORY_TITLE.toLocaleLowerCase()}` });
     dispatchFormData(ADD_ACTION_KEY);
   }
 
@@ -86,7 +86,7 @@ const Header: FC = () => {
         }}
       >
         <Typography variant="h5">{title}</Typography>
-        {currentData.id && <Tooltip
+        {currentFormData.id && <Tooltip
           placement="top"
           title={EDIT_ITEM_TITLE}
         >
@@ -108,7 +108,7 @@ const Header: FC = () => {
             <Add fontSize="large" />
           </IconButton>
         </Tooltip>
-        {currentData.id && <Tooltip
+        {currentFormData.id && <Tooltip
           placement="top"
           title={REMOVE_TITLE}
         >
@@ -133,12 +133,12 @@ const Header: FC = () => {
           Главная
         </Link>
         <Link
-          href={`/${currentData.type}`}
+          href={`/${currentFormData.type}`}
           color="inherit"
           underline="hover"
           sx={{ display: 'flex', alignItems: 'center' }}
         >
-          {currentData.caption as string}
+          {currentFormData.caption as string}
         </Link>
         {pageTitle && <Typography
           variant="subtitle2"
