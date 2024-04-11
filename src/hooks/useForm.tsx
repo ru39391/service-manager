@@ -59,8 +59,8 @@ const useForm = (): IForm => {
         {}
       );
     const requiredFieldValues: (string | number)[] = requiredFormFields
-      .map((key) => editedValuesArr[key])
-      .filter((item: string | number | undefined) => item !== undefined && !item);
+      .map((key) => editedValuesArr[key]) // по ключам обязательных полей ищем значения среди данных формы
+      .filter((item: string | number | undefined) => item !== undefined && !item); // отбираем значения, если поля существуют и заполнены
 
     /*
     console.log(
@@ -71,14 +71,17 @@ const useForm = (): IForm => {
     console.log('values: ', values);
     console.log('formData: ', formData);
     console.log('editedValuesArr: ', editedValuesArr);
-    */
+
     console.log('formValues: ', formValues);
     console.log('requiredFormFields: ', requiredFormFields.map((key) => editedValuesArr[key]));
     console.log('requiredFieldValues: ', requiredFieldValues.length);
     console.log('requiredFieldValues: ', Object.values(editedValuesArr).length);
+    */
 
     // TODO: поправить активное состояние кнопки
-    setDisabled(!Object.values(editedValuesArr).length || Boolean(requiredFieldValues.length));
+    // requiredFieldValues.length > 0 - поля существуют и заполнены, инвертируем значение
+    // Object.values(editedValuesArr).length > 0 - отредактированные поля заполнены корректными данными
+    setDisabled(!(Object.values(editedValuesArr).length && requiredFieldValues.length));
   }
 
   useEffect(() => {

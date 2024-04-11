@@ -20,7 +20,7 @@ import useCategoryItems from '../hooks/useCategoryItems';
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
 
-import type { TCustomData, TItemData } from '../types';
+import type { TCustomData } from '../types';
 
 import {
   ADD_TITLE,
@@ -39,10 +39,6 @@ const ItemsList: FC = () => {
   const dispatch = useDispatch();
   const pricelist = useSelector(state => state.pricelist);
   const {
-    tableData,
-    handleTableData
-  } = useTableData();
-  const {
     currSubCategory,
     subCategoryItems,
     categoryTypes,
@@ -50,11 +46,10 @@ const ItemsList: FC = () => {
     setCurrSubCategory
   } = useCategoryItems();
   const { toggleModal } = useModal();
-  const { currentFormData, setCategoryType } = useCurrentData();
+  const { setCurrentFormValues } = useCurrentData();
+  const { tableData, handleTableData } = useTableData();
 
   useEffect(() => {
-    console.log('currSubCategory: ', currSubCategory);
-    setCategoryType(currSubCategory);
     handleTableData({
       data: keys.reduce((acc, key) => ({...acc, [key]: pricelist[key]}), {}),
       category: currSubCategory,
@@ -66,14 +61,13 @@ const ItemsList: FC = () => {
     categoryParams
   ]);
 
-  // TODO: избавиться от бага с подстановкой значений по умолчанию http://localhost:5173/groups/7937 и http://localhost:5173/depts/4
   const handleCategoryData = () => {
     toggleModal({ title: `${ADD_TITLE} ${categoryTypes && categoryTypes[currSubCategory].toLocaleLowerCase()}`});
     dispatch(setFormData({
       data: {
         action: ADD_ACTION_KEY,
         type: currSubCategory,
-        data: currentFormData ? currentFormData.values as TItemData : {}
+        data: setCurrentFormValues(currSubCategory)
       }
     }));
   }

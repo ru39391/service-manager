@@ -94,7 +94,8 @@ const DataForm: FC = () => {
   }
 
   useEffect(() => {
-    console.log('formData: ', formData);
+    console.log(formData);
+
     setSubCategories({
       type: formData ? formData.type as string : null,
       data: formData ? formData.data as TCustomData<number> : null

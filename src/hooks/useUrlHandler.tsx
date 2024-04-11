@@ -10,6 +10,12 @@ interface IUrlHandler {
   currUrlData: TUrlData;
 }
 
+/**
+ * Обработка текущего URL
+ * @returns {object} данные текущей категории
+ * @property {string} type - тип категории данных ('depts' | 'subdepts' | 'groups' | 'pricelist')
+ * @property {number|null} id - item_id категории
+ */
 const useUrlHandler = (): IUrlHandler => {
   const [currUrlData, setCurrUrlData] = useState<TUrlData>({ type: '', id: null });
 

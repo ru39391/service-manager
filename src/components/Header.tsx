@@ -19,8 +19,6 @@ import useCurrentData from '../hooks/useCurrentData';
 import { useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
 
-import type { TItemData } from '../types';
-
 import {
   EDIT_TITLE,
   REMOVE_TITLE,
@@ -39,19 +37,18 @@ const Header: FC = () => {
     pageTitle,
     currentCategory,
     currentFormData,
-    setCategoryType
+    setCurrentFormValues
   } = useCurrentData();
   const title = pageTitle || currentFormData.caption as string;
 
   const dispatchFormData = (action: string) => {
-    const { type, values } = currentFormData;
+    const { type } = currentFormData;
 
-    setCategoryType(null);
     dispatch(setFormData({
       data: {
         action,
         type: type as string,
-        data: action === EDIT_ACTION_KEY ? currentCategory : values as TItemData
+        data: action === ADD_ACTION_KEY ? setCurrentFormValues(type as string) : currentCategory
       }
     }));
   }
