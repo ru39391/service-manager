@@ -31,6 +31,7 @@ const Selecter: FC<ISelecter> = ({ keys }) => {
     selectOption
   } = useSelecter();
 
+  // TODO: настроить возможность выбора нулевого значения для группы услуг
   return (
     [
       {

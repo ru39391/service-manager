@@ -14,7 +14,7 @@ import {
 } from '@mui/icons-material';
 
 import useModal from '../hooks/useModal';
-import useHeader from '../hooks/useHeader';
+import useCurrentData from '../hooks/useCurrentData';
 
 import { useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
@@ -38,24 +38,26 @@ const Header: FC = () => {
   const {
     pageTitle,
     currentItem,
-    categoryData
-  } = useHeader();
-  const title = pageTitle || categoryData.caption;
+    currentData,
+    handleSubCategory
+  } = useCurrentData();
+  const title = pageTitle || currentData.caption as string;
 
   const dispatchFormData = (action: string) => {
-    const { type, category } = categoryData;
+    const { type, values } = currentData;
 
+    handleSubCategory(null);
     dispatch(setFormData({
       data: {
         action,
         type: type as string,
-        data: action === EDIT_ACTION_KEY ? currentItem : category as TItemData
+        data: action === EDIT_ACTION_KEY ? currentItem : values as TItemData
       }
     }));
   }
 
   const addCategory = () => {
-    toggleModal({ title: `${categoryData.caption}, ${ADD_CATEGORY_TITLE.toLocaleLowerCase()}` });
+    toggleModal({ title: `${currentData.caption}, ${ADD_CATEGORY_TITLE.toLocaleLowerCase()}` });
     dispatchFormData(ADD_ACTION_KEY);
   }
 
@@ -84,7 +86,7 @@ const Header: FC = () => {
         }}
       >
         <Typography variant="h5">{title}</Typography>
-        {categoryData.id && <Tooltip
+        {currentData.id && <Tooltip
           placement="top"
           title={EDIT_ITEM_TITLE}
         >
@@ -106,7 +108,7 @@ const Header: FC = () => {
             <Add fontSize="large" />
           </IconButton>
         </Tooltip>
-        {categoryData.id && <Tooltip
+        {currentData.id && <Tooltip
           placement="top"
           title={REMOVE_TITLE}
         >
@@ -131,12 +133,12 @@ const Header: FC = () => {
           Главная
         </Link>
         <Link
-          href={`/${categoryData.type}`}
+          href={`/${currentData.type}`}
           color="inherit"
           underline="hover"
           sx={{ display: 'flex', alignItems: 'center' }}
         >
-          {categoryData.caption}
+          {currentData.caption as string}
         </Link>
         {pageTitle && <Typography
           variant="subtitle2"

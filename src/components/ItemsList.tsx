@@ -14,12 +14,13 @@ import { DataGrid } from '@mui/x-data-grid';
 
 import useModal from '../hooks/useModal';
 import useTableData from '../hooks/useTableData';
+import useCurrentData from '../hooks/useCurrentData';
 import useCategoryItems from '../hooks/useCategoryItems';
 
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
 
-import type { TCustomData } from '../types';
+import type { TCustomData, TItemData } from '../types';
 
 import {
   ADD_TITLE,
@@ -49,6 +50,7 @@ const ItemsList: FC = () => {
     setCurrSubcategory
   } = useCategoryItems();
   const { toggleModal } = useModal();
+  const { currentData } = useCurrentData();
 
   useEffect(() => {
     handleTableData({
@@ -62,13 +64,14 @@ const ItemsList: FC = () => {
     categoryParams
   ]);
 
+  // TODO: избавиться от бага с подстановкой значений по умолчанию http://localhost:5173/groups/7937 и http://localhost:5173/depts/4
   const handleCategoryData = () => {
     toggleModal({ title: `${ADD_TITLE} ${categoryTypes && categoryTypes[currSubcategory].toLocaleLowerCase()}`});
     dispatch(setFormData({
       data: {
         action: ADD_ACTION_KEY,
         type: currSubcategory,
-        data: {...categoryParams}
+        data: currentData ? currentData.values as TItemData : {}
       }
     }));
   }

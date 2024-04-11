@@ -48,6 +48,7 @@ isVisible - радио
 const DataForm: FC = () => {
   const dispatch = useDispatch();
   const { formData, formValues } = useSelector(state => state.form);
+  // TODO: исправить баг с пересчётом дочерних элементов
   const { subCategoryCounter, setSubCategories } = useCategoryCounter();
   const {
     isDisabled,
