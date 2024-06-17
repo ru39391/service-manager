@@ -5,9 +5,10 @@ import {
 
 import { useSelector } from '../services/hooks';
 
-import type { TCustomData } from '../types';
+import type { TCustomData, TItemData } from '../types';
 
 import {
+  ADD_ACTION_KEY,
   NAME_KEY,
   PRICE_KEY,
   INDEX_KEY,
@@ -50,19 +51,30 @@ const useForm = (): IForm => {
       return;
     }
 
-    const {type, data: currValues} = formData;
+    const {action, type, data: currValues} = formData;
     const currKeys = Object.keys(formValues)
       .filter(
         key => [...formFields[type as string], ...selecterFields[type as string]].includes(key)
       );
-    const editedValues: TCustomData<string | number | null> = currKeys
+    const currRequiredFields = requiredFormFields
+      .filter(
+        key => [...formFields[type as string]].includes(key)
+      );
+    const editedValues: TItemData = currKeys
       .reduce(
         (
-          acc: TCustomData<string | number | null>,
+          acc: TItemData,
           key: string
         ) => currValues[key] === formValues[key] ? acc : {...acc, [key]: formValues[key]}, {}
       );
     const isValuesEdited: boolean = !Object.values(editedValues).length;
+    const undefinedRequiredValues: string[] = currRequiredFields
+      .reduce(
+        (
+          acc: string[],
+          item: string
+        ) => editedValues[item] === undefined ? [...acc, item] : acc, []
+      );
     const invalidRequiredValues: string[] = requiredFormFields
       .reduce(
         (
@@ -70,12 +82,14 @@ const useForm = (): IForm => {
           item: string
         ) => editedValues[item] !== undefined && !editedValues[item] ? [...acc, item] : acc, []
       );
+    const isActionAdd: boolean = action === ADD_ACTION_KEY && Boolean(undefinedRequiredValues.length);
 
     /*
     console.log(editedValues);
+    console.log({undefinedRequiredValues, isActionAdd});
     console.log({invalidRequiredValues});
     */
-    setDisabled(isValuesEdited || Boolean(invalidRequiredValues.length));
+    setDisabled(isValuesEdited || Boolean(invalidRequiredValues.length) || isActionAdd);
   }
 
   useEffect(() => {

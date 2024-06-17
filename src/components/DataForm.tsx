@@ -13,9 +13,10 @@ import { setFormValues } from '../services/slices/form-slice';
 
 import { removePricelistData } from '../services/actions/pricelist';
 
-import type { TCustomData } from '../types';
+import type { TCustomData, TItemData } from '../types';
 
 import {
+  ID_KEY,
   NAME_KEY,
   INDEX_KEY,
   SORT_CAPTION,
@@ -44,11 +45,9 @@ isComplexItem - радио (если отмечено, показывать сп
 isComplex - радио (если отмечено, показывать услуги в комплексе complex)
 isVisible - радио
 */
-// TODO: настроить disabled кнопки submit
 const DataForm: FC = () => {
   const dispatch = useDispatch();
   const { formData, formValues } = useSelector(state => state.form);
-  // TODO: исправить баг с пересчётом дочерних элементов
   const { subCategoryCounter, setSubCategories } = useCategoryCounter();
   const {
     isDisabled,
@@ -60,20 +59,25 @@ const DataForm: FC = () => {
   const handlersData = {
     [ADD_ACTION_KEY]: useCallback(() => {
       console.log(ADD_ACTION_KEY);
+      console.log(formData && {...formData.data as TItemData, ...formValues});
     }, [
       dispatch,
-      formData
+      formData,
+      formValues
     ]),
     [EDIT_ACTION_KEY]: useCallback(() => {
       console.log(EDIT_ACTION_KEY);
+      // TODO: настроить передачу только изменённых данных
+      console.log(formData && {...formData.data as TItemData, ...formValues});
     }, [
       dispatch,
-      formData
+      formData,
+      formValues
     ]),
     [REMOVE_ACTION_KEY]: useCallback(() => {
       dispatch(removePricelistData({
         alias: formData ? formData.type as string : null,
-        ids: formData ? [Object.values(formData.data)[0] as number] : [],
+        ids: formData ? [formData.data[ID_KEY]] : [],
       }));
     }, [
       dispatch,

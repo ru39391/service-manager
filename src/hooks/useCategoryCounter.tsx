@@ -2,9 +2,10 @@ import { useState, useEffect } from 'react';
 
 import { useSelector } from '../services/hooks';
 
-import type { TCustomData } from '../types';
+import type { TCustomData, TItemData } from '../types';
 
 import {
+  ID_KEY,
   DEPT_KEY,
   SUBDEPT_KEY,
   GROUP_KEY,
@@ -26,7 +27,7 @@ interface ICategoryCounter {
 const useCategoryCounter = (): ICategoryCounter => {
   const [categoryList, setCategoryList] = useState<string[] | null>(null);
   const [subCategoryCounter, setSubCategoryCounter] = useState<string>('');
-  const [sortedParams, setSortedParams] = useState<TCustomData<number> | null>(null);
+  const [sortedParams, setSortedParams] = useState<TCustomData<string | number> | null>(null);
 
   const pricelist = useSelector(state => state.pricelist);
 
@@ -42,9 +43,7 @@ const useCategoryCounter = (): ICategoryCounter => {
       return [];
     }
 
-    const [key, value] = [Object.keys(sortedParams)[0], Object.values(sortedParams)[0]];
-
-    return arr.filter((data: TCustomData<number | string>) => data[key] === value);
+    return arr.filter((data: TItemData) => data[sortedParams.type] === sortedParams[ID_KEY]);
   }
 
   const countSubCategoryItems = () => {
@@ -67,7 +66,13 @@ const useCategoryCounter = (): ICategoryCounter => {
   }
 
   const setSubCategories = ({type, data}: TCategoryData) => {
-    setSortedParams(data);
+    setSortedParams(type && data
+      ? {
+        type:  Object.values(TYPES).reduce((acc, item, index) => ({...acc, [item]: Object.keys(TYPES)[index]}), {})[type],
+        [ID_KEY]: data && data[ID_KEY]
+      }
+      : null
+    );
     setCategoryList(type ? subCategories[type] : null);
   }
 
