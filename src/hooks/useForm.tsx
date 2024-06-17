@@ -45,43 +45,43 @@ const useForm = (): IForm => {
   const requiredFormFields = [NAME_KEY, PRICE_KEY];
 
   const handleFormValues = () => {
+    if(!formData) {
+      setDisabled(true);
+      return;
+    }
+
+    const {data: currValues} = formData; // action, type,
     const [keys, values] = [Object.keys(formValues), Object.values(formValues)];
-    const editedValuesArr: (string | number | null)[] = keys
-      .map((key) => formData && formData.data[key])
+    const editedValues: TCustomData<string | number | null> = keys
       .reduce(
         (
-          acc: (string | number | null)[],
-          item: string | number | null,
-          index
-        ) => item !== values[index] && item !== undefined
-          ? ({ ...acc, [keys[index]]: values[index] })
-          : acc,
-        {}
+          acc: TCustomData<string | number | null>,
+          key: string,
+          index: number
+        ) => currValues[key] === values[index] ? acc : {...acc, [key]: values[index]}, {}
       );
-    const requiredFieldValues: (string | number)[] = requiredFormFields
-      .map((key) => editedValuesArr[key]) // по ключам обязательных полей ищем значения среди данных формы
-      .filter((item: string | number | undefined) => item !== undefined && !item); // отбираем значения, если поля существуют и заполнены
+    const isValuesEdited: boolean = !Object.values(editedValues).length;
+    const undefinedRequiredValues: string[] = requiredFormFields
+      .reduce(
+        (
+          acc: string[],
+          item: string
+        ) => editedValues[item] === undefined ? [...acc, item] : acc, []
+      );
+    const invalidRequiredValues: string[] = requiredFormFields
+      .reduce(
+        (
+          acc: string[],
+          item: string
+        ) => editedValues[item] !== undefined && !editedValues[item] ? [...acc, item] : acc, []
+      );
 
     /*
-    console.log(
-      'requiredFieldValues: ',
-      requiredFormFields
-        .map((key) => editedValuesArr[key])
-    );
-    console.log('values: ', values);
-    console.log('formData: ', formData);
-    console.log('editedValuesArr: ', editedValuesArr);
-
-    console.log('formValues: ', formValues);
-    console.log('requiredFormFields: ', requiredFormFields.map((key) => editedValuesArr[key]));
-    console.log('requiredFieldValues: ', requiredFieldValues.length);
-    console.log('requiredFieldValues: ', Object.values(editedValuesArr).length);
+    console.log(editedValues);
+    console.log({undefinedRequiredValues});
+    console.log({invalidRequiredValues});
     */
-
-    // TODO: поправить активное состояние кнопки
-    // requiredFieldValues.length > 0 - поля существуют и заполнены, инвертируем значение
-    // Object.values(editedValuesArr).length > 0 - отредактированные поля заполнены корректными данными
-    setDisabled(!(Object.values(editedValuesArr).length && requiredFieldValues.length));
+    setDisabled(undefinedRequiredValues.length === 0 ? isValuesEdited : isValuesEdited || Boolean(invalidRequiredValues.length));
   }
 
   useEffect(() => {
