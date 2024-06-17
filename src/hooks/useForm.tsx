@@ -50,24 +50,19 @@ const useForm = (): IForm => {
       return;
     }
 
-    const {data: currValues} = formData; // action, type,
-    const [keys, values] = [Object.keys(formValues), Object.values(formValues)];
-    const editedValues: TCustomData<string | number | null> = keys
+    const {type, data: currValues} = formData;
+    const currKeys = Object.keys(formValues)
+      .filter(
+        key => [...formFields[type as string], ...selecterFields[type as string]].includes(key)
+      );
+    const editedValues: TCustomData<string | number | null> = currKeys
       .reduce(
         (
           acc: TCustomData<string | number | null>,
-          key: string,
-          index: number
-        ) => currValues[key] === values[index] ? acc : {...acc, [key]: values[index]}, {}
+          key: string
+        ) => currValues[key] === formValues[key] ? acc : {...acc, [key]: formValues[key]}, {}
       );
     const isValuesEdited: boolean = !Object.values(editedValues).length;
-    const undefinedRequiredValues: string[] = requiredFormFields
-      .reduce(
-        (
-          acc: string[],
-          item: string
-        ) => editedValues[item] === undefined ? [...acc, item] : acc, []
-      );
     const invalidRequiredValues: string[] = requiredFormFields
       .reduce(
         (
@@ -78,10 +73,9 @@ const useForm = (): IForm => {
 
     /*
     console.log(editedValues);
-    console.log({undefinedRequiredValues});
     console.log({invalidRequiredValues});
     */
-    setDisabled(undefinedRequiredValues.length === 0 ? isValuesEdited : isValuesEdited || Boolean(invalidRequiredValues.length));
+    setDisabled(isValuesEdited || Boolean(invalidRequiredValues.length));
   }
 
   useEffect(() => {
