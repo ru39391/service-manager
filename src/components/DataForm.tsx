@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect } from 'react';
-import { Box, TextField } from '@mui/material';
+import { Box, TextField, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
 import { Delete } from '@mui/icons-material';
 
 import Selecter from './Selecter';
@@ -19,6 +19,7 @@ import {
   ID_KEY,
   NAME_KEY,
   INDEX_KEY,
+  IS_VISIBLE_KEY,
   SORT_CAPTION,
   CAPTIONS,
   REMOVE_TITLE,
@@ -42,7 +43,7 @@ group - список
 
 // TODO: настроить радиокнопки
 isComplexItem - радио (если отмечено, показывать список доступных комплексов и поле ввода количества)
-isComplex - радио (если отмечено, показывать услуги в комплексе complex)
+isComplex - радио (если отмечено, показывать услуги в комплексе complex), настроить пересчёт цены при парсинге
 isVisible - радио
 */
 const DataForm: FC = () => {
@@ -58,17 +59,20 @@ const DataForm: FC = () => {
 
   const handlersData = {
     [ADD_ACTION_KEY]: useCallback(() => {
-      console.log(ADD_ACTION_KEY);
-      console.log(formData && {...formData.data as TItemData, ...formValues});
+      console.log({
+        alias: formData ? formData.type as string : null,
+        data: formData ? [{...formData.data as TItemData, ...formValues}] : [],
+      });
     }, [
       dispatch,
       formData,
       formValues
     ]),
     [EDIT_ACTION_KEY]: useCallback(() => {
-      console.log(EDIT_ACTION_KEY);
-      // TODO: настроить передачу только изменённых данных
-      console.log(formData && {...formData.data as TItemData, ...formValues});
+      console.log({
+        alias: formData ? formData.type as string : null,
+        data: formData ? [{[ID_KEY]: formData.data[ID_KEY], ...formValues}] : [],
+      });
     }, [
       dispatch,
       formData,
@@ -95,7 +99,22 @@ const DataForm: FC = () => {
         }
       })
     )
-  }
+  };
+
+  const handleChange = (value: number | null) => {
+    if(formData && formData.action === REMOVE_ACTION_KEY) {
+      return;
+    }
+
+    dispatch(
+      setFormValues({
+        values: {
+          ...formValues,
+          [IS_VISIBLE_KEY]: value
+        }
+      })
+    )
+  };
 
   useEffect(() => {
     console.log(formData);
@@ -109,7 +128,12 @@ const DataForm: FC = () => {
   ]);
 
   useEffect(() => {
-    //console.log('formValues: ', formValues);
+    console.log('formValues: ', formValues);
+
+    if(formData && formValues[IS_VISIBLE_KEY] === undefined) {
+      // TODO: настроить валидацию IS_VISIBLE_KEY
+      handleChange(formData.action === EDIT_ACTION_KEY ? formData.data[IS_VISIBLE_KEY] : 1);
+    }
   }, [
     formValues
   ]);
@@ -151,6 +175,17 @@ const DataForm: FC = () => {
             <Selecter
               keys={selecterFields[formData.type as string]}
             />
+            <FormGroup>
+              <FormControlLabel
+                label={CAPTIONS[IS_VISIBLE_KEY]}
+                control={
+                  <Checkbox
+                    checked={Boolean(formValues[IS_VISIBLE_KEY])}
+                  />
+                }
+                onChange={() => handleChange(Number(!formValues[IS_VISIBLE_KEY]))}
+              />
+            </FormGroup>
           </Box>
           <ModalFooter
             disabled={isDisabled}

@@ -102,6 +102,11 @@ const createPricelistData = (priceListData: TPricelistData): TAppThunk<void> => 
 const removePricelistData = ({ alias, ids }: { alias: string | null; ids: number[] }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
+  console.log({
+    alias: `${API_URL}${alias}`,
+    ...ids.reduce((acc, item, index) => ({...acc, [index]: { [ID_KEY]: item }}), {})
+  });
+
   try {
     const {
       success,
