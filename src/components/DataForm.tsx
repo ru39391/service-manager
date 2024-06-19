@@ -1,5 +1,13 @@
 import { FC, useCallback, useEffect } from 'react';
-import { Box, TextField, FormGroup, FormControlLabel, Checkbox } from '@mui/material';
+import {
+  Box,
+  TextField,
+  FormGroup,
+  FormControlLabel,
+  Radio,
+  RadioGroup,
+  Checkbox
+} from '@mui/material';
 import { Delete } from '@mui/icons-material';
 
 import Selecter from './Selecter';
@@ -17,13 +25,15 @@ import type { TCustomData, TItemData } from '../types';
 
 import {
   ID_KEY,
+  ITEM_KEY,
   NAME_KEY,
   INDEX_KEY,
   IS_VISIBLE_KEY,
   ADD_ACTION_KEY,
   EDIT_ACTION_KEY,
   REMOVE_ACTION_KEY,
-  ITEM_KEY,
+  IS_COMPLEX_KEY,
+  IS_COMPLEX_ITEM_KEY,
   SORT_CAPTION,
   CAPTIONS,
   REMOVE_TITLE,
@@ -43,7 +53,8 @@ dept - список
 subdept - список
 group - список
 
-// TODO: настроить радиокнопки
+// TODO: настроить установку значения для параметра "Входит в комплекс" (сейчас везде 0, см. услуги для комлекса id = 19829)
+// TODO: настроить обработку списка услуг, входящих в компекс
 isComplexItem - входит в комплекс, радио (если отмечено, показывать список доступных комплексов и поле ввода количества)
 isComplex - комплекс услуг, радио (если отмечено, показывать услуги в комплексе complex), настроить пересчёт цены при парсинге
 */
@@ -58,6 +69,7 @@ const DataForm: FC = () => {
     requiredFormFields
   } = useForm();
 
+  const complexKeys: string[] = [IS_COMPLEX_KEY, IS_COMPLEX_ITEM_KEY];
   const handlersData = {
     [ADD_ACTION_KEY]: useCallback(() => {
       console.log({
@@ -102,7 +114,7 @@ const DataForm: FC = () => {
     )
   };
 
-  const handleChange = (value: number | null) => {
+  const changeVisibility = (value: number) => {
     if(!formData || formData.action === REMOVE_ACTION_KEY || formData.type !== TYPES[ITEM_KEY]) {
       return;
     }
@@ -112,6 +124,23 @@ const DataForm: FC = () => {
         values: {
           ...formValues,
           [IS_VISIBLE_KEY]: value
+        }
+      })
+    )
+  };
+
+  const handleComplexData = ({key, value}: {key: string, value: number}) => {
+    if(!formData || formData.action === REMOVE_ACTION_KEY || formData.type !== TYPES[ITEM_KEY]) {
+      return;
+    }
+
+    dispatch(
+      setFormValues({
+        values: {
+          ...formValues,
+          [key]: value,
+          ...(key === IS_COMPLEX_ITEM_KEY && value === 1 && {[IS_COMPLEX_KEY]: 0}),
+          ...(key === IS_COMPLEX_KEY && value === 1 && {[IS_COMPLEX_ITEM_KEY]: 0}),
         }
       })
     )
@@ -132,7 +161,14 @@ const DataForm: FC = () => {
     console.log('formValues: ', formValues);
 
     if(formData && formValues[IS_VISIBLE_KEY] === undefined) {
-      handleChange(formData.action === EDIT_ACTION_KEY ? formData.data[IS_VISIBLE_KEY] : 1);
+      changeVisibility(formData.action === EDIT_ACTION_KEY ? formData.data[IS_VISIBLE_KEY] : 1);
+    }
+
+    if(formData && complexKeys.every(key => formValues[key] === undefined)) {
+      complexKeys.forEach(key => handleComplexData({
+        key,
+        value: formData.action === EDIT_ACTION_KEY ? formData.data[key] : 0
+      }));
     }
   }, [
     formValues
@@ -175,19 +211,38 @@ const DataForm: FC = () => {
             <Selecter
               keys={selecterFields[formData.type as string]}
             />
-            {formData.type === TYPES[ITEM_KEY] &&
-              <FormGroup>
-                <FormControlLabel
-                  label={CAPTIONS[IS_VISIBLE_KEY]}
-                  control={
-                    <Checkbox
-                      checked={Boolean(formValues[IS_VISIBLE_KEY])}
-                    />
+            {formData.type === TYPES[ITEM_KEY] && (
+              <>
+                <FormGroup>
+                  <FormControlLabel
+                    label={CAPTIONS[IS_VISIBLE_KEY]}
+                    control={
+                      <Checkbox
+                        checked={Boolean(formValues[IS_VISIBLE_KEY])}
+                        onChange={() => changeVisibility(Number(!formValues[IS_VISIBLE_KEY]))}
+                      />
+                    }
+                  />
+                  {complexKeys.map(
+                    (key) =>
+                      <FormControlLabel
+                        key={key}
+                        label={CAPTIONS[key]}
+                        control={
+                          <Checkbox
+                            checked={Boolean(formValues[key])}
+                            onChange={() => handleComplexData({
+                              key,
+                              value: Number(!formValues[key])
+                            })}
+                          />
+                        }
+                      />
+                    )
                   }
-                  onChange={() => handleChange(Number(!formValues[IS_VISIBLE_KEY]))}
-                />
-              </FormGroup>
-            }
+                </FormGroup>
+              </>
+            )}
           </Box>
           <ModalFooter
             disabled={isDisabled}
