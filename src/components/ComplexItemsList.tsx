@@ -1,5 +1,12 @@
 import { FC, useEffect } from 'react';
-import { Grid, TextField } from '@mui/material';
+import {
+  Grid,
+  TextField,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem
+} from '@mui/material';
 
 import useComplex from '../hooks/useComplex';
 
@@ -8,7 +15,8 @@ import type { TItemData, TCustomData } from '../types';
 import {
   ID_KEY,
   NAME_KEY,
-  TITLES,
+  COMPLEX_KEY,
+  QUANTITY_KEY,
   CAPTIONS
 } from '../utils/constants';
 
@@ -19,11 +27,14 @@ interface IComplexItemsList {
 
 const ComplexItemsList: FC<IComplexItemsList> = ({ complexItemId, isComplexItemsVisible }) => {
   const {
+    complexList,
     currComplexList,
+    complexItems,
     handleCurrComplexList
   } = useComplex();
 
   useEffect(() => {
+    console.log(complexItems);
     handleCurrComplexList({complexItemId, isListVisible: isComplexItemsVisible});
   }, [
     isComplexItemsVisible
@@ -32,30 +43,45 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ complexItemId, isComplexItems
   return (
     isComplexItemsVisible
     ? currComplexList.map(
-      ({ item_id, name }) =>
-        <Grid container spacing={2}>
+      (complexItem, index) =>
+        <Grid key={complexItem.item_id?.toString()} container spacing={2}>
           <Grid item xs={9}>
-            <TextField
-              key={item_id && item_id.toString()}
-              id={item_id as string}
-              name={NAME_KEY}
-              label={CAPTIONS[NAME_KEY]}
-              defaultValue={`${name} - ${item_id}`}
-              sx={{ mb: 1 }}
-              fullWidth
-              variant="outlined"
-              margin="dense"
-              type="text"
-            />
+            <FormControl sx={{ my: 1 }} fullWidth>
+              <InputLabel id={`id-${complexItem.item_id?.toString()}`}>{CAPTIONS[NAME_KEY]}</InputLabel>
+              <Select
+                labelId={`id-${complexItem.item_id?.toString()}`}
+                id={`select-${complexItem.item_id?.toString()}`}
+                name={`${NAME_KEY}-${complexItem.item_id?.toString()}`}
+                value={complexItem.item_id}
+                label={CAPTIONS[NAME_KEY]}
+                onChange={({ target }) => console.log({
+                  [ID_KEY]: target.value as number
+                })}
+              >
+                {complexList.map(
+                  (item: TItemData) =>
+                    <MenuItem
+                      key={item[ID_KEY] && item[ID_KEY].toString()}
+                      value={item[ID_KEY] as number}
+                    >
+                      {item[NAME_KEY]} - {item[ID_KEY]}
+                    </MenuItem>
+                  )
+                }
+              </Select>
+            </FormControl>
           </Grid>
           <Grid item xs={3}>
             <TextField
-              id="outlined-number"
-              label="Number"
+              id={`input-${complexItem.item_id?.toString()}`}
+              name={`${QUANTITY_KEY}-${complexItem.item_id?.toString()}`}
+              label={CAPTIONS[QUANTITY_KEY]}
+              defaultValue={complexItems[index][COMPLEX_KEY][complexItemId.toString()]}
               fullWidth
               variant="outlined"
-              margin="dense"
               type="text"
+              sx={{ my: 1 }}
+              onChange={({ target }) => console.log(target)}
             />
           </Grid>
         </Grid>

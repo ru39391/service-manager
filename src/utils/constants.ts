@@ -35,6 +35,7 @@ const IS_VISIBLE_KEY = 'isVisible';
 
 const CREATEDON_KEY = 'createdon';
 const UPDATEDON_KEY = 'updatedon';
+const QUANTITY_KEY = 'quantity';
 
 const ITEM_KEY = 'items';
 const RES_KEY = 'res';
@@ -67,6 +68,7 @@ const CAPTIONS = {
   [IS_VISIBLE_KEY]: 'Показывать на сайте',
   [CREATEDON_KEY]: 'Дата создания',
   [UPDATEDON_KEY]: 'Дата обновления',
+  [QUANTITY_KEY]: 'Количество',
 };
 
 const TYPES = {
@@ -112,6 +114,7 @@ export {
   IS_VISIBLE_KEY,
   CREATEDON_KEY,
   UPDATEDON_KEY,
+  QUANTITY_KEY,
   SORT_CAPTION,
   CAPTIONS,
   TITLES,
