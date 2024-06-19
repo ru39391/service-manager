@@ -41,6 +41,7 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ complexItemId, isComplexItems
   ]);
 
   return (
+    // TODO: настроить удаление/добавление элементов списка комплексных услуг
     isComplexItemsVisible
     ? currComplexList.map(
       (complexItem, index) =>
@@ -48,6 +49,7 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ complexItemId, isComplexItems
           <Grid item xs={9}>
             <FormControl sx={{ my: 1 }} fullWidth>
               <InputLabel id={`id-${complexItem.item_id?.toString()}`}>{CAPTIONS[NAME_KEY]}</InputLabel>
+              {/* // TODO: настроить изменение значения списка при выборе нового значения */}
               <Select
                 labelId={`id-${complexItem.item_id?.toString()}`}
                 id={`select-${complexItem.item_id?.toString()}`}
@@ -72,6 +74,7 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ complexItemId, isComplexItems
             </FormControl>
           </Grid>
           <Grid item xs={3}>
+            {/* // TODO: настроить валидацию вводимого значения */}
             <TextField
               id={`input-${complexItem.item_id?.toString()}`}
               name={`${QUANTITY_KEY}-${complexItem.item_id?.toString()}`}
