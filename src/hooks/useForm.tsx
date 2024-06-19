@@ -15,6 +15,7 @@ import {
   DEPT_KEY,
   SUBDEPT_KEY,
   GROUP_KEY,
+  IS_VISIBLE_KEY,
   ITEM_KEY,
   TYPES,
 } from '../utils/constants';
@@ -43,6 +44,12 @@ const useForm = (): IForm => {
     [TYPES[GROUP_KEY]]: [DEPT_KEY, SUBDEPT_KEY, GROUP_KEY],
     [TYPES[ITEM_KEY]]: [DEPT_KEY, SUBDEPT_KEY, GROUP_KEY]
   };
+  const togglerFields = {
+    [TYPES[DEPT_KEY]]: [],
+    [TYPES[SUBDEPT_KEY]]: [],
+    [TYPES[GROUP_KEY]]: [],
+    [TYPES[ITEM_KEY]]: [IS_VISIBLE_KEY]
+  };
   const requiredFormFields = [NAME_KEY, PRICE_KEY];
 
   const handleFormValues = () => {
@@ -54,7 +61,11 @@ const useForm = (): IForm => {
     const {action, type, data: currValues} = formData;
     const currKeys = Object.keys(formValues)
       .filter(
-        key => [...formFields[type as string], ...selecterFields[type as string]].includes(key)
+        key => [
+          ...formFields[type as string],
+          ...selecterFields[type as string],
+          ...togglerFields[type as string]
+        ].includes(key)
       );
     const currRequiredFields = requiredFormFields
       .filter(

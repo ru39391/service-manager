@@ -20,14 +20,16 @@ import {
   NAME_KEY,
   INDEX_KEY,
   IS_VISIBLE_KEY,
+  ADD_ACTION_KEY,
+  EDIT_ACTION_KEY,
+  REMOVE_ACTION_KEY,
+  ITEM_KEY,
   SORT_CAPTION,
   CAPTIONS,
   REMOVE_TITLE,
   SAVE_TITLE,
-  ADD_ACTION_KEY,
-  EDIT_ACTION_KEY,
-  REMOVE_ACTION_KEY,
-  NOT_EMPTY_CATEGORY
+  NOT_EMPTY_CATEGORY,
+  TYPES
 } from '../utils/constants';
 
 /*
@@ -42,9 +44,8 @@ subdept - список
 group - список
 
 // TODO: настроить радиокнопки
-isComplexItem - радио (если отмечено, показывать список доступных комплексов и поле ввода количества)
-isComplex - радио (если отмечено, показывать услуги в комплексе complex), настроить пересчёт цены при парсинге
-isVisible - радио
+isComplexItem - входит в комплекс, радио (если отмечено, показывать список доступных комплексов и поле ввода количества)
+isComplex - комплекс услуг, радио (если отмечено, показывать услуги в комплексе complex), настроить пересчёт цены при парсинге
 */
 const DataForm: FC = () => {
   const dispatch = useDispatch();
@@ -102,7 +103,7 @@ const DataForm: FC = () => {
   };
 
   const handleChange = (value: number | null) => {
-    if(formData && formData.action === REMOVE_ACTION_KEY) {
+    if(!formData || formData.action === REMOVE_ACTION_KEY || formData.type !== TYPES[ITEM_KEY]) {
       return;
     }
 
@@ -131,7 +132,6 @@ const DataForm: FC = () => {
     console.log('formValues: ', formValues);
 
     if(formData && formValues[IS_VISIBLE_KEY] === undefined) {
-      // TODO: настроить валидацию IS_VISIBLE_KEY
       handleChange(formData.action === EDIT_ACTION_KEY ? formData.data[IS_VISIBLE_KEY] : 1);
     }
   }, [
@@ -175,17 +175,19 @@ const DataForm: FC = () => {
             <Selecter
               keys={selecterFields[formData.type as string]}
             />
-            <FormGroup>
-              <FormControlLabel
-                label={CAPTIONS[IS_VISIBLE_KEY]}
-                control={
-                  <Checkbox
-                    checked={Boolean(formValues[IS_VISIBLE_KEY])}
-                  />
-                }
-                onChange={() => handleChange(Number(!formValues[IS_VISIBLE_KEY]))}
-              />
-            </FormGroup>
+            {formData.type === TYPES[ITEM_KEY] &&
+              <FormGroup>
+                <FormControlLabel
+                  label={CAPTIONS[IS_VISIBLE_KEY]}
+                  control={
+                    <Checkbox
+                      checked={Boolean(formValues[IS_VISIBLE_KEY])}
+                    />
+                  }
+                  onChange={() => handleChange(Number(!formValues[IS_VISIBLE_KEY]))}
+                />
+              </FormGroup>
+            }
           </Box>
           <ModalFooter
             disabled={isDisabled}
