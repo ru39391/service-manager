@@ -1,49 +1,66 @@
 import { FC, useEffect } from 'react';
-import {
-  FormControl,
-  InputLabel,
-  Select,
-  MenuItem
-} from '@mui/material';
+import { Grid, TextField } from '@mui/material';
 
-import { useSelector } from '../services/hooks';
+import useComplex from '../hooks/useComplex';
 
 import type { TItemData, TCustomData } from '../types';
 
 import {
   ID_KEY,
   NAME_KEY,
-  TITLES
+  TITLES,
+  CAPTIONS
 } from '../utils/constants';
 
 interface IComplexItemsList {
   complexItemId: number;
+  isComplexItemsVisible: number;
 }
 
-const ComplexItemsList: FC<IComplexItemsList> = ({ complexItemId }) => {
-  const { pricelist } = useSelector(state => state.pricelist);
-
-  const handleComplex = () => {
-    const complexData = pricelist
-      .filter(({ isComplex }) => isComplex === 1)
-      .map(({ name, item_id, complex }) => ({name, item_id, complex: JSON.parse(complex as string)}));
-
-    console.log(complexItemId);
-    console.log(complexData.filter(({ complex }) => {
-      const arr = complex.reduce((acc: number[], item: TCustomData<number>) => [...acc, Number(Object.keys(item)[0])], []);
-
-      return arr.includes(complexItemId);
-    }));
-  }
+const ComplexItemsList: FC<IComplexItemsList> = ({ complexItemId, isComplexItemsVisible }) => {
+  const {
+    currComplexList,
+    handleCurrComplexList
+  } = useComplex();
 
   useEffect(() => {
-    handleComplex();
+    handleCurrComplexList({complexItemId, isListVisible: isComplexItemsVisible});
   }, [
-    pricelist
+    isComplexItemsVisible
   ]);
 
   return (
-    <>{/*pricelist.filter(({ isComplex }) => isComplex === 1).map((item: TItemData) => <p key={item.item_id?.toString()}>{item.name}</p>)*/}</>
+    isComplexItemsVisible
+    ? currComplexList.map(
+      ({ item_id, name }) =>
+        <Grid container spacing={2}>
+          <Grid item xs={9}>
+            <TextField
+              key={item_id && item_id.toString()}
+              id={item_id as string}
+              name={NAME_KEY}
+              label={CAPTIONS[NAME_KEY]}
+              defaultValue={`${name} - ${item_id}`}
+              sx={{ mb: 1 }}
+              fullWidth
+              variant="outlined"
+              margin="dense"
+              type="text"
+            />
+          </Grid>
+          <Grid item xs={3}>
+            <TextField
+              id="outlined-number"
+              label="Number"
+              fullWidth
+              variant="outlined"
+              margin="dense"
+              type="text"
+            />
+          </Grid>
+        </Grid>
+      )
+    : ''
   )
 };
 

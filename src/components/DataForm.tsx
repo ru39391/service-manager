@@ -4,7 +4,6 @@ import {
   TextField,
   FormGroup,
   FormControlLabel,
-  Grid,
   Checkbox
 } from '@mui/material';
 import { Delete } from '@mui/icons-material';
@@ -241,29 +240,10 @@ const DataForm: FC = () => {
                     )
                   }
                 </FormGroup>
-                <ComplexItemsList complexItemId={formData.data[ID_KEY]} />
-                <Grid container spacing={2}>
-                  <Grid item xs={9}>
-                    <TextField
-                      id="outlined-value"
-                      label="value"
-                      fullWidth
-                      variant="outlined"
-                      margin="dense"
-                      type="text"
-                    />
-                  </Grid>
-                  <Grid item xs={3}>
-                    <TextField
-                      id="outlined-number"
-                      label="Number"
-                      fullWidth
-                      variant="outlined"
-                      margin="dense"
-                      type="text"
-                    />
-                  </Grid>
-                </Grid>
+                <ComplexItemsList
+                  complexItemId={formData.data[ID_KEY]}
+                  isComplexItemsVisible={formValues[IS_COMPLEX_ITEM_KEY] as number}
+                />
               </>
             )}
           </Box>
