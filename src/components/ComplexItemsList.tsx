@@ -5,8 +5,11 @@ import {
   FormControl,
   InputLabel,
   Select,
-  MenuItem
+  MenuItem,
+  Tooltip,
+  IconButton
 } from '@mui/material';
+import { DeleteOutlined } from '@mui/icons-material';
 
 import useComplex from '../hooks/useComplex';
 
@@ -17,7 +20,10 @@ import {
   NAME_KEY,
   COMPLEX_KEY,
   QUANTITY_KEY,
-  CAPTIONS
+  CAPTIONS,
+  REMOVE_TITLE,
+  EDIT_ACTION_KEY,
+  REMOVE_ACTION_KEY
 } from '../utils/constants';
 
 interface IComplexItemsList {
@@ -30,11 +36,11 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complex, isComplexLis
   const {
     complexItems,
     currComplexItems,
-    handleComplexData
+    handleComplexData,
+    hadnleComplexItem
   } = useComplex();
 
   useEffect(() => {
-    console.log(complexItems);
     handleComplexData({itemId, complex, isListVisible: isComplexListVisible});
   }, [
     isComplexListVisible
@@ -44,48 +50,70 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complex, isComplexLis
     // TODO: настроить удаление/добавление элементов списка комплексных услуг
     isComplexListVisible
     ? currComplexItems.map(
-      (complexItem, index) =>
-        <Grid key={complexItem.item_id?.toString()} container spacing={2}>
-          <Grid item xs={9}>
+      (complexItem, index, arr) =>
+        <Grid key={complexItem[ID_KEY] && complexItem[ID_KEY].toString()} container spacing={2}>
+          <Grid item xs={8}>
             <FormControl sx={{ my: 1 }} fullWidth>
-              <InputLabel id={`id-${complexItem.item_id?.toString()}`}>{CAPTIONS[NAME_KEY]}</InputLabel>
+              <InputLabel id={`${COMPLEX_KEY}-id-${index.toString()}`}>{CAPTIONS[NAME_KEY]}</InputLabel>
               {/* // TODO: настроить изменение значения списка при выборе нового значения */}
               <Select
-                labelId={`id-${complexItem.item_id?.toString()}`}
-                id={`select-${complexItem.item_id?.toString()}`}
-                name={`${NAME_KEY}-${complexItem.item_id?.toString()}`}
-                value={complexItem.item_id}
+                labelId={`${COMPLEX_KEY}-id-${index.toString()}`}
+                id={`${COMPLEX_KEY}-select-${index.toString()}`}
+                name={`${COMPLEX_KEY}-${NAME_KEY}-${index.toString()}`}
+                value={complexItem[ID_KEY]}
                 label={CAPTIONS[NAME_KEY]}
-                onChange={({ target }) => console.log({
-                  [ID_KEY]: target.value as number
+                onChange={({ target }) => hadnleComplexItem({
+                  ...target,
+                  action: EDIT_ACTION_KEY,
+                  [ID_KEY]: complexItem[ID_KEY],
+                  [QUANTITY_KEY]: 1
                 })}
               >
                 {complexItems.map(
                   (item: TItemData) =>
                     <MenuItem
                       key={item[ID_KEY] && item[ID_KEY].toString()}
-                      value={item[ID_KEY] as number}
+                      value={item[ID_KEY]}
+                      disabled={arr.map(data => data[ID_KEY]).includes(item[ID_KEY])}
                     >
-                      {item[NAME_KEY]} - {item[ID_KEY]}
+                      {item[NAME_KEY]} - {item[ID_KEY] && item[ID_KEY].toString()}
                     </MenuItem>
                   )
                 }
               </Select>
             </FormControl>
           </Grid>
-          <Grid item xs={3}>
+          <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
             {/* // TODO: настроить валидацию вводимого значения */}
             <TextField
-              id={`input-${complexItem.item_id?.toString()}`}
-              name={`${QUANTITY_KEY}-${complexItem.item_id?.toString()}`}
+              id={`${COMPLEX_KEY}-input-${index.toString()}`}
+              name={`${COMPLEX_KEY}-${QUANTITY_KEY}-${index.toString()}`}
               label={CAPTIONS[QUANTITY_KEY]}
               defaultValue={complexItem[QUANTITY_KEY]}
               fullWidth
               variant="outlined"
               type="text"
               sx={{ my: 1 }}
-              onChange={({ target }) => console.log(target)}
+              onChange={({ target }) => console.log({
+                value: target.value,
+                [ID_KEY]: complexItem[ID_KEY]
+              })}
             />
+            <Tooltip
+              placement="top"
+              title={REMOVE_TITLE}
+            >
+              <IconButton
+                sx={{ p: 1, color: 'text.secondary' }}
+                onClick={() => hadnleComplexItem({
+                  action: REMOVE_ACTION_KEY,
+                  [COMPLEX_KEY]: itemId,
+                  [ID_KEY]: complexItem[ID_KEY] as number
+                })}
+              >
+                <DeleteOutlined fontSize="medium" />
+              </IconButton>
+            </Tooltip>
           </Grid>
         </Grid>
       )

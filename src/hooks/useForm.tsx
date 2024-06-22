@@ -54,7 +54,7 @@ const useForm = (): IForm => {
   };
   const requiredFormFields = [NAME_KEY, PRICE_KEY];
 
-  const handleFormValues = () => {
+  const handleFormValues = (): void => {
     if(!formData) {
       setDisabled(true);
       return;

@@ -3,16 +3,24 @@ import {
   useEffect
 } from 'react';
 
-import { useSelector } from '../services/hooks';
+import { useSelector, useDispatch } from '../services/hooks';
+import { setFormValues } from '../services/slices/form-slice';
 
 import type { TCustomData, TItemData } from '../types';
 
 import {
   ID_KEY,
+  NAME_KEY,
+  PRICE_KEY,
   COMPLEX_KEY,
   IS_COMPLEX_ITEM_KEY,
-  QUANTITY_KEY
+  QUANTITY_KEY,
+  EDIT_ACTION_KEY,
+  REMOVE_ACTION_KEY,
+  ITEM_KEY,
+  TYPES
 } from '../utils/constants';
+import { sortStrArray } from '../utils';
 
 type TComplexData = {
   itemId: number;
@@ -21,21 +29,29 @@ type TComplexData = {
 };
 
 interface IComplex {
-  complexItems: TItemData[],
-  currComplexItems: TItemData[],
+  complexItems: TItemData[];
+  currComplexItems: TItemData[];
   handleComplexData: (data: TComplexData) => void;
+  hadnleComplexItem: (data: TCustomData<string | number>) => void;
 }
 
 const useComplex = (): IComplex => {
   const [complexItems, setComplexItems] = useState<TItemData[]>([]);
   const [currComplexItems, setCurrComplexItems] = useState<TItemData[]>([]);
 
-  const { pricelist } = useSelector(state => state.pricelist);
+  const dispatch = useDispatch();
+  const {
+    pricelist,
+    formValues
+  } = useSelector(state => ({
+    pricelist: state.pricelist,
+    formValues: state.form.formValues
+  }));
 
-  const handleComplexItems = () => {
-    const complexItemsArr = pricelist.filter(item => item[IS_COMPLEX_ITEM_KEY] === 1);
+  const fetchComplexItems = () => {
+    const complexItemsArr: TItemData[] = pricelist[TYPES[ITEM_KEY]].filter((item: TItemData) => item[IS_COMPLEX_ITEM_KEY] === 1);
 
-    setComplexItems(complexItemsArr);
+    setComplexItems(sortStrArray(complexItemsArr, NAME_KEY));
   }
 
   const handleComplexData = ({itemId, complex, isListVisible}: TComplexData) => {
@@ -50,7 +66,7 @@ const useComplex = (): IComplex => {
       }));
     const currComplexItemsArr: TItemData[] = complexDataArr.reduce(
       (acc: TItemData[], data: TCustomData<number>, index, arr) => {
-        const itemData: TItemData | undefined = pricelist.find(item => item[ID_KEY] === data[ID_KEY]);
+        const itemData: TItemData | undefined = pricelist[TYPES[ITEM_KEY]].find((item: TItemData) => item[ID_KEY] === data[ID_KEY]);
 
         return itemData
           ? [
@@ -64,17 +80,91 @@ const useComplex = (): IComplex => {
       }, []
     );
 
-    setCurrComplexItems(currComplexItemsArr);
+    setCurrComplexItems(sortStrArray(currComplexItemsArr, NAME_KEY));
+  }
+
+  const updateComplex = (arr: TItemData[], id: number) => {
+    const summ = arr
+      .reduce(
+        (acc, item) => {
+          const data = {
+            [PRICE_KEY]: item[PRICE_KEY] as number,
+            [QUANTITY_KEY]: item[QUANTITY_KEY] as number
+          };
+
+          return acc + data[QUANTITY_KEY] * data[PRICE_KEY]
+        }, 0
+      );
+    const complexData: TCustomData<number>[] = arr
+      .reduce(
+        (acc: TCustomData<number>[], item: TItemData) => {
+          const data = {
+            [ID_KEY]: item[ID_KEY] as number,
+            [QUANTITY_KEY]: item[QUANTITY_KEY] as number
+          };
+
+          return [...acc, {[data[ID_KEY].toString()]: data[QUANTITY_KEY]}];
+        }, []
+      );
+
+    console.log({[ID_KEY]: id, [PRICE_KEY]: summ, [COMPLEX_KEY]: JSON.stringify(complexData)});
+    dispatch(
+      setFormValues({
+        values: {
+          ...formValues,
+          [PRICE_KEY]: summ,
+          [COMPLEX_KEY]: JSON.stringify(complexData)
+        }
+      })
+    );
+    setCurrComplexItems(sortStrArray(arr, NAME_KEY));
+  }
+
+  const removeComplexItem = (data: TCustomData<number>) => {
+    const complexItemsArr = [...currComplexItems].filter(item => item[ID_KEY] !== data[ID_KEY]);
+
+    updateComplex(complexItemsArr, data[COMPLEX_KEY]);
+  }
+
+  const editComplexItem = (data: TCustomData<number>) => {
+    const complexItemsArr = [...currComplexItems].filter(item => item[ID_KEY] !== data[ID_KEY]);
+
+    updateComplex(complexItemsArr, data[COMPLEX_KEY]);
+  }
+
+  const hadnleComplexItem = (data: TCustomData<string | number>) => {
+    console.log(data);
+
+    switch(data.action) {
+      case `${REMOVE_ACTION_KEY}`:
+        removeComplexItem({
+          [ID_KEY]: data[ID_KEY] as number,
+          [COMPLEX_KEY]: data[COMPLEX_KEY] as number
+        });
+        break;
+
+      case `${EDIT_ACTION_KEY}`:
+        editComplexItem({
+          [ID_KEY]: data[ID_KEY] as number,
+          [COMPLEX_KEY]: data[COMPLEX_KEY] as number
+        });
+        break;
+
+      default:
+        console.log(data[ID_KEY]);
+        break;
+    }
   }
 
   useEffect(() => {
-    handleComplexItems();
+    fetchComplexItems();
   }, []);
 
   return {
     complexItems,
     currComplexItems,
-    handleComplexData
+    handleComplexData,
+    hadnleComplexItem
   };
 }
 

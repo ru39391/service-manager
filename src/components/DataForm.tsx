@@ -26,6 +26,7 @@ import {
   ID_KEY,
   ITEM_KEY,
   NAME_KEY,
+  PRICE_KEY,
   INDEX_KEY,
   IS_VISIBLE_KEY,
   ADD_ACTION_KEY,
@@ -104,6 +105,7 @@ const DataForm: FC = () => {
 
   const handleInput = (input: EventTarget & (HTMLInputElement | HTMLTextAreaElement), key: string) => {
     input.value = key === NAME_KEY ? input.value : input.value.replace(/\D/g, '');
+
     dispatch(
       setFormValues({
         values: {
@@ -204,6 +206,7 @@ const DataForm: FC = () => {
             margin="dense"
             type="text"
             required={requiredFormFields.includes(key)}
+            disabled={key === PRICE_KEY && Boolean(formValues[IS_COMPLEX_KEY])}
             onChange={({ target }) => handleInput(target, key)}
           />
         )
