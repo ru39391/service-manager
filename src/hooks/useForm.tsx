@@ -16,6 +16,8 @@ import {
   SUBDEPT_KEY,
   GROUP_KEY,
   IS_VISIBLE_KEY,
+  IS_COMPLEX_ITEM_KEY,
+  IS_COMPLEX_KEY,
   ITEM_KEY,
   TYPES,
 } from '../utils/constants';
@@ -48,7 +50,7 @@ const useForm = (): IForm => {
     [TYPES[DEPT_KEY]]: [],
     [TYPES[SUBDEPT_KEY]]: [],
     [TYPES[GROUP_KEY]]: [],
-    [TYPES[ITEM_KEY]]: [IS_VISIBLE_KEY]
+    [TYPES[ITEM_KEY]]: [IS_VISIBLE_KEY, IS_COMPLEX_ITEM_KEY, IS_COMPLEX_KEY]
   };
   const requiredFormFields = [NAME_KEY, PRICE_KEY];
 

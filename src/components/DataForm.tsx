@@ -68,7 +68,7 @@ const DataForm: FC = () => {
     requiredFormFields
   } = useForm();
 
-  const complexKeys: string[] = [IS_COMPLEX_KEY, IS_COMPLEX_ITEM_KEY];
+  const complexKeys: string[] = [IS_COMPLEX_ITEM_KEY, IS_COMPLEX_KEY];
   const handlersData = {
     [ADD_ACTION_KEY]: useCallback(() => {
       console.log({
@@ -163,12 +163,14 @@ const DataForm: FC = () => {
       changeVisibility(formData.action === EDIT_ACTION_KEY ? formData.data[IS_VISIBLE_KEY] : 1);
     }
 
-    if(formData && complexKeys.every(key => formValues[key] === undefined)) {
-      complexKeys.forEach(key => handleComplexData({
-        key,
-        value: formData.action === EDIT_ACTION_KEY ? formData.data[key] : 0
-      }));
-    }
+    complexKeys.forEach(key => {
+      if(formData && formValues[key] === undefined) {
+        handleComplexData({
+          key,
+          value: formData.action === EDIT_ACTION_KEY ? formData.data[key] : 0
+        });
+      }
+    });
   }, [
     formValues
   ]);
@@ -244,10 +246,12 @@ const DataForm: FC = () => {
                     )
                   }
                 </FormGroup>
+                {/*
                 <ComplexItemsList
                   complexItemId={formData.data[ID_KEY]}
                   isComplexItemsVisible={formValues[IS_COMPLEX_ITEM_KEY] as number}
                 />
+                */}
               </>
             )}
           </Box>
