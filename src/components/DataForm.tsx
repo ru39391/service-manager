@@ -67,7 +67,9 @@ const DataForm: FC = () => {
     isDisabled,
     formFields,
     selecterFields,
-    requiredFormFields
+    requiredFormFields,
+    textFieldValues,
+    handleTextFields
   } = useForm();
 
   const complexKeys: string[] = [IS_COMPLEX_ITEM_KEY, IS_COMPLEX_KEY];
@@ -163,6 +165,18 @@ const DataForm: FC = () => {
   useEffect(() => {
     console.log('formValues: ', formValues);
 
+    handleTextFields(
+      [
+        PRICE_KEY,
+        IS_COMPLEX_KEY
+      ].reduce(
+        (acc, item) => ({
+          ...acc,
+          [item]: formValues[item]
+        }), {}
+      )
+    );
+
     if(formData && formValues[IS_VISIBLE_KEY] === undefined) {
       changeVisibility(formData.action === EDIT_ACTION_KEY ? formData.data[IS_VISIBLE_KEY] : 1);
     }
@@ -177,6 +191,12 @@ const DataForm: FC = () => {
     });
   }, [
     formValues
+  ]);
+
+  useEffect(() => {
+    //console.log('textFieldValues: ', textFieldValues);
+  }, [
+    textFieldValues
   ]);
 
   if(formData && formData.action === REMOVE_ACTION_KEY) {
@@ -208,6 +228,7 @@ const DataForm: FC = () => {
             required={requiredFormFields.includes(key)}
             disabled={key === PRICE_KEY && Boolean(formValues[IS_COMPLEX_KEY])}
             onChange={({ target }) => handleInput(target, key)}
+            {...(key === PRICE_KEY && textFieldValues && { value: textFieldValues[PRICE_KEY] })}
           />
         )
       }

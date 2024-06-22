@@ -27,10 +27,13 @@ interface IForm {
   formFields: TCustomData<string[]>;
   selecterFields: TCustomData<string[]>;
   requiredFormFields: string[];
+  textFieldValues: TCustomData<string> | null;
+  handleTextFields: (data: TCustomData<number | undefined>) => void;
 }
 
 const useForm = (): IForm => {
   const [isDisabled, setDisabled] = useState<boolean>(true);
+  const [textFieldValues, setTextFieldValues] = useState<TCustomData<string> | null>(null);
 
   const { formData, formValues } = useSelector(state => state.form);
 
@@ -54,7 +57,7 @@ const useForm = (): IForm => {
   };
   const requiredFormFields = [NAME_KEY, PRICE_KEY];
 
-  const handleFormValues = (): void => {
+  const handleFormValues = () => {
     if(!formData) {
       setDisabled(true);
       return;
@@ -105,6 +108,18 @@ const useForm = (): IForm => {
     setDisabled(isValuesEdited || Boolean(invalidRequiredValues.length) || isActionAdd);
   }
 
+  const handleTextFields = (data: TCustomData<number | undefined>) => {
+    if(!data[IS_COMPLEX_KEY]) {
+      setTextFieldValues(null);
+    } else {
+      setTextFieldValues(
+        data[PRICE_KEY] === undefined
+          ? null
+          : {[PRICE_KEY]: data[PRICE_KEY] ? data[PRICE_KEY].toString() : '0'}
+      );
+    }
+  }
+
   useEffect(() => {
     handleFormValues();
   }, [
@@ -115,7 +130,9 @@ const useForm = (): IForm => {
     isDisabled,
     formFields,
     selecterFields,
-    requiredFormFields
+    requiredFormFields,
+    textFieldValues,
+    handleTextFields
   };
 }
 
