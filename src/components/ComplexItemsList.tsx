@@ -21,29 +21,29 @@ import {
 } from '../utils/constants';
 
 interface IComplexItemsList {
-  complexItemId: number;
-  isComplexItemsVisible: number;
+  itemId: number;
+  complex: string;
+  isComplexListVisible: number;
 }
 
-const ComplexItemsList: FC<IComplexItemsList> = ({ complexItemId, isComplexItemsVisible }) => {
+const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complex, isComplexListVisible }) => {
   const {
-    complexList,
-    currComplexList,
     complexItems,
-    handleCurrComplexList
+    currComplexItems,
+    handleComplexData
   } = useComplex();
 
   useEffect(() => {
     console.log(complexItems);
-    handleCurrComplexList({complexItemId, isListVisible: isComplexItemsVisible});
+    handleComplexData({itemId, complex, isListVisible: isComplexListVisible});
   }, [
-    isComplexItemsVisible
+    isComplexListVisible
   ]);
 
   return (
     // TODO: настроить удаление/добавление элементов списка комплексных услуг
-    isComplexItemsVisible
-    ? currComplexList.map(
+    isComplexListVisible
+    ? currComplexItems.map(
       (complexItem, index) =>
         <Grid key={complexItem.item_id?.toString()} container spacing={2}>
           <Grid item xs={9}>
@@ -60,7 +60,7 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ complexItemId, isComplexItems
                   [ID_KEY]: target.value as number
                 })}
               >
-                {complexList.map(
+                {complexItems.map(
                   (item: TItemData) =>
                     <MenuItem
                       key={item[ID_KEY] && item[ID_KEY].toString()}
@@ -79,7 +79,7 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ complexItemId, isComplexItems
               id={`input-${complexItem.item_id?.toString()}`}
               name={`${QUANTITY_KEY}-${complexItem.item_id?.toString()}`}
               label={CAPTIONS[QUANTITY_KEY]}
-              defaultValue={complexItems[index][COMPLEX_KEY][complexItemId.toString()]}
+              defaultValue={complexItem[QUANTITY_KEY]}
               fullWidth
               variant="outlined"
               type="text"

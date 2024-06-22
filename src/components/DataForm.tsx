@@ -31,6 +31,7 @@ import {
   ADD_ACTION_KEY,
   EDIT_ACTION_KEY,
   REMOVE_ACTION_KEY,
+  COMPLEX_KEY,
   IS_COMPLEX_KEY,
   IS_COMPLEX_ITEM_KEY,
   SORT_CAPTION,
@@ -140,6 +141,7 @@ const DataForm: FC = () => {
           [key]: value,
           ...(key === IS_COMPLEX_ITEM_KEY && value === 1 && {[IS_COMPLEX_KEY]: 0}),
           ...(key === IS_COMPLEX_KEY && value === 1 && {[IS_COMPLEX_ITEM_KEY]: 0}),
+          ...(key === COMPLEX_KEY && value === 0 && {[COMPLEX_KEY]: '[]'}),
         }
       })
     )
@@ -163,7 +165,7 @@ const DataForm: FC = () => {
       changeVisibility(formData.action === EDIT_ACTION_KEY ? formData.data[IS_VISIBLE_KEY] : 1);
     }
 
-    complexKeys.forEach(key => {
+    [...complexKeys, COMPLEX_KEY].forEach(key => {
       if(formData && formValues[key] === undefined) {
         handleComplexData({
           key,
@@ -246,12 +248,11 @@ const DataForm: FC = () => {
                     )
                   }
                 </FormGroup>
-                {/*
                 <ComplexItemsList
-                  complexItemId={formData.data[ID_KEY]}
-                  isComplexItemsVisible={formValues[IS_COMPLEX_ITEM_KEY] as number}
+                  itemId={formData.data[ID_KEY]}
+                  complex={formValues[COMPLEX_KEY] as string}
+                  isComplexListVisible={formValues[IS_COMPLEX_KEY] as number}
                 />
-                */}
               </>
             )}
           </Box>
