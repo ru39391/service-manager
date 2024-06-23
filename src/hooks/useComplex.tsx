@@ -107,7 +107,6 @@ const useComplex = (): IComplex => {
         }, []
       );
 
-    console.log({[ID_KEY]: id, [PRICE_KEY]: summ, [COMPLEX_KEY]: JSON.stringify(complexData)});
     dispatch(
       setFormValues({
         values: {
@@ -128,8 +127,12 @@ const useComplex = (): IComplex => {
 
   const editComplexItem = (data: TCustomData<number>) => {
     const complexItemsArr = [...currComplexItems].filter(item => item[ID_KEY] !== data[ID_KEY]);
+    const complexItemData: TItemData | undefined = complexItems.find((item: TItemData) => item[ID_KEY] === data.value);
 
-    updateComplex(complexItemsArr, data[COMPLEX_KEY]);
+    updateComplex(
+      complexItemData ? [...complexItemsArr, {...complexItemData, [QUANTITY_KEY]: data[QUANTITY_KEY]}] : complexItemsArr,
+      data[COMPLEX_KEY]
+    );
   }
 
   const hadnleComplexItem = (data: TCustomData<string | number>) => {
@@ -145,8 +148,10 @@ const useComplex = (): IComplex => {
 
       case `${EDIT_ACTION_KEY}`:
         editComplexItem({
+          value: data.value as number,
           [ID_KEY]: data[ID_KEY] as number,
-          [COMPLEX_KEY]: data[COMPLEX_KEY] as number
+          [COMPLEX_KEY]: data[COMPLEX_KEY] as number,
+          [QUANTITY_KEY]: data[QUANTITY_KEY] as number
         });
         break;
 

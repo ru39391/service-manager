@@ -219,7 +219,6 @@ const DataForm: FC = () => {
             id={key}
             name={key}
             label={key === INDEX_KEY ? SORT_CAPTION : CAPTIONS[key]}
-            defaultValue={formData.data[key] ? formData.data[key].toString() : ''}
             sx={{ mb: 1 }}
             fullWidth
             variant="outlined"
@@ -228,7 +227,11 @@ const DataForm: FC = () => {
             required={requiredFormFields.includes(key)}
             disabled={key === PRICE_KEY && Boolean(formValues[IS_COMPLEX_KEY])}
             onChange={({ target }) => handleInput(target, key)}
-            {...(key === PRICE_KEY && textFieldValues && { value: textFieldValues[PRICE_KEY] })}
+            {...(
+              key === PRICE_KEY
+                ? textFieldValues !== null ? { value: textFieldValues[PRICE_KEY] } : { defaultValue: formData.data[key] ? formData.data[key].toString() : '' }
+                : { defaultValue: formData.data[key] ? formData.data[key].toString() : '' }
+            )}
           />
         )
       }

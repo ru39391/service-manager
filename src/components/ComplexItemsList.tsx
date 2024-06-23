@@ -63,10 +63,11 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complex, isComplexLis
                 value={complexItem[ID_KEY]}
                 label={CAPTIONS[NAME_KEY]}
                 onChange={({ target }) => hadnleComplexItem({
-                  ...target,
                   action: EDIT_ACTION_KEY,
-                  [ID_KEY]: complexItem[ID_KEY],
-                  [QUANTITY_KEY]: 1
+                  value: target.value as number,
+                  [COMPLEX_KEY]: itemId,
+                  [ID_KEY]: complexItem[ID_KEY] as number,
+                  [QUANTITY_KEY]: 1,
                 })}
               >
                 {complexItems.map(
