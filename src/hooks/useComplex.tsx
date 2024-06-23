@@ -23,7 +23,6 @@ import {
 import { sortStrArray } from '../utils';
 
 type TComplexData = {
-  itemId: number;
   complex: string;
   isListVisible: number;
 };
@@ -54,7 +53,7 @@ const useComplex = (): IComplex => {
     setComplexItems(sortStrArray(complexItemsArr, NAME_KEY));
   }
 
-  const handleComplexData = ({itemId, complex, isListVisible}: TComplexData) => {
+  const handleComplexData = ({complex, isListVisible}: TComplexData) => {
     if(!isListVisible) {
       return;
     }
@@ -127,12 +126,20 @@ const useComplex = (): IComplex => {
 
   const editComplexItem = (data: TCustomData<number>) => {
     const complexItemsArr = [...currComplexItems].filter(item => item[ID_KEY] !== data[ID_KEY]);
-    const complexItemData: TItemData | undefined = complexItems.find((item: TItemData) => item[ID_KEY] === data.value);
+    const complexItemData: TItemData | undefined = [...complexItems].find((item: TItemData) => item[ID_KEY] === data.value);
 
     updateComplex(
       complexItemData ? [...complexItemsArr, {...complexItemData, [QUANTITY_KEY]: data[QUANTITY_KEY]}] : complexItemsArr,
       data[COMPLEX_KEY]
     );
+  }
+
+  const addComplexItem = (data: TCustomData<number>) => {
+    const currComplexItemIds: number[] = [...currComplexItems].map(item => item[ID_KEY] as number);
+    const complexItemsArr = [...complexItems].filter(item => !currComplexItemIds.includes(item[ID_KEY] as number));
+
+    // TODO: избавиться от data[COMPLEX_KEY]
+    updateComplex([...currComplexItems, {...complexItemsArr[0], [QUANTITY_KEY]: data[QUANTITY_KEY]}], data[COMPLEX_KEY]);
   }
 
   const hadnleComplexItem = (data: TCustomData<string | number>) => {
@@ -156,7 +163,10 @@ const useComplex = (): IComplex => {
         break;
 
       default:
-        console.log(data[ID_KEY]);
+        addComplexItem({
+          [COMPLEX_KEY]: data[COMPLEX_KEY] as number,
+          [QUANTITY_KEY]: data[QUANTITY_KEY] as number
+        });
         break;
     }
   }
