@@ -48,8 +48,7 @@ interface IComplexItemsList {
 const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complexList, complex, isComplexListVisible }) => {
   const {
     complexItems,
-    //currComplexItems,
-    //handleComplexData,
+    currComplexItems,
     handleComplexItem
   } = useComplex();
 
@@ -68,22 +67,18 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complexList, complex,
   };
 
   useEffect(() => {
-    //handleComplexData({complex, isListVisible: isComplexListVisible});
+    console.log({currComplexItems});
   }, [
-    complex,
-    isComplexListVisible
+    currComplexItems
   ]);
 
   useEffect(() => {
-    console.log({ complexList, isComplexListVisible });
-  }, [
-    complexList,
-    isComplexListVisible
-  ]);
+    //console.log({complexList, isComplexListVisible});
+  }, [complexList]);
 
   return (
     isComplexListVisible
-      ? <>{complexList.map(
+      ? <>{currComplexItems.map(
         (complexItem, index, arr) =>
           <Grid key={complexItem[ID_KEY] && complexItem[ID_KEY].toString()} container spacing={2}>
             <Grid item xs={8}>
@@ -118,7 +113,6 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complexList, complex,
               </FormControl>
             </Grid>
             <Grid item xs={4} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-              {/* // TODO: настроить валидацию вводимого значения и его передачу */}
               <TextField
                 id={`${COMPLEX_KEY}-input-${index.toString()}`}
                 name={`${COMPLEX_KEY}-${QUANTITY_KEY}-${index.toString()}`}
@@ -156,7 +150,7 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complexList, complex,
           color="inherit"
           variant="outlined"
           startIcon={<Add />}
-          disabled={complexItems.length === complexList.length}
+          disabled={complexItems.length === currComplexItems.length}
           onClick={() => handleComplexItem({
             action: ADD_ACTION_KEY,
             [COMPLEX_KEY]: itemId,

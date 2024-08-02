@@ -74,6 +74,7 @@ const DataForm: FC = () => {
   } = useForm();
   const {
     currComplexItems,
+    currComplexSumm,
     handleComplexData
   } = useComplex();
 
@@ -109,6 +110,8 @@ const DataForm: FC = () => {
       formData
     ]),
   };
+
+  const handlePriceValue = (value: number): number => currComplexSumm === value ? value : currComplexSumm;
 
   const handleInput = (input: EventTarget & (HTMLInputElement | HTMLTextAreaElement), key: string) => {
     input.value = key === NAME_KEY ? input.value : input.value.replace(/\D/g, '');
@@ -154,8 +157,15 @@ const DataForm: FC = () => {
         values: {
           ...formValues,
           [key]: value,
-          ...(key === IS_COMPLEX_ITEM_KEY && value === 1 && {[IS_COMPLEX_KEY]: 0, [COMPLEX_KEY]: '[]', price}),
-          ...(key === IS_COMPLEX_KEY && value === 1 && {[IS_COMPLEX_ITEM_KEY]: 0, [PRICE_KEY]: 0}),
+          ...(key === IS_COMPLEX_ITEM_KEY && value === 1 && {
+            [IS_COMPLEX_KEY]: 0,
+            [COMPLEX_KEY]: '[]',
+            price
+          }),
+          ...(key === IS_COMPLEX_KEY && value === 1 && {
+            [IS_COMPLEX_ITEM_KEY]: 0,
+            [PRICE_KEY]: handlePriceValue(price)
+          }),
         }
       })
     )
@@ -180,22 +190,18 @@ const DataForm: FC = () => {
     handleTextFields({
       [PRICE_KEY]: formData && formValues[PRICE_KEY] === undefined
         ? formData.data[PRICE_KEY]
-        : formValues[PRICE_KEY] as number
+        : formValues[IS_COMPLEX_KEY] ? handlePriceValue(formValues[PRICE_KEY] as number) : formValues[PRICE_KEY] as number
     });
 
+    /*
+    // TODO: настроить корректную передачу списка услуг в комплексе
     if(formData && formValues[COMPLEX_KEY] === undefined) {
-      /*
-      changeComplexData({
-        key: COMPLEX_KEY,
-        value: formData ? formData.data[COMPLEX_KEY] : '[]'
-      });
-      */
-      // TODO: настроить корректную передачу списка услуг в комплексе
       handleComplexData({
         [COMPLEX_KEY]: formData ? formData.data[COMPLEX_KEY] : '[]',
         isListVisible: formData ? formData.data[IS_COMPLEX_KEY] : 0
       });
     }
+    */
 
     if(formData && formValues[IS_VISIBLE_KEY] === undefined) {
       changeVisibility(formData.action === EDIT_ACTION_KEY ? formData.data[IS_VISIBLE_KEY] : 1);
@@ -289,12 +295,12 @@ const DataForm: FC = () => {
                     )
                   }
                 </FormGroup>
-                <ComplexItemsList
+                {formValues[IS_COMPLEX_KEY] && <ComplexItemsList
                   itemId={formData.data[ID_KEY]}
-                  complexList={currComplexItems}
+                  complexList={[]}//currComplexItems
                   complex={formValues[COMPLEX_KEY] as string}
                   isComplexListVisible={formValues[IS_COMPLEX_KEY] as number}
-                />
+                />}
               </>
             )}
           </Box>

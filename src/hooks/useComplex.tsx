@@ -31,6 +31,7 @@ type TComplexData = {
 interface IComplex {
   complexItems: TItemData[];
   currComplexItems: TItemData[];
+  currComplexSumm: number;
   handleComplexData: (data: TComplexData) => void;
   handleComplexItem: (data: TCustomData<string | number>) => void;
 }
@@ -38,14 +39,17 @@ interface IComplex {
 const useComplex = (): IComplex => {
   const [complexItems, setComplexItems] = useState<TItemData[]>([]);
   const [currComplexItems, setCurrComplexItems] = useState<TItemData[]>([]);
+  const [currComplexSumm, setCurrComplexSumm] = useState<number>(0);
 
   const dispatch = useDispatch();
   const {
-    pricelist,
-    formValues
+    formData,
+    formValues,
+    pricelist
   } = useSelector(state => ({
-    pricelist: state.pricelist,
-    formValues: state.form.formValues
+    formData: state.form.formData,
+    formValues: state.form.formValues,
+    pricelist: state.pricelist
   }));
 
   const fetchComplexItems = () => {
@@ -54,7 +58,7 @@ const useComplex = (): IComplex => {
     setComplexItems(sortStrArray(complexItemsArr, NAME_KEY));
   }
 
-  const updateComplex = (arr: TItemData[] = []) => {
+  const handleComplexItemsPrice = (arr: TItemData[] = []) => {
     const summ = arr
       .reduce(
         (acc, item) => {
@@ -66,6 +70,12 @@ const useComplex = (): IComplex => {
           return acc + data[QUANTITY_KEY] * data[PRICE_KEY]
         }, 0
       );
+
+    setCurrComplexSumm(summ);
+  }
+
+  const updateComplex = (arr: TItemData[] = []) => {
+    //console.log({arr});
     const complexData: TCustomData<number>[] = arr
       .reduce(
         (acc: TCustomData<number>[], item: TItemData) => {
@@ -78,20 +88,23 @@ const useComplex = (): IComplex => {
         }, []
       );
 
+      /*
     dispatch(
       setFormValues({
         values: {
           ...formValues,
-          ...(formValues[IS_COMPLEX_KEY] && { [PRICE_KEY]: summ }),
-          [COMPLEX_KEY]: JSON.stringify(complexData)
+          //...(formValues[IS_COMPLEX_KEY] && { [PRICE_KEY]: summ }),
+          //[COMPLEX_KEY]: JSON.stringify(complexData)
         }
       })
     );
+    */
+
+    handleComplexItemsPrice(arr);
     setCurrComplexItems(sortStrArray(arr, NAME_KEY));
   }
 
   const handleComplexData = ({complex, isListVisible}: TComplexData) => {
-    //console.log('{complex, isListVisible}', {complex, isListVisible});
     if(!isListVisible) {
       //updateComplex();
       return;
@@ -118,8 +131,8 @@ const useComplex = (): IComplex => {
       }, []
     );
 
-    //updateComplex(currComplexItemsArr);
-    console.log({currComplexItemsArr});
+    //console.log({currComplexItemsArr});
+    handleComplexItemsPrice(currComplexItemsArr);
     setCurrComplexItems(sortStrArray(currComplexItemsArr, NAME_KEY));
   }
 
@@ -172,32 +185,36 @@ const useComplex = (): IComplex => {
     }
   }
 
+  const resetCurrComplexItems = () => {
+    if(!Object.values(formValues).length) {
+      setCurrComplexSumm(0);
+      setCurrComplexItems([]);
+    }
+  }
+
   useEffect(() => {
     fetchComplexItems();
   }, []);
 
   useEffect(() => {
-    console.log({currComplexItems});
-  }, [currComplexItems]);
-
-  /*
-  useEffect(() => {
     handleComplexData({
-      complex: formValues && formValues[COMPLEX_KEY]
-        ? formValues[COMPLEX_KEY] as string
-        : '[]',
-      isListVisible: formValues && formValues[IS_COMPLEX_KEY] !== undefined
-        ? formValues[IS_COMPLEX_KEY] as number
-        : 0,
+      [COMPLEX_KEY]: formData ? formData.data[COMPLEX_KEY] : '[]',
+      isListVisible: formData ? formData.data[IS_COMPLEX_KEY] : 0
     });
+  }, [
+    formData
+  ]);
+
+  useEffect(() => {
+    resetCurrComplexItems();
   }, [
     formValues
   ]);
-  */
 
   return {
     complexItems,
     currComplexItems,
+    currComplexSumm,
     handleComplexData,
     handleComplexItem
   };
