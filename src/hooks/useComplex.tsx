@@ -13,6 +13,7 @@ import {
   NAME_KEY,
   PRICE_KEY,
   COMPLEX_KEY,
+  IS_COMPLEX_KEY,
   IS_COMPLEX_ITEM_KEY,
   QUANTITY_KEY,
   EDIT_ACTION_KEY,
@@ -31,7 +32,7 @@ interface IComplex {
   complexItems: TItemData[];
   currComplexItems: TItemData[];
   handleComplexData: (data: TComplexData) => void;
-  hadnleComplexItem: (data: TCustomData<string | number>) => void;
+  handleComplexItem: (data: TCustomData<string | number>) => void;
 }
 
 const useComplex = (): IComplex => {
@@ -53,36 +54,7 @@ const useComplex = (): IComplex => {
     setComplexItems(sortStrArray(complexItemsArr, NAME_KEY));
   }
 
-  const handleComplexData = ({complex, isListVisible}: TComplexData) => {
-    if(!isListVisible) {
-      return;
-    }
-
-    const complexDataArr: TCustomData<number>[] = JSON.parse(complex)
-      .map((data: TCustomData<number>) => ({
-        [ID_KEY]: Number(Object.keys(data)[0]),
-        [QUANTITY_KEY]: Object.values(data)[0]
-      }));
-    const currComplexItemsArr: TItemData[] = complexDataArr.reduce(
-      (acc: TItemData[], data: TCustomData<number>, index, arr) => {
-        const itemData: TItemData | undefined = pricelist[TYPES[ITEM_KEY]].find((item: TItemData) => item[ID_KEY] === data[ID_KEY]);
-
-        return itemData
-          ? [
-            ...acc,
-            {
-              ...itemData,
-              [QUANTITY_KEY]: arr[index][QUANTITY_KEY]
-            }
-          ]
-          : acc
-      }, []
-    );
-
-    setCurrComplexItems(sortStrArray(currComplexItemsArr, NAME_KEY));
-  }
-
-  const updateComplex = (arr: TItemData[], id: number) => {
+  const updateComplex = (arr: TItemData[] = []) => {
     const summ = arr
       .reduce(
         (acc, item) => {
@@ -110,7 +82,7 @@ const useComplex = (): IComplex => {
       setFormValues({
         values: {
           ...formValues,
-          [PRICE_KEY]: summ,
+          ...(formValues[IS_COMPLEX_KEY] && { [PRICE_KEY]: summ }),
           [COMPLEX_KEY]: JSON.stringify(complexData)
         }
       })
@@ -118,31 +90,60 @@ const useComplex = (): IComplex => {
     setCurrComplexItems(sortStrArray(arr, NAME_KEY));
   }
 
+  const handleComplexData = ({complex, isListVisible}: TComplexData) => {
+    //console.log('{complex, isListVisible}', {complex, isListVisible});
+    if(!isListVisible) {
+      //updateComplex();
+      return;
+    }
+
+    const complexDataArr: TCustomData<number>[] = JSON.parse(complex)
+      .map((data: TCustomData<number>) => ({
+        [ID_KEY]: Number(Object.keys(data)[0]),
+        [QUANTITY_KEY]: Object.values(data)[0]
+      }));
+    const currComplexItemsArr: TItemData[] = complexDataArr.reduce(
+      (acc: TItemData[], data: TCustomData<number>, index, arr) => {
+        const itemData: TItemData | undefined = pricelist[TYPES[ITEM_KEY]].find((item: TItemData) => item[ID_KEY] === data[ID_KEY]);
+
+        return itemData
+          ? [
+            ...acc,
+            {
+              ...itemData,
+              [QUANTITY_KEY]: arr[index][QUANTITY_KEY]
+            }
+          ]
+          : acc
+      }, []
+    );
+
+    //updateComplex(currComplexItemsArr);
+    console.log({currComplexItemsArr});
+    setCurrComplexItems(sortStrArray(currComplexItemsArr, NAME_KEY));
+  }
+
   const removeComplexItem = (data: TCustomData<number>) => {
     const complexItemsArr = [...currComplexItems].filter(item => item[ID_KEY] !== data[ID_KEY]);
 
-    updateComplex(complexItemsArr, data[COMPLEX_KEY]);
+    updateComplex(complexItemsArr);
   }
 
   const editComplexItem = (data: TCustomData<number>) => {
     const complexItemsArr = [...currComplexItems].filter(item => item[ID_KEY] !== data[ID_KEY]);
     const complexItemData: TItemData | undefined = [...complexItems].find((item: TItemData) => item[ID_KEY] === data.value);
 
-    updateComplex(
-      complexItemData ? [...complexItemsArr, {...complexItemData, [QUANTITY_KEY]: data[QUANTITY_KEY]}] : complexItemsArr,
-      data[COMPLEX_KEY]
-    );
+    updateComplex(complexItemData ? [...complexItemsArr, {...complexItemData, [QUANTITY_KEY]: data[QUANTITY_KEY]}] : complexItemsArr);
   }
 
   const addComplexItem = (data: TCustomData<number>) => {
     const currComplexItemIds: number[] = [...currComplexItems].map(item => item[ID_KEY] as number);
     const complexItemsArr = [...complexItems].filter(item => !currComplexItemIds.includes(item[ID_KEY] as number));
 
-    // TODO: избавиться от data[COMPLEX_KEY]
-    updateComplex([...currComplexItems, {...complexItemsArr[0], [QUANTITY_KEY]: data[QUANTITY_KEY]}], data[COMPLEX_KEY]);
+    updateComplex([...currComplexItems, {...complexItemsArr[0], [QUANTITY_KEY]: data[QUANTITY_KEY]}]);
   }
 
-  const hadnleComplexItem = (data: TCustomData<string | number>) => {
+  const handleComplexItem = (data: TCustomData<string | number>) => {
     console.log(data);
 
     switch(data.action) {
@@ -175,11 +176,30 @@ const useComplex = (): IComplex => {
     fetchComplexItems();
   }, []);
 
+  useEffect(() => {
+    console.log({currComplexItems});
+  }, [currComplexItems]);
+
+  /*
+  useEffect(() => {
+    handleComplexData({
+      complex: formValues && formValues[COMPLEX_KEY]
+        ? formValues[COMPLEX_KEY] as string
+        : '[]',
+      isListVisible: formValues && formValues[IS_COMPLEX_KEY] !== undefined
+        ? formValues[IS_COMPLEX_KEY] as number
+        : 0,
+    });
+  }, [
+    formValues
+  ]);
+  */
+
   return {
     complexItems,
     currComplexItems,
     handleComplexData,
-    hadnleComplexItem
+    handleComplexItem
   };
 }
 

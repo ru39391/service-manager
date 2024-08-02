@@ -32,29 +32,58 @@ import {
   REMOVE_ACTION_KEY
 } from '../utils/constants';
 
+type TQuantityInput = {
+  input: EventTarget & (HTMLInputElement | HTMLTextAreaElement);
+  [COMPLEX_KEY]: number;
+  [ID_KEY]: number;
+}
+
 interface IComplexItemsList {
   itemId: number;
+  complexList: TItemData[];
   complex: string;
   isComplexListVisible: number;
 }
 
-const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complex, isComplexListVisible }) => {
+const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complexList, complex, isComplexListVisible }) => {
   const {
     complexItems,
-    currComplexItems,
-    handleComplexData,
-    hadnleComplexItem
+    //currComplexItems,
+    //handleComplexData,
+    handleComplexItem
   } = useComplex();
 
+  const handleInput = (data: TQuantityInput) => {
+    const { input } = data;
+
+    input.value = input.value.replace(/\D/g, '');
+
+    handleComplexItem({
+      action: EDIT_ACTION_KEY,
+      value: data[ID_KEY],
+      [COMPLEX_KEY]: data[COMPLEX_KEY],
+      [ID_KEY]: data[ID_KEY],
+      [QUANTITY_KEY]: Number(input.value)
+    });
+  };
+
   useEffect(() => {
-    handleComplexData({complex, isListVisible: isComplexListVisible});
+    //handleComplexData({complex, isListVisible: isComplexListVisible});
   }, [
+    complex,
+    isComplexListVisible
+  ]);
+
+  useEffect(() => {
+    console.log({ complexList, isComplexListVisible });
+  }, [
+    complexList,
     isComplexListVisible
   ]);
 
   return (
     isComplexListVisible
-      ? <>{currComplexItems.map(
+      ? <>{complexList.map(
         (complexItem, index, arr) =>
           <Grid key={complexItem[ID_KEY] && complexItem[ID_KEY].toString()} container spacing={2}>
             <Grid item xs={8}>
@@ -66,7 +95,7 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complex, isComplexLis
                   name={`${COMPLEX_KEY}-${NAME_KEY}-${index.toString()}`}
                   value={complexItem[ID_KEY]}
                   label={CAPTIONS[NAME_KEY]}
-                  onChange={({ target }) => hadnleComplexItem({
+                  onChange={({ target }) => handleComplexItem({
                     action: EDIT_ACTION_KEY,
                     value: target.value as number,
                     [COMPLEX_KEY]: itemId,
@@ -99,9 +128,10 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complex, isComplexLis
                 variant="outlined"
                 type="text"
                 sx={{ my: 1 }}
-                onChange={({ target }) => console.log({
-                  value: target.value,
-                  [ID_KEY]: complexItem[ID_KEY]
+                onChange={({ target }) => handleInput({
+                  input: target,
+                  [COMPLEX_KEY]: itemId,
+                  [ID_KEY]: complexItem[ID_KEY] as number
                 })}
               />
               <Tooltip
@@ -110,7 +140,7 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complex, isComplexLis
               >
                 <IconButton
                   sx={{ p: 1, color: 'text.secondary' }}
-                  onClick={() => hadnleComplexItem({
+                  onClick={() => handleComplexItem({
                     action: REMOVE_ACTION_KEY,
                     [COMPLEX_KEY]: itemId,
                     [ID_KEY]: complexItem[ID_KEY] as number
@@ -125,10 +155,9 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, complex, isComplexLis
         <Button
           color="inherit"
           variant="outlined"
-          loadingPosition="start"
           startIcon={<Add />}
-          disabled={complexItems.length === currComplexItems.length}
-          onClick={() => hadnleComplexItem({
+          disabled={complexItems.length === complexList.length}
+          onClick={() => handleComplexItem({
             action: ADD_ACTION_KEY,
             [COMPLEX_KEY]: itemId,
             [QUANTITY_KEY]: 1

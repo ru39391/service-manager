@@ -13,6 +13,7 @@ import ModalFooter from './ModalFooter';
 import ComplexItemsList from './ComplexItemsList';
 
 import useForm from '../hooks/useForm';
+import useComplex from '../hooks/useComplex';
 import useCategoryCounter from '../hooks/useCategoryCounter';
 
 import { useSelector, useDispatch } from '../services/hooks';
@@ -71,6 +72,10 @@ const DataForm: FC = () => {
     textFieldValues,
     handleTextFields
   } = useForm();
+  const {
+    currComplexItems,
+    handleComplexData
+  } = useComplex();
 
   const complexKeys: string[] = [IS_COMPLEX_ITEM_KEY, IS_COMPLEX_KEY];
   const handlersData = {
@@ -115,7 +120,11 @@ const DataForm: FC = () => {
           [key]: key === NAME_KEY ? input.value : Number(input.value)
         }
       })
-    )
+    );
+
+    if(key == PRICE_KEY) {
+      handleTextFields({ [PRICE_KEY]: Number(input.value) });
+    }
   };
 
   const changeVisibility = (value: number) => {
@@ -133,19 +142,20 @@ const DataForm: FC = () => {
     )
   };
 
-  const handleComplexData = ({key, value}: {key: string, value: number}) => {
+  const changeComplexData = ({key, value}: {key: string, value: number | string}) => {
     if(!formData || formData.action === REMOVE_ACTION_KEY || formData.type !== TYPES[ITEM_KEY]) {
       return;
     }
+
+    const price = formData ? formData.data[PRICE_KEY] : 0;
 
     dispatch(
       setFormValues({
         values: {
           ...formValues,
           [key]: value,
-          ...(key === IS_COMPLEX_ITEM_KEY && value === 1 && {[IS_COMPLEX_KEY]: 0}),
-          ...(key === IS_COMPLEX_KEY && value === 1 && {[IS_COMPLEX_ITEM_KEY]: 0}),
-          ...(key === COMPLEX_KEY && value === 0 && {[COMPLEX_KEY]: '[]'}),
+          ...(key === IS_COMPLEX_ITEM_KEY && value === 1 && {[IS_COMPLEX_KEY]: 0, [COMPLEX_KEY]: '[]', price}),
+          ...(key === IS_COMPLEX_KEY && value === 1 && {[IS_COMPLEX_ITEM_KEY]: 0, [PRICE_KEY]: 0}),
         }
       })
     )
@@ -158,32 +168,42 @@ const DataForm: FC = () => {
       type: formData ? formData.type as string : null,
       data: formData ? formData.data as TCustomData<number> : null
     });
+
+    handleTextFields({ [PRICE_KEY]: formData ? formData.data[PRICE_KEY] : 0 });
   }, [
     formData
   ]);
 
   useEffect(() => {
-    console.log('formValues: ', formValues);
+    //console.log('formValues: ', formValues);
 
-    handleTextFields(
-      [
-        PRICE_KEY,
-        IS_COMPLEX_KEY
-      ].reduce(
-        (acc, item) => ({
-          ...acc,
-          [item]: formValues[item]
-        }), {}
-      )
-    );
+    handleTextFields({
+      [PRICE_KEY]: formData && formValues[PRICE_KEY] === undefined
+        ? formData.data[PRICE_KEY]
+        : formValues[PRICE_KEY] as number
+    });
+
+    if(formData && formValues[COMPLEX_KEY] === undefined) {
+      /*
+      changeComplexData({
+        key: COMPLEX_KEY,
+        value: formData ? formData.data[COMPLEX_KEY] : '[]'
+      });
+      */
+      // TODO: настроить корректную передачу списка услуг в комплексе
+      handleComplexData({
+        [COMPLEX_KEY]: formData ? formData.data[COMPLEX_KEY] : '[]',
+        isListVisible: formData ? formData.data[IS_COMPLEX_KEY] : 0
+      });
+    }
 
     if(formData && formValues[IS_VISIBLE_KEY] === undefined) {
       changeVisibility(formData.action === EDIT_ACTION_KEY ? formData.data[IS_VISIBLE_KEY] : 1);
     }
 
-    [...complexKeys, COMPLEX_KEY].forEach(key => {
+    [...complexKeys].forEach(key => {
       if(formData && formValues[key] === undefined) {
-        handleComplexData({
+        changeComplexData({
           key,
           value: formData.action === EDIT_ACTION_KEY ? formData.data[key] : 0
         });
@@ -191,12 +211,6 @@ const DataForm: FC = () => {
     });
   }, [
     formValues
-  ]);
-
-  useEffect(() => {
-    //console.log('textFieldValues: ', textFieldValues);
-  }, [
-    textFieldValues
   ]);
 
   if(formData && formData.action === REMOVE_ACTION_KEY) {
@@ -229,8 +243,8 @@ const DataForm: FC = () => {
             onChange={({ target }) => handleInput(target, key)}
             {...(
               key === PRICE_KEY
-                ? textFieldValues !== null ? { value: textFieldValues[PRICE_KEY] } : { defaultValue: formData.data[key] ? formData.data[key].toString() : '' }
-                : { defaultValue: formData.data[key] ? formData.data[key].toString() : '' }
+                ? { value: textFieldValues ? textFieldValues[key] : '0' }
+                : { defaultValue: formData.data[key] ? formData.data[key].toString() : '0' }
             )}
           />
         )
@@ -265,7 +279,7 @@ const DataForm: FC = () => {
                         control={
                           <Checkbox
                             checked={Boolean(formValues[key])}
-                            onChange={() => handleComplexData({
+                            onChange={() => changeComplexData({
                               key,
                               value: Number(!formValues[key])
                             })}
@@ -277,6 +291,7 @@ const DataForm: FC = () => {
                 </FormGroup>
                 <ComplexItemsList
                   itemId={formData.data[ID_KEY]}
+                  complexList={currComplexItems}
                   complex={formValues[COMPLEX_KEY] as string}
                   isComplexListVisible={formValues[IS_COMPLEX_KEY] as number}
                 />

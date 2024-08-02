@@ -101,7 +101,7 @@ const useForm = (): IForm => {
     const isActionAdd: boolean = action === ADD_ACTION_KEY && Boolean(undefinedRequiredValues.length);
 
     /*
-    console.log(editedValues);
+    console.log({editedValues});
     console.log({undefinedRequiredValues, isActionAdd});
     console.log({invalidRequiredValues});
     */
@@ -109,19 +109,16 @@ const useForm = (): IForm => {
   }
 
   const handleTextFields = (data: TCustomData<number | undefined>) => {
-    if(!data[IS_COMPLEX_KEY]) {
-      setTextFieldValues(null);
-    } else {
-      setTextFieldValues(
-        data[PRICE_KEY] === undefined
-          ? null
-          : {[PRICE_KEY]: data[PRICE_KEY] ? data[PRICE_KEY].toString() : '0'}
-      );
-    }
+    setTextFieldValues(
+      data[PRICE_KEY] === undefined
+        ? null
+        : {[PRICE_KEY]: data[PRICE_KEY] ? data[PRICE_KEY].toString() : '0'}
+    );
   }
 
   useEffect(() => {
     handleFormValues();
+    //console.log(formValues);
   }, [
     formValues
   ]);
