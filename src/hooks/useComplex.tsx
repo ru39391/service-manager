@@ -75,7 +75,6 @@ const useComplex = (): IComplex => {
   }
 
   const updateComplex = (arr: TItemData[] = []) => {
-    //console.log({arr});
     const complexData: TCustomData<number>[] = arr
       .reduce(
         (acc: TCustomData<number>[], item: TItemData) => {
@@ -131,7 +130,6 @@ const useComplex = (): IComplex => {
       }, []
     );
 
-    //console.log({currComplexItemsArr});
     handleComplexItemsPrice(currComplexItemsArr);
     setCurrComplexItems(sortStrArray(currComplexItemsArr, NAME_KEY));
   }

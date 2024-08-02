@@ -64,6 +64,7 @@ const DataForm: FC = () => {
   const dispatch = useDispatch();
   const { formData, formValues } = useSelector(state => state.form);
   const { subCategoryCounter, setSubCategories } = useCategoryCounter();
+  const { currComplexSumm } = useComplex();
   const {
     isDisabled,
     formFields,
@@ -72,11 +73,6 @@ const DataForm: FC = () => {
     textFieldValues,
     handleTextFields
   } = useForm();
-  const {
-    currComplexItems,
-    currComplexSumm,
-    handleComplexData
-  } = useComplex();
 
   const complexKeys: string[] = [IS_COMPLEX_ITEM_KEY, IS_COMPLEX_KEY];
   const handlersData = {
@@ -193,16 +189,6 @@ const DataForm: FC = () => {
         : formValues[IS_COMPLEX_KEY] ? handlePriceValue(formValues[PRICE_KEY] as number) : formValues[PRICE_KEY] as number
     });
 
-    /*
-    // TODO: настроить корректную передачу списка услуг в комплексе
-    if(formData && formValues[COMPLEX_KEY] === undefined) {
-      handleComplexData({
-        [COMPLEX_KEY]: formData ? formData.data[COMPLEX_KEY] : '[]',
-        isListVisible: formData ? formData.data[IS_COMPLEX_KEY] : 0
-      });
-    }
-    */
-
     if(formData && formValues[IS_VISIBLE_KEY] === undefined) {
       changeVisibility(formData.action === EDIT_ACTION_KEY ? formData.data[IS_VISIBLE_KEY] : 1);
     }
@@ -295,12 +281,7 @@ const DataForm: FC = () => {
                     )
                   }
                 </FormGroup>
-                {formValues[IS_COMPLEX_KEY] && <ComplexItemsList
-                  itemId={formData.data[ID_KEY]}
-                  complexList={[]}//currComplexItems
-                  complex={formValues[COMPLEX_KEY] as string}
-                  isComplexListVisible={formValues[IS_COMPLEX_KEY] as number}
-                />}
+                {formValues[IS_COMPLEX_KEY] ? <ComplexItemsList itemId={formData.data[ID_KEY]} /> : ''}
               </>
             )}
           </Box>
