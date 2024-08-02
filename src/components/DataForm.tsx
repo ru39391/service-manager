@@ -19,7 +19,7 @@ import useCategoryCounter from '../hooks/useCategoryCounter';
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormValues } from '../services/slices/form-slice';
 
-import { removePricelistData } from '../services/actions/pricelist';
+import { createPricelistData, removePricelistData } from '../services/actions/pricelist';
 
 import type { TCustomData, TItemData } from '../types';
 
@@ -74,10 +74,12 @@ const DataForm: FC = () => {
   const complexKeys: string[] = [IS_COMPLEX_ITEM_KEY, IS_COMPLEX_KEY];
   const handlersData = {
     [ADD_ACTION_KEY]: useCallback(() => {
-      console.log({
+      dispatch(createPricelistData({
+        action: ADD_ACTION_KEY,
         alias: formData ? formData.type as string : null,
-        data: formData ? [{...formData.data as TItemData, ...formValues}] : [],
-      });
+        // TODO: вычислять item_id при создании элемента
+        arr: formData ? [{...formData.data as TItemData, ...formValues}] : [],
+      }));
     }, [
       dispatch,
       formData,
@@ -85,6 +87,7 @@ const DataForm: FC = () => {
     ]),
     [EDIT_ACTION_KEY]: useCallback(() => {
       console.log({
+        action: EDIT_ACTION_KEY,
         alias: formData ? formData.type as string : null,
         data: formData ? [{[ID_KEY]: formData.data[ID_KEY], ...formValues}] : [],
       });
@@ -95,6 +98,7 @@ const DataForm: FC = () => {
     ]),
     [REMOVE_ACTION_KEY]: useCallback(() => {
       dispatch(removePricelistData({
+        action: REMOVE_ACTION_KEY,
         alias: formData ? formData.type as string : null,
         ids: formData ? [formData.data[ID_KEY]] : [],
       }));
@@ -155,7 +159,9 @@ const DataForm: FC = () => {
       [COMPLEX_KEY]: formData ? formData.data[COMPLEX_KEY] : '[]',
       [PRICE_KEY]: formData ? formData.data[PRICE_KEY] : 0
     };
-    const isComplexItemsExist = JSON.parse(data[COMPLEX_KEY]).length > 0;
+    const isComplexItemsExist = data[COMPLEX_KEY] === undefined
+      ? data[COMPLEX_KEY]
+      : JSON.parse(data[COMPLEX_KEY]).length > 0;
 
 
     dispatch(
@@ -166,7 +172,7 @@ const DataForm: FC = () => {
           ...(key === IS_COMPLEX_ITEM_KEY && value === 1 && {
             [IS_COMPLEX_KEY]: 0,
             [COMPLEX_KEY]: '[]',
-            [PRICE_KEY]: data[PRICE_KEY]
+            [PRICE_KEY]: formData && formData.action === ADD_ACTION_KEY ? formValues[PRICE_KEY] : data[PRICE_KEY]
           }),
           ...(key === IS_COMPLEX_KEY && {
             ...( value === 1
@@ -176,8 +182,8 @@ const DataForm: FC = () => {
                   ...(isComplexItemsExist && { [COMPLEX_KEY]: data[COMPLEX_KEY] })
                 }
                 : {
+                  ...data,
                   [COMPLEX_KEY]: '[]',
-                  [PRICE_KEY]: 0
                 }
               )
           }),
@@ -239,7 +245,7 @@ const DataForm: FC = () => {
   }
 
   return (
-    <>{formValues[COMPLEX_KEY]}
+    <>{/*formValues[COMPLEX_KEY]*/}
       {formData && formFields[formData.type as string].map(
         (key, index) =>
           <TextField
@@ -258,7 +264,7 @@ const DataForm: FC = () => {
             {...(
               key === PRICE_KEY
                 ? { value: textFieldValues ? textFieldValues[key] : '0' }
-                : { defaultValue: formData.data[key] ? formData.data[key].toString() : '0' }
+                : { defaultValue: formData.data[key] ? formData.data[key].toString() : '' }
             )}
           />
         )

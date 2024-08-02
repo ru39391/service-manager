@@ -12,6 +12,7 @@ import {
 } from '../slices/form-slice';
 
 import type {
+  TItemData,
   TPricelistData,
   TResponseData,
   TResponseDefault
@@ -60,11 +61,28 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
   }
 };
 
+// TODO: переписать thunk-контроллеры для новой структуры ответов
 // TODO: переписать thunk по образцу removePricelistData (чтобы принимал alias/массив alias и массив объектов или массив объектов вида { [alias]: массив объектов })
-const createPricelistData = (priceListData: TPricelistData): TAppThunk<void> => async (dispatch: TAppDispatch) => {
+const createPricelistData = ({ action, alias, arr }: { action: string; alias: string | null; arr: TItemData[] }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
+  console.log({
+    action,
+    alias: `${API_URL}${alias}`,
+    arr,
+    //...ids.reduce((acc, item, index) => ({...acc, [index]: { [ID_KEY]: item }}), {})
+  });
+
+  /*
   try {
+    const {
+      success,
+      data,
+      errors
+    }: TResponseDefault = await axios.post(`${API_URL}${alias}`, {
+      ...ids.reduce((acc, item, index) => ({...acc, [index]: { [ID_KEY]: item }}), {})
+    });
+
     const response = await Promise.all(
       Object.values(TYPES).map(alias => axios.post(`${API_URL}${alias}`, {
         ...priceListData[alias].reduce((acc, item, index) => ({...acc, [index]: item}), {})
@@ -97,12 +115,15 @@ const createPricelistData = (priceListData: TPricelistData): TAppThunk<void> => 
   } catch(error) {
     dispatch(getPricelistFailed({ alertMsg: 'ошибка при создании' }));
   }
+
+    */
 };
 
-const removePricelistData = ({ alias, ids }: { alias: string | null; ids: number[] }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
+const removePricelistData = ({ action, alias, ids }: { action: string; alias: string | null; ids: number[] }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
   console.log({
+    action,
     alias: `${API_URL}${alias}`,
     ...ids.reduce((acc, item, index) => ({...acc, [index]: { [ID_KEY]: item }}), {})
   });
@@ -125,7 +146,7 @@ const removePricelistData = ({ alias, ids }: { alias: string | null; ids: number
     const handleRespData = () => {
       dispatch(setFormData({}));
 
-      // TODO: отредактировать передачу параметров
+      // TODO: отредактировать передачу параметров ???
       dispatch(setFormVisible({
         title: 'Не всё удалено',
         desc: `Не удалось удалить: ${failedItemsArr.map((item, index, arr) => `"${item[NAME_KEY]}" c id ${item[ID_KEY]}${index === arr.length - 1 ? '.': ', '}`)}`
