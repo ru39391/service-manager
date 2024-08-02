@@ -17,7 +17,7 @@ import {
 
 import useComplex from '../hooks/useComplex';
 
-import type { TItemData, TCustomData } from '../types';
+import type { TItemData } from '../types';
 
 import {
   ID_KEY,
@@ -62,12 +62,6 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId }) => {
       [QUANTITY_KEY]: Number(input.value)
     });
   };
-
-  useEffect(() => {
-    console.log({currComplexItems});
-  }, [
-    currComplexItems
-  ]);
 
   return <>
     {currComplexItems.map((complexItem, index, arr) =>

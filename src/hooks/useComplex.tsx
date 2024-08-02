@@ -24,15 +24,14 @@ import {
 import { sortStrArray } from '../utils';
 
 type TComplexData = {
-  complex: string;
-  isListVisible: number;
+  [COMPLEX_KEY]: string;
+  [IS_COMPLEX_KEY]: number;
 };
 
 interface IComplex {
   complexItems: TItemData[];
   currComplexItems: TItemData[];
   currComplexSumm: number;
-  handleComplexData: (data: TComplexData) => void;
   handleComplexItem: (data: TCustomData<string | number>) => void;
 }
 
@@ -58,7 +57,7 @@ const useComplex = (): IComplex => {
     setComplexItems(sortStrArray(complexItemsArr, NAME_KEY));
   }
 
-  const handleComplexItemsPrice = (arr: TItemData[] = []) => {
+  const handleComplexItemsPrice = (arr: TItemData[] = []): number => {
     const summ = arr
       .reduce(
         (acc, item) => {
@@ -72,6 +71,8 @@ const useComplex = (): IComplex => {
       );
 
     setCurrComplexSumm(summ);
+
+    return summ;
   }
 
   const updateComplex = (arr: TItemData[] = []) => {
@@ -87,29 +88,26 @@ const useComplex = (): IComplex => {
         }, []
       );
 
-      /*
+    const summ = handleComplexItemsPrice(arr);
+    setCurrComplexItems(sortStrArray(arr, NAME_KEY));
+
     dispatch(
       setFormValues({
         values: {
           ...formValues,
-          //...(formValues[IS_COMPLEX_KEY] && { [PRICE_KEY]: summ }),
-          //[COMPLEX_KEY]: JSON.stringify(complexData)
+          ...(formValues[IS_COMPLEX_KEY] && { [PRICE_KEY]: summ }),
+          [COMPLEX_KEY]: formValues[IS_COMPLEX_KEY] ? JSON.stringify(complexData) : '[]'
         }
       })
     );
-    */
-
-    handleComplexItemsPrice(arr);
-    setCurrComplexItems(sortStrArray(arr, NAME_KEY));
   }
 
-  const handleComplexData = ({complex, isListVisible}: TComplexData) => {
-    if(!isListVisible) {
-      //updateComplex();
+  const handleComplexData = (payload: TComplexData) => {
+    if(!payload[IS_COMPLEX_KEY]) {
       return;
     }
 
-    const complexDataArr: TCustomData<number>[] = JSON.parse(complex)
+    const complexDataArr: TCustomData<number>[] = JSON.parse(payload[COMPLEX_KEY])
       .map((data: TCustomData<number>) => ({
         [ID_KEY]: Number(Object.keys(data)[0]),
         [QUANTITY_KEY]: Object.values(data)[0]
@@ -197,7 +195,7 @@ const useComplex = (): IComplex => {
   useEffect(() => {
     handleComplexData({
       [COMPLEX_KEY]: formData ? formData.data[COMPLEX_KEY] : '[]',
-      isListVisible: formData ? formData.data[IS_COMPLEX_KEY] : 0
+      [IS_COMPLEX_KEY]: formData ? formData.data[IS_COMPLEX_KEY] : 0
     });
   }, [
     formData
@@ -213,7 +211,6 @@ const useComplex = (): IComplex => {
     complexItems,
     currComplexItems,
     currComplexSumm,
-    handleComplexData,
     handleComplexItem
   };
 }

@@ -107,7 +107,15 @@ const DataForm: FC = () => {
     ]),
   };
 
-  const handlePriceValue = (value: number): number => currComplexSumm === value ? value : currComplexSumm;
+  const handlePriceValue = (data: { [PRICE_KEY]: number; [COMPLEX_KEY]: string }): number => {
+    if(data[COMPLEX_KEY] === undefined) {
+      return currComplexSumm;
+    }
+
+    const arr = data[COMPLEX_KEY] ? JSON.parse(data[COMPLEX_KEY]) : [];
+
+    return arr.length === 0 ? data[PRICE_KEY] : data[PRICE_KEY] || currComplexSumm;
+  }
 
   const handleInput = (input: EventTarget & (HTMLInputElement | HTMLTextAreaElement), key: string) => {
     input.value = key === NAME_KEY ? input.value : input.value.replace(/\D/g, '');
@@ -146,7 +154,10 @@ const DataForm: FC = () => {
       return;
     }
 
-    const price = formData ? formData.data[PRICE_KEY] : 0;
+    const data = {
+      [COMPLEX_KEY]: formData ? formData.data[COMPLEX_KEY] : '[]',
+      [PRICE_KEY]: formData ? formData.data[PRICE_KEY] : 0
+    };
 
     dispatch(
       setFormValues({
@@ -156,11 +167,10 @@ const DataForm: FC = () => {
           ...(key === IS_COMPLEX_ITEM_KEY && value === 1 && {
             [IS_COMPLEX_KEY]: 0,
             [COMPLEX_KEY]: '[]',
-            price
+            [PRICE_KEY]: data[PRICE_KEY]
           }),
-          ...(key === IS_COMPLEX_KEY && value === 1 && {
-            [IS_COMPLEX_ITEM_KEY]: 0,
-            [PRICE_KEY]: handlePriceValue(price)
+          ...(key === IS_COMPLEX_KEY && {
+            ...( value === 1 ? { [IS_COMPLEX_ITEM_KEY]: 0, [PRICE_KEY]: 0 } : { ...data })
           }),
         }
       })
@@ -186,7 +196,10 @@ const DataForm: FC = () => {
     handleTextFields({
       [PRICE_KEY]: formData && formValues[PRICE_KEY] === undefined
         ? formData.data[PRICE_KEY]
-        : formValues[IS_COMPLEX_KEY] ? handlePriceValue(formValues[PRICE_KEY] as number) : formValues[PRICE_KEY] as number
+        : handlePriceValue({
+          [PRICE_KEY]: formValues[PRICE_KEY] as number,
+          [COMPLEX_KEY]: formValues[COMPLEX_KEY] as string
+        })
     });
 
     if(formData && formValues[IS_VISIBLE_KEY] === undefined) {
@@ -260,8 +273,7 @@ const DataForm: FC = () => {
                     }
                   />
                   {/*
-                    // TODO: настроить валидацию чекбоксов (учесть случаи изменения данных комплексных услуг, когда не меняется значение чекбокса)
-                    // TODO: настроить передачу значения выпадающих список при сохранении
+                    // TODO: настроить передачу значения выпадающих списков при сохранении
                   */}
                   {complexKeys.map(
                     (key) =>
