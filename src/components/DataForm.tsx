@@ -56,9 +56,6 @@ subdept - список
 group - список
 
 // TODO: настроить установку значения для параметра "Входит в комплекс" (сейчас везде 0, см. услуги для комлекса id = 19829)
-// TODO: настроить обработку списка услуг, входящих в компекс
-isComplexItem - входит в комплекс, радио (если отмечено, показывать список доступных комплексов и поле ввода количества)
-isComplex - комплекс услуг, радио (если отмечено, показывать услуги в комплексе complex), настроить пересчёт цены при парсинге
 */
 const DataForm: FC = () => {
   const dispatch = useDispatch();
@@ -158,6 +155,8 @@ const DataForm: FC = () => {
       [COMPLEX_KEY]: formData ? formData.data[COMPLEX_KEY] : '[]',
       [PRICE_KEY]: formData ? formData.data[PRICE_KEY] : 0
     };
+    const isComplexItemsExist = JSON.parse(data[COMPLEX_KEY]).length > 0;
+
 
     dispatch(
       setFormValues({
@@ -170,7 +169,17 @@ const DataForm: FC = () => {
             [PRICE_KEY]: data[PRICE_KEY]
           }),
           ...(key === IS_COMPLEX_KEY && {
-            ...( value === 1 ? { [IS_COMPLEX_ITEM_KEY]: 0, [PRICE_KEY]: 0 } : { ...data })
+            ...( value === 1
+                ? {
+                  [IS_COMPLEX_ITEM_KEY]: 0,
+                  [PRICE_KEY]: isComplexItemsExist ? data[PRICE_KEY] : 0,
+                  ...(isComplexItemsExist && { [COMPLEX_KEY]: data[COMPLEX_KEY] })
+                }
+                : {
+                  [COMPLEX_KEY]: '[]',
+                  [PRICE_KEY]: 0
+                }
+              )
           }),
         }
       })
@@ -230,7 +239,7 @@ const DataForm: FC = () => {
   }
 
   return (
-    <>
+    <>{formValues[COMPLEX_KEY]}
       {formData && formFields[formData.type as string].map(
         (key, index) =>
           <TextField
