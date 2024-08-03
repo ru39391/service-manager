@@ -13,8 +13,11 @@ import {
 
 import type {
   TItemData,
+  TItemsArr,
   TPricelistData,
   TResponseData,
+  TResponseList,
+  TResponseItems,
   TResponseDefault
 } from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';
@@ -29,6 +32,7 @@ import {
   API_URL,
   TYPES
 } from '../../utils/constants';
+import { handleRespData, setRespMessage } from '../../utils';
 
 import { deleteDepts } from '../../mocks';
 
@@ -37,6 +41,7 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
 
   try {
     const response = await Promise.all(Object.values(TYPES).map(alias => axios.get(`${API_URL}${alias}`)));
+
     const { success, data }: TResponseData = response
       .map(({ data }) => data)
       .reduce((acc: TResponseData, item: TResponseDefault, index ) => ({
@@ -63,7 +68,7 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
 
 // TODO: переписать thunk-контроллеры для новой структуры ответов
 // TODO: переписать thunk по образцу removePricelistData (чтобы принимал alias/массив alias и массив объектов или массив объектов вида { [alias]: массив объектов })
-const createPricelistData = ({ action, alias, arr }: { action: string; alias: string | null; arr: TItemData[] }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
+const createPricelistData = ({ action, alias, arr }: { action: string; alias: string | null; arr: TItemsArr }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
   console.log({
@@ -135,35 +140,48 @@ const removePricelistData = ({ action, alias, ids }: { action: string; alias: st
       errors
     }: TResponseDefault = await deleteDepts();
     /*
-    axios.delete(`${API_URL}${alias}`, {
+    await axios.delete(`${API_URL}${alias}`, {
       ...ids.reduce((acc, item, index) => ({...acc, [index]: { [ID_KEY]: item }}), {})
     });
     */
 
-    const itemsArr = data ? Object.values(data).filter((value) => typeof value !== 'boolean' && typeof value !== 'string') : [];
-    const failedItemsArr = itemsArr.filter((item) => item[UPDATEDON_KEY] === null);
+    const {
+      message,
+      counter,
+      succeed,
+      failed,
+      inValid
+    } = success ? data as TResponseItems : errors as TResponseItems;
+    const {
+      succeed: succeedValue,
+      failed: failedValue,
+      inValid: inValidValue
+    } = counter;
+    const itemsArr = handleRespData(succeed);
+    const failedItemsArr = handleRespData(failed);
+    const inValidItemsArr = handleRespData(inValid);
 
-    const handleRespData = () => {
+    const handleFailedData = () => {
       dispatch(setFormData({}));
 
       // TODO: отредактировать передачу параметров ???
       dispatch(setFormVisible({
-        title: 'Не всё удалено',
-        desc: `Не удалось удалить: ${failedItemsArr.map((item, index, arr) => `"${item[NAME_KEY]}" c id ${item[ID_KEY]}${index === arr.length - 1 ? '.': ', '}`)}`
+        title: message || 'Не всё удалено',
+        desc: setRespMessage({failedValue, inValidValue, failedItemsArr, inValidItemsArr})
       }));
     }
 
     if(success) {
       dispatch(removeItems({
         key: alias as string,
-        ids: itemsArr.filter((item) => item[UPDATEDON_KEY] !== null).map((item) => item[ID_KEY]),
-        alertMsg: REMOVING_SUCCESS_MSG
+        ids: itemsArr.filter((item) => item[UPDATEDON_KEY] !== null).map((item) => item[ID_KEY] as number),
+        alertMsg: `${REMOVING_SUCCESS_MSG}, обработано элементов: ${succeedValue}`
       }));
-      failedItemsArr.length
-        ? handleRespData()
+      failedValue || inValidValue
+        ? handleFailedData()
         : dispatch(setFormHidden());
     } else {
-      dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : REMOVING_ERROR_MSG }));
+      dispatch(getPricelistFailed({ alertMsg: errors ? message as string : REMOVING_ERROR_MSG }));
     }
   } catch(error) {
     const { errors }: { errors: TResponseDefault['errors']; } = error;

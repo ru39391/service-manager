@@ -8,10 +8,21 @@ export type TItemsArr = TItemData[];
 
 export type TPricelistData = TCustomData<TItemsArr>;
 
+export type TResponseList = TItemsArr | TCustomData<TItemData>;
+
+export type TResponseItems = {
+  success: boolean;
+  message?: string;
+  counter: TCustomData<number>;
+  succeed?: TResponseList;
+  failed?: TResponseList;
+  inValid: TResponseList;
+};
+
 export type TResponseDefault = {
   success: boolean;
-  data?: TCustomData<boolean | TItemData>;
-  errors?: TCustomData<string | boolean | TItemData>;
+  data?: TResponseItems;
+  errors?: TResponseItems;
   meta: TCustomData<string | number>;
 };
 

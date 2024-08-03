@@ -6,7 +6,7 @@ import {
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormValues } from '../services/slices/form-slice';
 
-import type { TCustomData, TItemData } from '../types';
+import type { TCustomData, TItemData, TItemsArr } from '../types';
 
 import {
   ID_KEY,
@@ -29,15 +29,15 @@ type TComplexData = {
 };
 
 interface IComplex {
-  complexItems: TItemData[];
-  currComplexItems: TItemData[];
+  complexItems: TItemsArr;
+  currComplexItems: TItemsArr;
   currComplexSumm: number;
   handleComplexItem: (data: TCustomData<string | number>) => void;
 }
 
 const useComplex = (): IComplex => {
-  const [complexItems, setComplexItems] = useState<TItemData[]>([]);
-  const [currComplexItems, setCurrComplexItems] = useState<TItemData[]>([]);
+  const [complexItems, setComplexItems] = useState<TItemsArr>([]);
+  const [currComplexItems, setCurrComplexItems] = useState<TItemsArr>([]);
   const [currComplexSumm, setCurrComplexSumm] = useState<number>(0);
 
   const dispatch = useDispatch();
@@ -52,12 +52,12 @@ const useComplex = (): IComplex => {
   }));
 
   const fetchComplexItems = () => {
-    const complexItemsArr: TItemData[] = pricelist[TYPES[ITEM_KEY]].filter((item: TItemData) => item[IS_COMPLEX_ITEM_KEY] === 1);
+    const complexItemsArr: TItemsArr = pricelist[TYPES[ITEM_KEY]].filter((item: TItemData) => item[IS_COMPLEX_ITEM_KEY] === 1);
 
     setComplexItems(sortStrArray(complexItemsArr, NAME_KEY));
   }
 
-  const handleComplexItemsPrice = (arr: TItemData[] = []): number => {
+  const handleComplexItemsPrice = (arr: TItemsArr = []): number => {
     const summ = arr
       .reduce(
         (acc, item) => {
@@ -75,7 +75,7 @@ const useComplex = (): IComplex => {
     return summ;
   }
 
-  const updateComplex = (arr: TItemData[] = []) => {
+  const updateComplex = (arr: TItemsArr = []) => {
     const complexData: TCustomData<number>[] = arr
       .reduce(
         (acc: TCustomData<number>[], item: TItemData) => {
@@ -112,8 +112,8 @@ const useComplex = (): IComplex => {
         [ID_KEY]: Number(Object.keys(data)[0]),
         [QUANTITY_KEY]: Object.values(data)[0]
       }));
-    const currComplexItemsArr: TItemData[] = complexDataArr.reduce(
-      (acc: TItemData[], data: TCustomData<number>, index, arr) => {
+    const currComplexItemsArr: TItemsArr = complexDataArr.reduce(
+      (acc: TItemsArr, data: TCustomData<number>, index, arr) => {
         const itemData: TItemData | undefined = pricelist[TYPES[ITEM_KEY]].find((item: TItemData) => item[ID_KEY] === data[ID_KEY]);
 
         return itemData

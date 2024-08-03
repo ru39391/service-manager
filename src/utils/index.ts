@@ -1,4 +1,9 @@
-import type { TItemData, TItemsArr } from '../types';
+import type {
+  TItemData,
+  TItemsArr,
+  TResponseList
+} from '../types';
+import { ID_KEY, NAME_KEY } from './constants';
 
 const fetchArray = (arr: TItemsArr, param: string): TItemsArr => {
   return arr.reduce((acc: TItemsArr, item: TItemData) => {
@@ -27,7 +32,37 @@ const sortStrArray = (arr: TItemsArr, key: string): TItemsArr => {
   });
 };
 
+const handleRespData = (data: TResponseList | undefined) => {
+  if(!data) {
+    return [];
+  }
+
+  return Array.isArray(data) ? [...data] : Object.values(data);
+};
+
+const setRespMessage = (
+  {
+    failedValue,
+    inValidValue,
+    failedItemsArr,
+    inValidItemsArr
+  }: {
+    failedValue: number;
+    inValidValue: number;
+    failedItemsArr: TItemsArr;
+    inValidItemsArr: TItemsArr;
+  }
+) => {
+  return `
+    ${failedValue + inValidValue > 0 ? `Число недоступных для обработки элементов: ${failedValue + inValidValue}. ` : ''}
+    ${failedValue > 0 ? `Не удалось завершить операцию для: ${failedItemsArr.map((item, index, arr) => `"${item[NAME_KEY]}" c id ${item[ID_KEY]}${index === arr.length - 1 ? '.': ', '}`)}, общее количество - ${failedValue}. ` : ''}
+    ${inValidValue > 0 ? `Переданы объекты  в неправильном формате: ${inValidItemsArr.map((item, index, arr) => `"${item[NAME_KEY]}" c id ${item[ID_KEY]}${index === arr.length - 1 ? '.': ', '}`)}, общее количество - ${inValidValue}. ` : ''}
+    `
+};
+
 export {
   fetchArray,
-  sortStrArray
+  sortStrArray,
+  handleRespData,
+  setRespMessage
 };
