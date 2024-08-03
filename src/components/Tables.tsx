@@ -1,11 +1,10 @@
 import { FC, useState, useEffect, SyntheticEvent } from 'react';
 import { styled } from '@mui/material/styles';
-import { Grid, Tab, Tabs, Box, Button } from '@mui/material';
+import { Grid, Tab, Tabs, Box, Button, Typography } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
 import { CloudUpload } from '@mui/icons-material';
 
 import TabPanel from './TabPanel';
-//import Popup from './Popup';
 
 import useTableData from '../hooks/useTableData';
 import useFileUploader from '../hooks/useFileUploader';
@@ -13,7 +12,15 @@ import useFileUploader from '../hooks/useFileUploader';
 import { useSelector, useDispatch } from '../services/hooks';
 import { handlePricelistData } from '../services/actions/pricelist';
 
-import { TITLES, TYPES, ITEM_KEY } from '../utils/constants';
+import type { TCustomData, TItemsArr } from '../types';
+
+import {
+  TITLES,
+  TYPES,
+  ITEM_KEY,
+  NAME_KEY,
+  ID_KEY
+} from '../utils/constants';
 
 const InvisibleInput = styled('input')({
   overflow: 'hidden',
@@ -27,8 +34,31 @@ const InvisibleInput = styled('input')({
 
 const Tables: FC = () => {
   const [tabValue, setTabValue] = useState<number>(0);
+  const [createdItems, setCreatedItems] = useState<TItemsArr>([]);
+  const [removedItems, setRemovedItems] = useState<TItemsArr>([]);
 
-  const { depts, subdepts, groups, items, rowData } = useSelector(state => state.file);
+  const {
+    file: { items: fileItems },
+    pricelist: { pricelist: items }
+  } = useSelector(state => ({
+    file: state.file,
+    pricelist: state.pricelist
+  }));
+  const {
+    uploadFile,
+    getRowData
+  } = useFileUploader();
+
+  const handleItems = ({ fileItems, items }: TCustomData<TItemsArr>) => {
+    console.log({ fileItems: fileItems.length, items: items.length });
+    const fileItemIds = fileItems.map(item => item[ID_KEY] as number);
+    const itemIds = items.map(item => item[ID_KEY] as number);
+
+    setCreatedItems(fileItems.filter(item => !itemIds.includes(item[ID_KEY] as number)));
+    setRemovedItems(items.filter(item => !fileItemIds.includes(item[ID_KEY] as number)));
+  }
+
+  /*
   const dispatch = useDispatch();
 
   const {
@@ -37,10 +67,6 @@ const Tables: FC = () => {
     groupsTableData,
     itemsTableData
   } = useTableData();
-  const {
-    uploadFile,
-    getRowData
-  } = useFileUploader();
 
   //@ts-expect-error
   const handleTab = (event: SyntheticEvent, value: number) => {
@@ -55,15 +81,51 @@ const Tables: FC = () => {
       [TYPES[ITEM_KEY]]: items
     }));
   };
+  */
 
   useEffect(() => {
-    //console.log(rowData);
+    handleItems({ fileItems, items });
   }, [
-    rowData
+    //rowData
+    //depts, subdepts, groups, items, rowData
+    fileItems,
+    items
+  ]);
+
+  useEffect(() => {
+    console.log({ createdItems: createdItems.length, removedItems: removedItems.length });
+  }, [
+    createdItems,
+    removedItems
   ]);
 
   return (
     <>
+      <Grid item xs={3} sx={(theme) => ({ ...theme.custom.dFlexColumn })}>
+        <Button component="label" variant="contained" startIcon={<CloudUpload />}>
+          Загрузить файл
+          <InvisibleInput type="file" accept=".xlsx, .xls" onChange={uploadFile} />
+        </Button>
+      </Grid>
+      <Grid
+        item
+        xs={9}
+        sx={{
+          pl: 3,
+          pr: 2,
+          display: 'flex',
+          flexDirection: 'column'
+        }}
+      >
+        {createdItems.length
+          ? <>
+              <Typography variant="h5">Добавлено:</Typography>
+              <ul>{createdItems.map((item, index) => (<li key={item[ID_KEY]}>{index + 1}. <b>{item[NAME_KEY].toString().length}</b>: {JSON.stringify(item)}</li>))}</ul>
+            </>
+          : ''
+        }
+      </Grid>
+      {/*
       <Box sx={{ mb: 2 }}>
         <Button component="label" variant="contained" startIcon={<CloudUpload />}>
           Загрузить файл
@@ -117,11 +179,6 @@ const Tables: FC = () => {
           </TabPanel>)}
         </Grid>
       </Grid>
-
-
-      {/*
-      {Boolean(rowData) && <Popup data={rowData} close={() => getRowData(null)} />}
-        slots={{ noRowsOverlay: NoRowsOverlay }}
       */}
     </>
   );

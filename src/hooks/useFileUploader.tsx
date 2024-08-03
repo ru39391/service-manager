@@ -21,7 +21,7 @@ import { useSelector, useDispatch } from '../services/hooks';
 import { handleFile } from '../services/actions/file';
 import { setRowData } from '../services/slices/file-slice';
 
-import type { TCustomData } from '../types';
+import type { TCustomData, TItemsArr } from '../types';
 
 interface IFileUploaderHook {
   uploadFile: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -65,7 +65,7 @@ const useFileUploader = (): IFileUploaderHook => {
       .map(
         ({ RAZDID, RAZDNAME }) => ({
           [ID_KEY]: RAZDID,
-          [NAME_KEY]: RAZDNAME
+          [NAME_KEY]: RAZDNAME.toString().slice(0, 255)
         })
       );
 
@@ -77,7 +77,7 @@ const useFileUploader = (): IFileUploaderHook => {
       .map(
         ({ SPECID, SPECNAME, RAZDID }) => ({
           [ID_KEY]: SPECID,
-          [NAME_KEY]: SPECNAME,
+          [NAME_KEY]: SPECNAME.toString().slice(0, 255),
           [DEPT_KEY]: RAZDID
         })
       );
@@ -91,7 +91,7 @@ const useFileUploader = (): IFileUploaderHook => {
       .map(
         ({ RAZDID, SPECID, ZAGOLOVOK_ID, SCHID, SCHNAME }) => ({
           [ID_KEY]: SCHID,
-          [NAME_KEY]: SCHNAME,
+          [NAME_KEY]: SCHNAME.toString().slice(0, 255),
           [DEPT_KEY]: RAZDID,
           [SUBDEPT_KEY]: SPECID,
           [GROUP_KEY]: ZAGOLOVOK_ID
@@ -101,7 +101,7 @@ const useFileUploader = (): IFileUploaderHook => {
     return { [TYPES[GROUP_KEY]]: fetchArray(groupsArr, ID_KEY) };
   };
 
-  const handleItems = (arr: TCustomData<string | number>[]): TCustomData<TCustomData<string | number>[]> => {
+  const handleItems = (arr: TCustomData<string | number>[]): TCustomData<TItemsArr> => {
     //@ts-expect-error
     const complexItemsArr: TCustomData<number>[] = arr
       .filter(({ ISCOMPLEX }) => Number(ISCOMPLEX) === 1)
@@ -129,8 +129,8 @@ const useFileUploader = (): IFileUploaderHook => {
 
           return {
             [ID_KEY]: SCHID,
-            [NAME_KEY]: SCHNAME,
-            [PRICE_KEY]: ISCOMPLEX ? summ : SPRICE,
+            [NAME_KEY]: SCHNAME.toString().slice(0, 255),
+            [PRICE_KEY]: ISCOMPLEX ? summ : Number(SPRICE),
             [DEPT_KEY]: RAZDID,
             [SUBDEPT_KEY]: SPECID,
             [GROUP_KEY]: ZAGOLOVOK_ID,
@@ -143,7 +143,10 @@ const useFileUploader = (): IFileUploaderHook => {
         }
       );
 
-    return { [ITEM_KEY]: fetchArray(itemsArr, ID_KEY) };
+    const data = { [ITEM_KEY]: fetchArray(itemsArr, ID_KEY) };
+    console.log(data);
+
+    return data;
   };
 
   const handleUploadedFile = (event: Event): void => {
