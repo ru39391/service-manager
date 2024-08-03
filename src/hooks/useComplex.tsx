@@ -32,6 +32,7 @@ interface IComplex {
   complexItems: TItemsArr;
   currComplexItems: TItemsArr;
   currComplexSumm: number;
+  setItemId: () => TCustomData<number>;
   handleComplexItem: (data: TCustomData<string | number>) => void;
 }
 
@@ -50,6 +51,8 @@ const useComplex = (): IComplex => {
     formValues: state.form.formValues,
     pricelist: state.pricelist
   }));
+
+  const setItemId = (): TCustomData<number> => ({ [ID_KEY]: Math.max(...pricelist[TYPES[ITEM_KEY]].map((item: TItemData) => item[ID_KEY])) + 1 });
 
   const fetchComplexItems = () => {
     const complexItemsArr: TItemsArr = pricelist[TYPES[ITEM_KEY]].filter((item: TItemData) => item[IS_COMPLEX_ITEM_KEY] === 1);
@@ -211,6 +214,7 @@ const useComplex = (): IComplex => {
     complexItems,
     currComplexItems,
     currComplexSumm,
+    setItemId,
     handleComplexItem
   };
 }

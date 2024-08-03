@@ -1,8 +1,12 @@
 import axios from 'axios';
+import { AxiosResponse } from 'axios';
+import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
 import {
   getPricelistLoading,
   getPricelistSucceed,
   getPricelistFailed,
+  createItems,
+  updateItems,
   removeItems,
 } from '../slices/pricelist-slice';
 import {
@@ -12,6 +16,7 @@ import {
 } from '../slices/form-slice';
 
 import type {
+  TCustomData,
   TItemData,
   TItemsArr,
   TPricelistData,
@@ -21,8 +26,12 @@ import type {
   TResponseDefault
 } from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';
+import type { TPricelistAction } from '../slices/pricelist-slice';
 
 import {
+  ADD_ACTION_KEY,
+  EDIT_ACTION_KEY,
+  REMOVE_ACTION_KEY,
   FETCHING_ERROR_MSG,
   REMOVING_ERROR_MSG,
   REMOVING_SUCCESS_MSG,
@@ -34,13 +43,14 @@ import {
 } from '../../utils/constants';
 import { handleRespData, setRespMessage } from '../../utils';
 
-import { deleteDepts } from '../../mocks';
+import { deleteDepts, fetchData } from '../../mocks';
 
 const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
   try {
     const response = await Promise.all(Object.values(TYPES).map(alias => axios.get(`${API_URL}${alias}`)));
+    console.log(response);
 
     const { success, data }: TResponseData = response
       .map(({ data }) => data)
@@ -66,71 +76,59 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
   }
 };
 
-// TODO: переписать thunk-контроллеры для новой структуры ответов
-// TODO: переписать thunk по образцу removePricelistData (чтобы принимал alias/массив alias и массив объектов или массив объектов вида { [alias]: массив объектов })
-const createPricelistData = ({ action, alias, arr }: { action: string; alias: string | null; arr: TItemsArr }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
-  dispatch(getPricelistLoading());
+// TODO: обновить действия thunk-контроллеров для случая успешного ответа
+const handlePricelistData = ({ action, alias, items }: { action: string; alias: string | null; items: TItemsArr; }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
+  const actionData = {
+    [ADD_ACTION_KEY]: {
+      handler: async (url: string, data: TCustomData<TItemData>) => await axios.post(url, data),
+      dispatcher: (data: TPricelistAction['payload']) => createItems(data),
+      modalTitle: 'Не всё создано',
+      successMsg: 'успешно создано',
+      errorMsg: 'ошибка при создании',
+    },
+    [EDIT_ACTION_KEY]: {
+      handler: async (url: string, data: TCustomData<TItemData>) => await axios.patch(url, data),
+      dispatcher: (data: TPricelistAction['payload']) => updateItems(data),
+      modalTitle: 'Не всё обновлено',
+      successMsg: 'успешно обновлено',
+      errorMsg: 'ошибка при обновлении',
+    },
+    [REMOVE_ACTION_KEY]: {
+      handler: async (url: string, data: TCustomData<TItemData>) => await axios.delete(url, data),
+      dispatcher: (data: TPricelistAction['payload']) => removeItems(data),
+      modalTitle: 'Не всё удалено',
+      successMsg: REMOVING_SUCCESS_MSG,
+      errorMsg: REMOVING_ERROR_MSG,
+    },
+  };
+  const {
+    handler,
+    dispatcher,
+    modalTitle,
+    successMsg,
+    errorMsg
+  }: {
+    handler: (url: string, data: TCustomData<TItemData>) => Promise<AxiosResponse<string, TCustomData<TItemData>>>;
+    dispatcher: ActionCreatorWithPayload<TPricelistAction['payload'], string>;
+    modalTitle: string;
+    successMsg: string;
+    errorMsg: string;
+  } = actionData[action];
 
-  console.log({
-    action,
-    alias: `${API_URL}${alias}`,
-    arr,
-    //...ids.reduce((acc, item, index) => ({...acc, [index]: { [ID_KEY]: item }}), {})
-  });
+  console.log(actionData[action]);
+  //return;
 
-  /*
-  try {
-    const {
-      success,
-      data,
-      errors
-    }: TResponseDefault = await axios.post(`${API_URL}${alias}`, {
-      ...ids.reduce((acc, item, index) => ({...acc, [index]: { [ID_KEY]: item }}), {})
-    });
-
-    const response = await Promise.all(
-      Object.values(TYPES).map(alias => axios.post(`${API_URL}${alias}`, {
-        ...priceListData[alias].reduce((acc, item, index) => ({...acc, [index]: item}), {})
-      }))
-    );
-    console.log(response);
-
-    const { success, data }: TResponseData = response
-      .map(({ data }) => {
-        console.log(data);
-        return data;
-      })
-      .reduce((acc: TResponseData, item: TResponseDefault, index ) => ({
-        ...acc,
-        success: [...acc.success, item.success],
-        data: {
-          ...acc.data,
-          [Object.values(TYPES)[index]]: item.data && Object.values(item.data).filter((value) => typeof value !== 'boolean')
-        }
-      }), {
-        success: [],
-        data: {}
-      });
-
-    if(success.every(item => item)) {
-      dispatch(getPricelistSucceed({ ...data }));
-    } else {
-      dispatch(getPricelistFailed({ alertMsg: 'ошибка при создании' }));
-    }
-  } catch(error) {
-    dispatch(getPricelistFailed({ alertMsg: 'ошибка при создании' }));
+  if(!alias) {
+    dispatch(getPricelistFailed({ alertMsg: errorMsg }));
+    return;
   }
 
-    */
-};
-
-const removePricelistData = ({ action, alias, ids }: { action: string; alias: string | null; ids: number[] }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
   console.log({
     action,
-    alias: `${API_URL}${alias}`,
-    ...ids.reduce((acc, item, index) => ({...acc, [index]: { [ID_KEY]: item }}), {})
+    url: `${API_URL}${alias}`,
+    payload: { ...items.reduce((acc, item, index) => ({...acc, [index]: item }), {}) }
   });
 
   try {
@@ -140,8 +138,11 @@ const removePricelistData = ({ action, alias, ids }: { action: string; alias: st
       errors
     }: TResponseDefault = await deleteDepts();
     /*
+    await handler(`${API_URL}${alias}`, {
+      ...items.reduce((acc, item, index) => ({...acc, [index]: item }), {})
+    });
     await axios.delete(`${API_URL}${alias}`, {
-      ...ids.reduce((acc, item, index) => ({...acc, [index]: { [ID_KEY]: item }}), {})
+      ...items.reduce((acc, item, index) => ({...acc, [index]: item }), {})
     });
     */
 
@@ -166,32 +167,32 @@ const removePricelistData = ({ action, alias, ids }: { action: string; alias: st
 
       // TODO: отредактировать передачу параметров ???
       dispatch(setFormVisible({
-        title: message || 'Не всё удалено',
+        title: message || modalTitle,
         desc: setRespMessage({failedValue, inValidValue, failedItemsArr, inValidItemsArr})
       }));
     }
 
     if(success) {
-      dispatch(removeItems({
+      dispatch(dispatcher({
         key: alias as string,
+        // TODO: вынести mapping в метод
         ids: itemsArr.filter((item) => item[UPDATEDON_KEY] !== null).map((item) => item[ID_KEY] as number),
-        alertMsg: `${REMOVING_SUCCESS_MSG}, обработано элементов: ${succeedValue}`
+        alertMsg: `${successMsg}, обработано элементов: ${succeedValue}`
       }));
       failedValue || inValidValue
         ? handleFailedData()
         : dispatch(setFormHidden());
     } else {
-      dispatch(getPricelistFailed({ alertMsg: errors ? message as string : REMOVING_ERROR_MSG }));
+      dispatch(getPricelistFailed({ alertMsg: errors ? message as string : errorMsg }));
     }
   } catch(error) {
     const { errors }: { errors: TResponseDefault['errors']; } = error;
 
-    dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : REMOVING_ERROR_MSG }));
+    dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : errorMsg }));
   }
 };
 
 export {
   fetchPricelistData,
-  createPricelistData,
-  removePricelistData
+  handlePricelistData
 }

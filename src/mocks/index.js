@@ -10,6 +10,8 @@ import postPricelist from './postPricelist';
 
 import deleteDepts from './deleteDepts';
 
+import fetchData from './fetchData';
+
 export {
   getDepts,
   getSubdepts,
@@ -19,5 +21,6 @@ export {
   postSubdepts,
   postGroups,
   postPricelist,
-  deleteDepts
+  deleteDepts,
+  fetchData
 };

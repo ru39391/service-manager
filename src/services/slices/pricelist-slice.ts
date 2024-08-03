@@ -70,10 +70,20 @@ const pricelistSlice = createSlice({
       alertMsg: action.payload.alertMsg || ''
     }),
     // TODO: создать методы:
-    /*
-    createItems,
-    updateItems
-    */
+    createItems(state, action: TPricelistAction) {
+      console.log(action.payload);
+
+      return {
+        ...state,
+      };
+    },
+    updateItems(state, action: TPricelistAction) {
+      console.log(action.payload);
+
+      return {
+        ...state,
+      };
+    },
     removeItems(state, action: TPricelistAction) {
       const {key, ids} = action.payload;
 
@@ -108,6 +118,8 @@ export const {
   getPricelistLoading,
   getPricelistSucceed,
   getPricelistFailed,
+  createItems,
+  updateItems,
   removeItems,
   resetPricelist
 } = pricelistSlice.actions;

@@ -11,7 +11,7 @@ import useTableData from '../hooks/useTableData';
 import useFileUploader from '../hooks/useFileUploader';
 
 import { useSelector, useDispatch } from '../services/hooks';
-import { createPricelistData } from '../services/actions/pricelist';
+import { handlePricelistData } from '../services/actions/pricelist';
 
 import { TITLES, TYPES, ITEM_KEY } from '../utils/constants';
 
@@ -48,7 +48,7 @@ const Tables: FC = () => {
   };
 
   const createDepts = () => {
-    dispatch(createPricelistData({
+    dispatch(handlePricelistData({
       depts,
       subdepts,
       groups,

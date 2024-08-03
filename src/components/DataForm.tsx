@@ -19,7 +19,7 @@ import useCategoryCounter from '../hooks/useCategoryCounter';
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormValues } from '../services/slices/form-slice';
 
-import { createPricelistData, removePricelistData } from '../services/actions/pricelist';
+import { handlePricelistData } from '../services/actions/pricelist';
 
 import type { TCustomData, TItemData } from '../types';
 
@@ -61,7 +61,7 @@ const DataForm: FC = () => {
   const dispatch = useDispatch();
   const { formData, formValues } = useSelector(state => state.form);
   const { subCategoryCounter, setSubCategories } = useCategoryCounter();
-  const { currComplexSumm } = useComplex();
+  const { currComplexSumm, setItemId } = useComplex();
   const {
     isDisabled,
     formFields,
@@ -74,11 +74,10 @@ const DataForm: FC = () => {
   const complexKeys: string[] = [IS_COMPLEX_ITEM_KEY, IS_COMPLEX_KEY];
   const handlersData = {
     [ADD_ACTION_KEY]: useCallback(() => {
-      dispatch(createPricelistData({
+      dispatch(handlePricelistData({
         action: ADD_ACTION_KEY,
         alias: formData ? formData.type as string : null,
-        // TODO: вычислять item_id при создании элемента
-        arr: formData ? [{...formData.data as TItemData, ...formValues}] : [],
+        items: formData ? [{...formData.data as TItemData, ...formValues, ...setItemId()}] : []
       }));
     }, [
       dispatch,
@@ -97,10 +96,10 @@ const DataForm: FC = () => {
       formValues
     ]),
     [REMOVE_ACTION_KEY]: useCallback(() => {
-      dispatch(removePricelistData({
+      dispatch(handlePricelistData({
         action: REMOVE_ACTION_KEY,
         alias: formData ? formData.type as string : null,
-        ids: formData ? [formData.data[ID_KEY]] : [],
+        items: formData ? [{[ID_KEY]: formData.data[ID_KEY]}] : [],
       }));
     }, [
       dispatch,
