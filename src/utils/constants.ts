@@ -14,11 +14,20 @@ const EDIT_ITEM_TITLE = 'Изменить данные';
 const REMOVE_CONFIRM_MSG = 'Вы действительно хотите';
 
 const FETCHING_ERROR_MSG = 'При получении списка услуг произошла ошибка';
-const REMOVING_ERROR_MSG = 'При удалении элементов произошла ошибка, повторите попытку позже';
 const RESOURCES_ERROR_MSG = 'Ошибка при получении списка ресурсов';
 const FILE_UPLOADING_ERROR_MSG = 'Ошибка при обработке файла';
 
-const REMOVING_SUCCESS_MSG = 'Записи успешно удалены';
+const CREATE_ITEM_SUCCESS_MSG = 'Записи успешно созданы';
+const CREATE_ITEM_WARNING_MSG = 'Не удалось сохранить некоторые записи';
+const CREATE_ITEM_ERROR_MSG = 'При создании элементов произошла ошибка, повторите попытку позже';
+
+const UPDATE_ITEM_SUCCESS_MSG = 'Записи успешно обновлены';
+const UPDATE_ITEM_WARNING_MSG = 'Не удалось обновить некоторые записи';
+const UPDATE_ITEM_ERROR_MSG = 'При обновлении элементов произошла ошибка, повторите попытку позже';
+
+const REMOVE_ITEM_SUCCESS_MSG = 'Записи успешно удалены';
+const REMOVE_ITEM_WARNING_MSG = 'Не удалось удалить некоторые записи';
+const REMOVE_ITEM_ERROR_MSG = 'При удалении элементов произошла ошибка, повторите попытку позже';
 
 const INDEX_KEY = 'index';
 const ID_KEY = 'item_id';
@@ -82,11 +91,18 @@ const API_URL = 'http://localhost/api/';//'http://stomistok.local/api/';
 
 export {
   DEFAULT_DOC_TITLE,
-  REMOVING_ERROR_MSG,
+  CREATE_ITEM_SUCCESS_MSG,
+  CREATE_ITEM_WARNING_MSG,
+  CREATE_ITEM_ERROR_MSG,
+  UPDATE_ITEM_SUCCESS_MSG,
+  UPDATE_ITEM_WARNING_MSG,
+  UPDATE_ITEM_ERROR_MSG,
+  REMOVE_ITEM_SUCCESS_MSG,
+  REMOVE_ITEM_WARNING_MSG,
+  REMOVE_ITEM_ERROR_MSG,
   FETCHING_ERROR_MSG,
   RESOURCES_ERROR_MSG,
   FILE_UPLOADING_ERROR_MSG,
-  REMOVING_SUCCESS_MSG,
   ADD_TITLE,
   EDIT_TITLE,
   REMOVE_TITLE,

@@ -82,14 +82,15 @@ const DataForm: FC = () => {
     }, [
       dispatch,
       formData,
-      formValues
+      formValues,
+      setItemId
     ]),
     [EDIT_ACTION_KEY]: useCallback(() => {
-      console.log({
+      dispatch(handlePricelistData({
         action: EDIT_ACTION_KEY,
         alias: formData ? formData.type as string : null,
-        data: formData ? [{[ID_KEY]: formData.data[ID_KEY], ...formValues}] : [],
-      });
+        items: formData ? [{[ID_KEY]: formData.data[ID_KEY], ...formValues}] : []
+      }));
     }, [
       dispatch,
       formData,
@@ -286,9 +287,6 @@ const DataForm: FC = () => {
                       />
                     }
                   />
-                  {/*
-                    // TODO: настроить передачу значения выпадающих списков при сохранении
-                  */}
                   {complexKeys.map(
                     (key) =>
                       <FormControlLabel

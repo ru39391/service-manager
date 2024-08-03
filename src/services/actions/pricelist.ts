@@ -19,9 +19,7 @@ import type {
   TCustomData,
   TItemData,
   TItemsArr,
-  TPricelistData,
   TResponseData,
-  TResponseList,
   TResponseItems,
   TResponseDefault
 } from '../../types';
@@ -33,24 +31,29 @@ import {
   EDIT_ACTION_KEY,
   REMOVE_ACTION_KEY,
   FETCHING_ERROR_MSG,
-  REMOVING_ERROR_MSG,
-  REMOVING_SUCCESS_MSG,
+  CREATE_ITEM_SUCCESS_MSG,
+  CREATE_ITEM_WARNING_MSG,
+  CREATE_ITEM_ERROR_MSG,
+  UPDATE_ITEM_SUCCESS_MSG,
+  UPDATE_ITEM_WARNING_MSG,
+  UPDATE_ITEM_ERROR_MSG,
+  REMOVE_ITEM_SUCCESS_MSG,
+  REMOVE_ITEM_WARNING_MSG,
+  REMOVE_ITEM_ERROR_MSG,
   UPDATEDON_KEY,
-  NAME_KEY,
-  ID_KEY,
   API_URL,
   TYPES
 } from '../../utils/constants';
 import { handleRespData, setRespMessage } from '../../utils';
 
-import { deleteDepts, fetchData } from '../../mocks';
+import { deleteDepts } from '../../mocks';
 
 const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
   try {
     const response = await Promise.all(Object.values(TYPES).map(alias => axios.get(`${API_URL}${alias}`)));
-    console.log(response);
+    //console.log(response);
 
     const { success, data }: TResponseData = response
       .map(({ data }) => data)
@@ -76,29 +79,28 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
   }
 };
 
-// TODO: обновить действия thunk-контроллеров для случая успешного ответа
 const handlePricelistData = ({ action, alias, items }: { action: string; alias: string | null; items: TItemsArr; }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   const actionData = {
     [ADD_ACTION_KEY]: {
       handler: async (url: string, data: TCustomData<TItemData>) => await axios.post(url, data),
       dispatcher: (data: TPricelistAction['payload']) => createItems(data),
-      modalTitle: 'Не всё создано',
-      successMsg: 'успешно создано',
-      errorMsg: 'ошибка при создании',
+      modalTitle: CREATE_ITEM_WARNING_MSG,
+      successMsg: CREATE_ITEM_SUCCESS_MSG,
+      errorMsg: CREATE_ITEM_ERROR_MSG,
     },
     [EDIT_ACTION_KEY]: {
       handler: async (url: string, data: TCustomData<TItemData>) => await axios.patch(url, data),
       dispatcher: (data: TPricelistAction['payload']) => updateItems(data),
-      modalTitle: 'Не всё обновлено',
-      successMsg: 'успешно обновлено',
-      errorMsg: 'ошибка при обновлении',
+      modalTitle: UPDATE_ITEM_WARNING_MSG,
+      successMsg: UPDATE_ITEM_SUCCESS_MSG,
+      errorMsg: UPDATE_ITEM_ERROR_MSG,
     },
     [REMOVE_ACTION_KEY]: {
       handler: async (url: string, data: TCustomData<TItemData>) => await axios.delete(url, data),
       dispatcher: (data: TPricelistAction['payload']) => removeItems(data),
-      modalTitle: 'Не всё удалено',
-      successMsg: REMOVING_SUCCESS_MSG,
-      errorMsg: REMOVING_ERROR_MSG,
+      modalTitle: REMOVE_ITEM_WARNING_MSG,
+      successMsg: REMOVE_ITEM_SUCCESS_MSG,
+      errorMsg: REMOVE_ITEM_ERROR_MSG,
     },
   };
   const {
@@ -115,11 +117,11 @@ const handlePricelistData = ({ action, alias, items }: { action: string; alias: 
     errorMsg: string;
   } = actionData[action];
 
-  console.log(actionData[action]);
+  //console.log(actionData[action]);
   //return;
 
   if(!alias) {
-    dispatch(getPricelistFailed({ alertMsg: errorMsg }));
+    dispatch(getPricelistFailed({ alertMsg: 'Не удалось определить тип переданного элемента' }));
     return;
   }
 
@@ -165,7 +167,6 @@ const handlePricelistData = ({ action, alias, items }: { action: string; alias: 
     const handleFailedData = () => {
       dispatch(setFormData({}));
 
-      // TODO: отредактировать передачу параметров ???
       dispatch(setFormVisible({
         title: message || modalTitle,
         desc: setRespMessage({failedValue, inValidValue, failedItemsArr, inValidItemsArr})
@@ -175,8 +176,7 @@ const handlePricelistData = ({ action, alias, items }: { action: string; alias: 
     if(success) {
       dispatch(dispatcher({
         key: alias as string,
-        // TODO: вынести mapping в метод
-        ids: itemsArr.filter((item) => item[UPDATEDON_KEY] !== null).map((item) => item[ID_KEY] as number),
+        items: itemsArr.filter((item) => item[UPDATEDON_KEY] !== null),
         alertMsg: `${successMsg}, обработано элементов: ${succeedValue}`
       }));
       failedValue || inValidValue
