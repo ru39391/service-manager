@@ -7,17 +7,12 @@ import {
 import type { TCustomData } from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';
 
-const handleFile = ({ depts, subdepts, groups, items }: TCustomData<TCustomData<string | number>[]>): TAppThunk<void> => (dispatch: TAppDispatch) => {
-  const isDataValid = [
-    depts,
-    subdepts,
-    groups,
-    items
-  ].map((item: TCustomData<string | number>[]) => Boolean(item)).every((item: boolean) => item);
+const handleFile = (data: TCustomData<TCustomData<string | number>[]>): TAppThunk<void> => (dispatch: TAppDispatch) => {
+  const isDataValid = Object.values(data).map((item: TCustomData<string | number>[]) => Boolean(item)).every((item: boolean) => item);
 
   dispatch(getFileUploading());
   if(isDataValid) {
-    dispatch(getFileUploadingSucceed({ depts, subdepts, groups, items }));
+    dispatch(getFileUploadingSucceed(data));
   } else {
     dispatch(getFileUploadingFailed({ errorMsg: FILE_UPLOADING_ERROR_MSG }));
   }

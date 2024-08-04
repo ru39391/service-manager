@@ -143,7 +143,7 @@ const useFileUploader = (): IFileUploaderHook => {
         }
       );
 
-    const data = { [ITEM_KEY]: fetchArray(itemsArr, ID_KEY) };
+    const data = { [TYPES[ITEM_KEY]]: fetchArray(itemsArr, ID_KEY) };
     console.log(data);
 
     return data;

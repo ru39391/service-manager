@@ -15,6 +15,7 @@ import { handlePricelistData } from '../services/actions/pricelist';
 import type { TCustomData, TItemsArr } from '../types';
 
 import {
+  NO_ITEMS_TITLE,
   TITLES,
   TYPES,
   ITEM_KEY,
@@ -37,25 +38,30 @@ const Tables: FC = () => {
   const [createdItems, setCreatedItems] = useState<TItemsArr>([]);
   const [removedItems, setRemovedItems] = useState<TItemsArr>([]);
 
+  const { tableData, handleTableData } = useTableData();
+
   const {
-    file: { items: fileItems },
-    pricelist: { pricelist: items }
+    file,
+    pricelist
   } = useSelector(state => ({
     file: state.file,
     pricelist: state.pricelist
   }));
+  // : { pricelist: items }
   const {
     uploadFile,
     getRowData
   } = useFileUploader();
 
   const handleItems = ({ fileItems, items }: TCustomData<TItemsArr>) => {
+    /*
     console.log({ fileItems: fileItems.length, items: items.length });
     const fileItemIds = fileItems.map(item => item[ID_KEY] as number);
     const itemIds = items.map(item => item[ID_KEY] as number);
 
     setCreatedItems(fileItems.filter(item => !itemIds.includes(item[ID_KEY] as number)));
     setRemovedItems(items.filter(item => !fileItemIds.includes(item[ID_KEY] as number)));
+    */
   }
 
   /*
@@ -84,12 +90,24 @@ const Tables: FC = () => {
   */
 
   useEffect(() => {
-    handleItems({ fileItems, items });
+    handleTableData({
+      data: Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: file[key]}), {}),
+      category: TYPES[ITEM_KEY],
+      params: null
+    });
+  }, [
+    file
+  ]);
+
+  useEffect(() => {
+    //handleItems({ fileItems, items });
   }, [
     //rowData
     //depts, subdepts, groups, items, rowData
+    /*
     fileItems,
     items
+    */
   ]);
 
   useEffect(() => {
@@ -117,12 +135,29 @@ const Tables: FC = () => {
           flexDirection: 'column'
         }}
       >
+        {/*
         {createdItems.length
           ? <>
               <Typography variant="h5">Добавлено:</Typography>
               <ul>{createdItems.map((item, index) => (<li key={item[ID_KEY]}>{index + 1}. <b>{item[NAME_KEY].toString().length}</b>: {JSON.stringify(item)}</li>))}</ul>
             </>
           : ''
+        }
+        */}
+        {tableData !== null
+          ? <DataGrid
+            sx={{
+              border: 0,
+              flexGrow: 1,
+              height: 'auto',
+              boxShadow: '0 2px 10px 0 rgba(0,0,0,.045)',
+              bgcolor: 'background.default',
+            }}
+            columns={tableData ? tableData.cols : []}
+            rows={tableData ? tableData.rows : []}
+            onRowClick={({ row }: { row: TCustomData<string | number> }) => handleItemData(row)}
+          />
+          : <Typography sx={{ mb: 1, typography: 'body1' }}>{NO_ITEMS_TITLE}</Typography>
         }
       </Grid>
       {/*

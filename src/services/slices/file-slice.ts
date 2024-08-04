@@ -7,7 +7,7 @@ export type TFileAction = {
     depts?: TCustomData<string | number>[];
     subdepts?: TCustomData<string | number>[];
     groups?: TCustomData<string | number>[];
-    items?: TCustomData<string | number>[];
+    pricelist?: TCustomData<string | number>[];
     data?: TCustomData<string | number> | null;
     item?: TCustomData<string | number>;
     key?: string;
@@ -19,7 +19,7 @@ export type TFileState = {
   depts: TCustomData<string | number>[];
   subdepts: TCustomData<string | number>[];
   groups: TCustomData<string | number>[];
-  items: TCustomData<string | number>[];
+  pricelist: TCustomData<string | number>[];
   rowData: TCustomData<string | number> | null;
   isFileUploading: boolean;
   isFileUploadingFailed: boolean;
@@ -30,7 +30,7 @@ const initialState: TFileState = {
   depts: [],
   subdepts: [],
   groups: [],
-  items: [],
+  pricelist: [],
   rowData: null,
   isFileUploading: false,
   isFileUploadingFailed: false,
@@ -50,7 +50,7 @@ const fileSlice = createSlice({
       depts: action.payload.depts || [],
       subdepts: action.payload.subdepts || [],
       groups: action.payload.groups || [],
-      items: action.payload.items || [],
+      pricelist: action.payload.pricelist || [],
       isFileUploading: false,
       isFileUploadingFailed: false,
       errorMsg: ''

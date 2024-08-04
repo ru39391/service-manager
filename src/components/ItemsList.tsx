@@ -35,7 +35,6 @@ import {
 } from '../utils/constants';
 
 const ItemsList: FC = () => {
-  const keys = Object.values(TYPES);
   const dispatch = useDispatch();
   const pricelist = useSelector(state => state.pricelist);
   const {
@@ -51,7 +50,7 @@ const ItemsList: FC = () => {
 
   useEffect(() => {
     handleTableData({
-      data: keys.reduce((acc, key) => ({...acc, [key]: pricelist[key]}), {}),
+      data: Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: pricelist[key]}), {}),
       category: currSubCategory,
       params: categoryParams
     });
