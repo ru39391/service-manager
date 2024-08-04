@@ -21,7 +21,7 @@ const Nav: FC = () => {
   } = useSubNav(subdepts);
 
   return (
-    depts.length > 0 && <Box
+    <Box
       sx={{
         top: 24,
         height: '100vh',
@@ -31,7 +31,7 @@ const Nav: FC = () => {
         bgcolor: 'background.default',
       }}
     >
-      <List
+      {depts.length > 0 && <List
         component="nav"
         sx={{
           position: 'absolute',
@@ -56,7 +56,7 @@ const Nav: FC = () => {
               setSubNav={setSubNav}
             />
         )}
-      </List>
+      </List>}
     </Box>
   )
 };

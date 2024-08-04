@@ -245,7 +245,7 @@ const DataForm: FC = () => {
   }
 
   return (
-    <>{/*formValues[COMPLEX_KEY]*/}
+    <>
       {formData && formFields[formData.type as string].map(
         (key, index) =>
           <TextField

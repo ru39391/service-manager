@@ -51,6 +51,7 @@ const useCategoryItems = (): ICategoryItems => {
 
   const handleCategoryItems = () => {
     const { type, id } = currUrlData;
+
     const subCategoryArr = type ? categoryData[type] : [TYPES[ITEM_KEY]];
     const subCategoryTypes =
       Object.values(keysData).reduce(
@@ -59,7 +60,9 @@ const useCategoryItems = (): ICategoryItems => {
           [TYPES[item]]: TITLES[item]
         }), {}
       );
-    const subCategoryData = subCategoryArr.map((item) => ({ [item]: Object.values(TITLES)[Object.values(TYPES).indexOf(item)] }));
+    const subCategoryData = subCategoryArr
+      ? subCategoryArr.map((item) => ({ [item]: Object.values(TITLES)[Object.values(TYPES).indexOf(item)] }))
+      : [];
 
     setCategoryTypes(subCategoryTypes);
     setSubCategoryItems(subCategoryData);
