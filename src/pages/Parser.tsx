@@ -20,6 +20,7 @@ import Layout from '../components/Layout';
 import useTableData from '../hooks/useTableData';
 import useCategoryItems from '../hooks/useCategoryItems';
 import useFileUploader from '../hooks/useFileUploader';
+import useDataComparer from '../hooks/useDataComparer';
 
 import { useSelector } from '../services/hooks';
 
@@ -30,7 +31,8 @@ import {
   DEFAULT_DOC_TITLE,
   NO_ITEMS_TITLE,
   TYPES,
-  ITEM_KEY
+  ITEM_KEY,
+  HANDLED_ITEMS_CAPTIONS,
 } from '../utils/constants';
 
 const InvisibleInput = styled('input')({
@@ -52,17 +54,27 @@ const Parser: FC = () => {
     pricelist: state.pricelist
   }));
   const { uploadFile } = useFileUploader();
+  const { handledFileData, handleFileData } = useDataComparer();
   const { categoryTypes } = useCategoryItems();
   const { tableData, handleTableData } = useTableData();
 
   useEffect(() => {
+    handleFileData(Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: file[key]}), {}));
+    /*
     handleTableData({
       data: Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: file[key]}), {}),
       category: TYPES[ITEM_KEY],
       params: null
     });
+    */
   }, [
     file
+  ]);
+
+  useEffect(() => {
+    console.log(handledFileData);
+  }, [
+    handledFileData
   ]);
 
   return (

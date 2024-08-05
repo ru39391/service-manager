@@ -53,6 +53,10 @@ const ADD_ACTION_KEY = 'add';
 const EDIT_ACTION_KEY = 'edit';
 const REMOVE_ACTION_KEY = 'remove';
 
+const CREATED_KEY = 'created';
+const UPDATED_KEY = 'updated';
+const REMOVED_KEY = 'removed';
+
 const TITLES = {
   [DEPT_KEY]: 'Отделения',
   [SUBDEPT_KEY]: 'Специализации',
@@ -78,6 +82,12 @@ const CAPTIONS = {
   [CREATEDON_KEY]: 'Дата создания',
   [UPDATEDON_KEY]: 'Дата обновления',
   [QUANTITY_KEY]: 'Количество',
+};
+
+const HANDLED_ITEMS_CAPTIONS = {
+  [CREATED_KEY]: 'Новые записи',
+  [UPDATED_KEY]: 'Обновлённые записи',
+  [REMOVED_KEY]: 'Удалённые записи',
 };
 
 const TYPES = {
@@ -133,6 +143,10 @@ export {
   QUANTITY_KEY,
   SORT_CAPTION,
   CAPTIONS,
+  CREATED_KEY,
+  UPDATED_KEY,
+  REMOVED_KEY,
+  HANDLED_ITEMS_CAPTIONS,
   TITLES,
   TYPES,
   API_URL
