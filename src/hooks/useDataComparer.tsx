@@ -48,11 +48,61 @@ const useDataComparer = (): IDataComparer => {
         ids: currIds,
         arr
       },
+      [UPDATED_KEY]: {
+        ids: ids.filter(id => currIds.includes(id as number)),
+        arr: currItems
+      },
       [REMOVED_KEY]: {
         ids,
         arr: currItems
       }
     };
+  };
+
+  const handleUpdatedItems = ({
+    ids,
+    items,
+    currItems
+  }: {
+    ids: number[];
+    items: TItemsArr;
+    currItems: TItemsArr;
+  }) => {
+    const fileItems = items.filter(item => ids.includes(item[ID_KEY] as number));
+
+    return fileItems.reduce((acc: TItemsArr, item) => {
+      const currItem = currItems.find(data => {
+        const {
+          itemId,
+          currItemId,
+        } = {
+          itemId: item[ID_KEY] as number,
+          currItemId: data[ID_KEY] as number
+        };
+
+        return itemId === currItemId;
+      });
+
+      const isEqual = currItem
+        ? Object.keys(item).every(key => {
+          // TODO: вычислять все изменённые параметры
+          if(item[key] !== currItem[key]) {
+            console.log({
+              [ID_KEY]: item[ID_KEY],
+              key,
+              item,
+              currItem
+            })
+          }
+
+          return item[key] === currItem[key];
+        })
+        : true;
+
+      return isEqual
+        ? acc
+        : [...acc, item];
+    }, []);
   };
 
   const handleItems = (
@@ -68,12 +118,17 @@ const useDataComparer = (): IDataComparer => {
   ): TCustomData<TItemsArr> => keys.reduce((acc, item, index) => {
     const { ids, arr } = setItemIds({ key: item, arr: items[index] })[key];
 
-    return { ...acc, [item]: arr.filter(data => !ids.includes(data[ID_KEY] as number)) };
+    return {
+      ...acc,
+      [item]: key === UPDATED_KEY
+        ? handleUpdatedItems({ ids, items: items[index], currItems: arr })
+        : arr.filter(data => !ids.includes(data[ID_KEY] as number))
+    };
   }, {});
 
   const handlers = {
     [CREATED_KEY]: ({keys, items}: TFileHandlerData) => handleItems({key: CREATED_KEY, keys, items}),
-    //[UPDATED_KEY]: () => {},
+    [UPDATED_KEY]: ({keys, items}: TFileHandlerData) => handleItems({key: UPDATED_KEY, keys, items}),
     [REMOVED_KEY]: ({keys, items}: TFileHandlerData) => handleItems({key: REMOVED_KEY, keys, items})
   };
 

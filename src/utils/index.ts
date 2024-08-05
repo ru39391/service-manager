@@ -60,9 +60,12 @@ const setRespMessage = (
     `
 };
 
+const fetchItemsArr = (arr: TItemsArr | undefined): TItemsArr => arr?.map(data => ({ ...data, ...( data[NAME_KEY] && typeof data[NAME_KEY] === 'string' && { [NAME_KEY]: data[NAME_KEY].trim() } ) })) || [];
+
 export {
   fetchArray,
   sortStrArray,
   handleRespData,
-  setRespMessage
+  setRespMessage,
+  fetchItemsArr
 };

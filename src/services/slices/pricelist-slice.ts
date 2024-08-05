@@ -2,6 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 import type { TItemData, TItemsArr } from '../../types';
 
+import { fetchItemsArr } from '../../utils';
 import { ID_KEY } from '../../utils/constants';
 
 export type TPricelistAction = {
@@ -51,10 +52,10 @@ const pricelistSlice = createSlice({
     }),
     getPricelistSucceed: (state, action: TPricelistAction) => ({
       ...state,
-      depts: action.payload.depts || [],
-      subdepts: action.payload.subdepts || [],
-      groups: action.payload.groups || [],
-      pricelist: action.payload.pricelist || [],
+      depts: fetchItemsArr(action.payload.depts),
+      subdepts: fetchItemsArr(action.payload.subdepts),
+      groups: fetchItemsArr(action.payload.groups),
+      pricelist: fetchItemsArr(action.payload.pricelist),
       isPricelistLoading: false,
       isPricelistSucceed: true,
       isPricelistFailed: false,

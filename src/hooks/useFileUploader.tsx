@@ -28,6 +28,7 @@ interface IFileUploaderHook {
   getRowData: (data: TCustomData<string | number> | null) => void;
 }
 
+// TODO: проверить код
 const useFileUploader = (): IFileUploaderHook => {
   const {
     depts,
@@ -64,8 +65,8 @@ const useFileUploader = (): IFileUploaderHook => {
     const deptsdArr = arr
       .map(
         ({ RAZDID, RAZDNAME }) => ({
-          [ID_KEY]: RAZDID,
-          [NAME_KEY]: RAZDNAME.toString().slice(0, 255)
+          [ID_KEY]: Number(RAZDID),
+          [NAME_KEY]: RAZDNAME.toString().trim().slice(0, 255)
         })
       );
 
@@ -76,9 +77,9 @@ const useFileUploader = (): IFileUploaderHook => {
     const subdeptsArr = arr
       .map(
         ({ SPECID, SPECNAME, RAZDID }) => ({
-          [ID_KEY]: SPECID,
-          [NAME_KEY]: SPECNAME.toString().slice(0, 255),
-          [DEPT_KEY]: RAZDID
+          [ID_KEY]: Number(SPECID),
+          [NAME_KEY]: SPECNAME.toString().trim().slice(0, 255),
+          [DEPT_KEY]: Number(RAZDID)
         })
       );
 
@@ -90,11 +91,11 @@ const useFileUploader = (): IFileUploaderHook => {
       .filter(({ ISCAPTION_1 }) => Number(ISCAPTION_1) === 1)
       .map(
         ({ RAZDID, SPECID, ZAGOLOVOK_ID, SCHID, SCHNAME }) => ({
-          [ID_KEY]: SCHID,
-          [NAME_KEY]: SCHNAME.toString().slice(0, 255),
-          [DEPT_KEY]: RAZDID,
-          [SUBDEPT_KEY]: SPECID,
-          [GROUP_KEY]: ZAGOLOVOK_ID
+          [ID_KEY]: Number(SCHID),
+          [NAME_KEY]: SCHNAME.toString().trim().slice(0, 255),
+          [DEPT_KEY]: Number(RAZDID),
+          [SUBDEPT_KEY]: Number(SPECID),
+          [GROUP_KEY]: Number(ZAGOLOVOK_ID)
         })
       );
 
@@ -128,17 +129,17 @@ const useFileUploader = (): IFileUploaderHook => {
           const { ids, summ } = handleComplexItem(array, complexItemsArr, SCHID as number);
 
           return {
-            [ID_KEY]: SCHID,
-            [NAME_KEY]: SCHNAME.toString().slice(0, 255),
+            [ID_KEY]: Number(SCHID),
+            [NAME_KEY]: SCHNAME.toString().trim().slice(0, 255),
             [PRICE_KEY]: ISCOMPLEX ? summ : Number(SPRICE),
-            [DEPT_KEY]: RAZDID,
-            [SUBDEPT_KEY]: SPECID,
-            [GROUP_KEY]: ZAGOLOVOK_ID,
-            [IS_COMPLEX_ITEM_KEY]: VIEWINCOMPLEX_ONLY || 0,
-            [IS_COMPLEX_KEY]: ISCOMPLEX || 0,
+            [DEPT_KEY]: Number(RAZDID),
+            [SUBDEPT_KEY]: Number(SPECID),
+            [GROUP_KEY]: Number(ZAGOLOVOK_ID),
+            [IS_COMPLEX_ITEM_KEY]: Number(VIEWINCOMPLEX_ONLY) || 0,
+            [IS_COMPLEX_KEY]: Number(ISCOMPLEX) || 0,
             [COMPLEX_KEY]: JSON.stringify(ids),
-            [IS_VISIBLE_KEY]: VIEWINWEB || 1,
-            [INDEX_KEY]: SORTIROVKA_SPEC
+            [IS_VISIBLE_KEY]: Number(VIEWINWEB) || 1,
+            [INDEX_KEY]: Number(SORTIROVKA_SPEC)
           }
         }
       );
