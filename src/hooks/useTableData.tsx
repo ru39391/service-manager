@@ -26,7 +26,7 @@ import type {
   TPricelistData
 } from '../types';
 
-export type TCategoryData = {
+type TCategoryData = {
   data: TPricelistData;
   category: string | undefined;
   params: TCustomData<number | null> | null;
@@ -51,6 +51,8 @@ const useTableData = (): ITableData => {
 
   const getCategoryName = (arr: TItemsArr, item: GridValidRowModel, key: string): string => {
     const data = arr.find(row => row[ID_KEY] === item[key]);
+    // TODO: настроить передачу id категорий при обновлении файла
+    // console.log(arr);
 
     return data ? data[NAME_KEY] as string : '';
   }

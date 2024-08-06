@@ -11,16 +11,12 @@ import {
   Breadcrumbs,
   Button,
   Collapse,
-  FormControl,
   Grid,
-  InputLabel,
   Link,
   List,
   ListItemButton,
   ListItemIcon,
   ListItemText,
-  MenuItem,
-  Select,
   Typography
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
@@ -37,11 +33,12 @@ import useFileDataNav from '../hooks/useFileDataNav';
 import { useSelector } from '../services/hooks';
 
 import type { TCustomData } from '../types';
-import type { TCategoryData } from '../hooks/useTableData';
 
 import {
   DEFAULT_DOC_TITLE,
-  NO_ITEMS_TITLE,
+  HANDLED_ITEMS_CAPTIONS,
+  NO_FILE_ITEMS_TITLE,
+  FILE_ITEMS_TITLE,
   CREATED_KEY,
   TYPES
 } from '../utils/constants';
@@ -67,10 +64,16 @@ const Parser: FC = () => {
   const { fileDataNav, updateFileDataNav } = useFileDataNav();
   const { tableData, handleTableData } = useTableData();
 
-  const selectFileCategory = ({ key, data }: { key: string; data: TCategoryData; }): void => {
-    setCurrCategory(key);
-    setCurrSubCategory(data.category as string);
-    handleTableData(data);
+  const selectFileCategory = ({ category, subCategory }: TCustomData<string>): void => {
+    setCurrCategory(category);
+    setCurrSubCategory(subCategory);
+    handleTableData({
+      data: comparedFileData
+        ? comparedFileData[category]
+        : Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: []}), {}),
+      category: subCategory,
+      params: null
+    });
   };
 
   useEffect(() => {
@@ -83,6 +86,21 @@ const Parser: FC = () => {
     updateFileDataNav(comparedFileData);
   }, [
     comparedFileData
+  ]);
+
+  useEffect(() => {
+    selectFileCategory({
+      category: currCategory,
+      subCategory: currSubCategory
+    });
+  }, [
+    fileDataNav
+  ]);
+
+  useEffect(() => {
+    //console.log(tableData && tableData.rows);
+  }, [
+    tableData
   ]);
 
   return (
@@ -144,16 +162,7 @@ const Parser: FC = () => {
                         color: 'grey.600',
                         fontSize: 14,
                       }}
-                      onClick={() => selectFileCategory({
-                        key,
-                        data: {
-                          data: comparedFileData
-                            ? comparedFileData[key]
-                            : Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: []}), {}),
-                          category: item.key as string,
-                          params: null
-                        }
-                      })}
+                      onClick={() => selectFileCategory({ category: key, subCategory: item.key as string })}
                     >
                       <ListItemText
                         disableTypography
@@ -206,9 +215,10 @@ const Parser: FC = () => {
             color="text.primary"
             sx={{ display: 'flex', alignItems: 'center' }}
           >
-            {DEFAULT_DOC_TITLE}
+            {HANDLED_ITEMS_CAPTIONS[currCategory]}, {categoryTypes && categoryTypes[currSubCategory].toLowerCase()}
           </Typography>
         </Breadcrumbs>
+        <Typography sx={{ mb: 1, typography: 'body1' }}>{tableData !== null ? `${FILE_ITEMS_TITLE} ${tableData.rows.length}` : NO_FILE_ITEMS_TITLE}</Typography>
         {tableData !== null
           ? <DataGrid
             sx={{
@@ -222,7 +232,7 @@ const Parser: FC = () => {
             rows={tableData ? tableData.rows : []}
             onRowClick={({ row }: { row: TCustomData<string | number> }) => console.log(row)}
           />
-          : <Typography sx={{ mb: 1, typography: 'body1' }}>{NO_ITEMS_TITLE}</Typography>
+          : ''
         }
       </Grid>
     </Layout>

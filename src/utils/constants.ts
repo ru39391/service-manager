@@ -2,6 +2,8 @@ const DEFAULT_DOC_TITLE = 'Управление услугами';
 
 const CATEGORY_TITLE = 'Категория';
 const NO_ITEMS_TITLE = 'Подходящих записей не найдено';
+const NO_FILE_ITEMS_TITLE = 'Обновлённых записей не найдено';
+const FILE_ITEMS_TITLE = 'Найдены обновлённые записи: ';
 const NOT_EMPTY_CATEGORY = 'Категория содержит следующие элементы: ';
 
 const ADD_TITLE = 'Добавить';
@@ -86,7 +88,7 @@ const CAPTIONS = {
 
 const HANDLED_ITEMS_CAPTIONS = {
   [CREATED_KEY]: 'Новые записи',
-  [UPDATED_KEY]: 'Обновлённые записи',
+  [UPDATED_KEY]: 'Изменённые записи',
   [REMOVED_KEY]: 'Удалённые записи',
 };
 
@@ -122,6 +124,8 @@ export {
   REMOVE_CONFIRM_MSG,
   CATEGORY_TITLE,
   NO_ITEMS_TITLE,
+  NO_FILE_ITEMS_TITLE,
+  FILE_ITEMS_TITLE,
   NOT_EMPTY_CATEGORY,
   INDEX_KEY,
   ITEM_KEY,
