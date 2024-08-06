@@ -24,7 +24,8 @@ const Nav: FC = () => {
     <Box
       sx={{
         top: 24,
-        height: '100vh',
+        height: '100%',
+        maxHeight: '100vh',
         position: 'sticky',
         overflow: 'hidden',
         boxShadow: '4px 0 16px 0 rgba(0,0,0,.045)',

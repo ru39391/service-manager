@@ -21,12 +21,12 @@ type TFileHandlerData = {
 }
 
 interface IDataComparer {
-  handledFileData: TCustomData<TCustomData<TItemsArr>> | null;
-  handleFileData: (data: TCustomData<TItemsArr>) => void;
+  comparedFileData: TCustomData<TCustomData<TItemsArr>> | null;
+  compareFileData: (data: TCustomData<TItemsArr>) => void;
 }
 
 const useDataComparer = (): IDataComparer => {
-  const [handledFileData, setHandledFileData] = useState<TCustomData<TCustomData<TItemsArr>> | null>(null);
+  const [comparedFileData, setComparedFileData] = useState<TCustomData<TCustomData<TItemsArr>> | null>(null);
 
   const pricelist = useSelector(state => state.pricelist);
 
@@ -87,12 +87,14 @@ const useDataComparer = (): IDataComparer => {
         ? Object.keys(item).every(key => {
           // TODO: вычислять все изменённые параметры
           if(item[key] !== currItem[key]) {
+            /*
             console.log({
               [ID_KEY]: item[ID_KEY],
               key,
               item,
               currItem
-            })
+            });
+            */
           }
 
           return item[key] === currItem[key];
@@ -132,10 +134,10 @@ const useDataComparer = (): IDataComparer => {
     [REMOVED_KEY]: ({keys, items}: TFileHandlerData) => handleItems({key: REMOVED_KEY, keys, items})
   };
 
-  const handleFileData = (data: TCustomData<TItemsArr>): void => {
+  const compareFileData = (data: TCustomData<TItemsArr>): void => {
     const [keys, items] = [Object.keys(data), Object.values(data)];
 
-    setHandledFileData(
+    setComparedFileData(
       Object.keys(handlers).reduce((acc, key, index) => (
         { ...acc, [key]: Object.values(handlers)[index]({keys, items}) }
       ), {})
@@ -143,8 +145,8 @@ const useDataComparer = (): IDataComparer => {
   };
 
   return {
-    handledFileData,
-    handleFileData
+    comparedFileData,
+    compareFileData
   }
 }
 

@@ -20,6 +20,8 @@ const Layout: FC<ILayout> = ({ children }) => {
         sx={{
           px: 2,
           py: 3,
+          height: '100%',
+          minHeight: '100vh',
           bgcolor: 'background.body'
         }}
       >

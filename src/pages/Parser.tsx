@@ -1,19 +1,30 @@
-import { FC, useEffect } from 'react';
+import {
+  FC,
+  Fragment,
+  useState,
+  useEffect
+} from 'react';
 import { styled } from '@mui/material/styles';
 import {
+  Badge,
   Box,
   Breadcrumbs,
   Button,
+  Collapse,
   FormControl,
   Grid,
   InputLabel,
   Link,
+  List,
+  ListItemButton,
+  ListItemIcon,
+  ListItemText,
   MenuItem,
   Select,
   Typography
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { CloudUpload } from '@mui/icons-material';
+import { CloudUpload, FolderOpen } from '@mui/icons-material';
 
 import Layout from '../components/Layout';
 
@@ -21,18 +32,18 @@ import useTableData from '../hooks/useTableData';
 import useCategoryItems from '../hooks/useCategoryItems';
 import useFileUploader from '../hooks/useFileUploader';
 import useDataComparer from '../hooks/useDataComparer';
+import useFileDataNav from '../hooks/useFileDataNav';
 
 import { useSelector } from '../services/hooks';
 
 import type { TCustomData } from '../types';
+import type { TCategoryData } from '../hooks/useTableData';
 
 import {
-  CATEGORY_TITLE,
   DEFAULT_DOC_TITLE,
   NO_ITEMS_TITLE,
-  TYPES,
-  ITEM_KEY,
-  HANDLED_ITEMS_CAPTIONS,
+  CREATED_KEY,
+  TYPES
 } from '../utils/constants';
 
 const InvisibleInput = styled('input')({
@@ -46,54 +57,116 @@ const InvisibleInput = styled('input')({
 });
 
 const Parser: FC = () => {
-  const {
-    file,
-    pricelist
-  } = useSelector(state => ({
-    file: state.file,
-    pricelist: state.pricelist
-  }));
+  const [currCategory, setCurrCategory] = useState(CREATED_KEY);
+
+  const file = useSelector(state => state.file);
+
   const { uploadFile } = useFileUploader();
-  const { handledFileData, handleFileData } = useDataComparer();
-  const { categoryTypes } = useCategoryItems();
+  const { comparedFileData, compareFileData } = useDataComparer();
+  const { currSubCategory, categoryTypes, setCurrSubCategory } = useCategoryItems();
+  const { fileDataNav, updateFileDataNav } = useFileDataNav();
   const { tableData, handleTableData } = useTableData();
 
+  const selectFileCategory = ({ key, data }: { key: string; data: TCategoryData; }): void => {
+    setCurrCategory(key);
+    setCurrSubCategory(data.category as string);
+    handleTableData(data);
+  };
+
   useEffect(() => {
-    handleFileData(Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: file[key]}), {}));
-    /*
-    handleTableData({
-      data: Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: file[key]}), {}),
-      category: TYPES[ITEM_KEY],
-      params: null
-    });
-    */
+    compareFileData(Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: file[key]}), {}));
   }, [
     file
   ]);
 
   useEffect(() => {
-    console.log(handledFileData);
+    updateFileDataNav(comparedFileData);
   }, [
-    handledFileData
+    comparedFileData
   ]);
 
   return (
     <Layout>
       <Grid item xs={3} sx={(theme) => ({ ...theme.custom.dFlexColumn })}>
-        <Button component="label" variant="contained" startIcon={<CloudUpload />}>
-          Загрузить файл
-          <InvisibleInput type="file" accept=".xlsx, .xls" onChange={uploadFile} />
-        </Button>
         <Box
           sx={{
             top: 24,
-            height: '100vh',
+            height: '100%',
+            maxHeight: '100vh',
             position: 'sticky',
             overflow: 'hidden',
             boxShadow: '4px 0 16px 0 rgba(0,0,0,.045)',
             bgcolor: 'background.default',
           }}
         >
+          <Button
+            sx={{
+              mb: 2,
+              width: '100%',
+            }}
+            component="label"
+            variant="contained"
+            startIcon={<CloudUpload />}
+          >
+            Загрузить файл
+            <InvisibleInput type="file" accept=".xlsx, .xls" onChange={uploadFile} />
+          </Button>
+          {fileDataNav.map(({ key, caption, counter, data }) =>
+            (<Fragment key={key}>
+              <ListItemButton
+                selected={true}
+                sx={{ py: 0.5 }}
+              >
+                <Box
+                  sx={{
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                  }}
+                >
+                  <ListItemIcon><FolderOpen fontSize="small" sx={{ color: 'info.light' }} /></ListItemIcon>
+                  <ListItemText
+                    primary={caption}
+                    sx={{ mr: 3 }}
+                  />
+                  <Badge badgeContent={counter} color="primary" />
+                </Box>
+              </ListItemButton>
+              {categoryTypes && counter > 0 && <Collapse in={true} timeout="auto" unmountOnExit>
+                <List component="div" disablePadding>
+                  {data.map(
+                    (item) =>
+                    <ListItemButton
+                      key={categoryTypes[item.key as string]}
+                      selected={currCategory === key && currSubCategory === item.key as string}
+                      sx={{
+                        pl: 6,
+                        color: 'grey.600',
+                        fontSize: 14,
+                      }}
+                      onClick={() => selectFileCategory({
+                        key,
+                        data: {
+                          data: comparedFileData
+                            ? comparedFileData[key]
+                            : Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: []}), {}),
+                          category: item.key as string,
+                          params: null
+                        }
+                      })}
+                    >
+                      <ListItemText
+                        disableTypography
+                        primary={categoryTypes[item.key as string]}
+                        sx={{ m: 0, mr: 2, flexGrow: 0 }}
+                      />
+                      <Badge badgeContent={item.counter as number} color="default" showZero />
+                    </ListItemButton>
+                  )}
+                </List>
+              </Collapse>}
+            </Fragment>)
+          )}
         </Box>
       </Grid>
       <Grid
@@ -136,46 +209,6 @@ const Parser: FC = () => {
             {DEFAULT_DOC_TITLE}
           </Typography>
         </Breadcrumbs>
-        <Box
-          sx={{
-            mb: 3,
-            gap: '0 8px',
-            display: 'flex',
-            alignItems: 'center'
-          }}
-        >
-          {/*
-            {
-              created: {
-                depts: [],
-                subdepts: [],
-                groups: [],
-                pricelist: []
-              },
-              updated: {
-                depts: [],
-                ...
-              },
-              removed: {
-                ...
-              }
-            }
-          */}
-          {categoryTypes && <FormControl sx={{ minWidth: 200, backgroundColor: '#fff' }} size="small">
-            <InputLabel id="demo-select-small-label">{CATEGORY_TITLE}</InputLabel>
-            <Select
-              labelId="demo-select-small-label"
-              id="demo-select-small"
-              value={Object.values(categoryTypes)[Object.values(categoryTypes).length - 1]}
-              label={CATEGORY_TITLE}
-              onChange={({ target }) => console.log(target.value)}
-            >
-              {Object.values(categoryTypes).map(
-                (item, index) => <MenuItem key={Object.keys(categoryTypes)[index]} value={item}>{item}</MenuItem>
-              )}
-            </Select>
-          </FormControl>}
-        </Box>
         {tableData !== null
           ? <DataGrid
             sx={{

@@ -26,13 +26,13 @@ import type {
   TPricelistData
 } from '../types';
 
-type TCategoryData = {
+export type TCategoryData = {
   data: TPricelistData;
   category: string | undefined;
   params: TCustomData<number | null> | null;
 };
 
-export type TTableData = {
+type TTableData = {
   cols: GridColDef<GridValidRowModel>[];
   rows: GridValidRowModel[];
 } | null;
