@@ -56,7 +56,7 @@ const useFileUploader = (): IFileUploaderHook => {
     };
   };
 
-  const handleDepts = (arr: TItemsArr): TCustomData<TItemsArr> => {
+  const handleDepts = (arr: TItemsArr): TPricelistData => {
     const deptsdArr = arr
       .map(
         ({ RAZDID, RAZDNAME }) => ({
@@ -68,7 +68,7 @@ const useFileUploader = (): IFileUploaderHook => {
     return { [TYPES[DEPT_KEY]]: fetchArray(deptsdArr, ID_KEY) };
   };
 
-  const handleSubdepts = (arr: TItemsArr): TCustomData<TItemsArr> => {
+  const handleSubdepts = (arr: TItemsArr): TPricelistData => {
     const subdeptsArr = arr
       .map(
         ({ SPECID, SPECNAME, RAZDID }) => ({
@@ -81,7 +81,7 @@ const useFileUploader = (): IFileUploaderHook => {
     return { [TYPES[SUBDEPT_KEY]]: fetchArray(subdeptsArr, ID_KEY) };
   };
 
-  const handleGroups = (arr: TItemsArr): TCustomData<TItemsArr> => {
+  const handleGroups = (arr: TItemsArr): TPricelistData => {
     const groupsArr = arr
       .filter(({ ISCAPTION_1 }) => Number(ISCAPTION_1) === 1)
       .map(
