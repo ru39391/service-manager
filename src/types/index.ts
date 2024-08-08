@@ -2,7 +2,7 @@ export type TCustomData<T> = {
   [key: string]: T;
 };
 
-export type TItemData = TCustomData<string | number | null>;
+export type TItemData = TCustomData<string | number>;
 
 export type TItemsArr = TItemData[];
 

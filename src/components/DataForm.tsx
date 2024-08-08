@@ -193,7 +193,7 @@ const DataForm: FC = () => {
   };
 
   useEffect(() => {
-    console.log(formData);
+    //console.log(formData);
 
     setSubCategories({
       type: formData ? formData.type as string : null,
@@ -206,7 +206,7 @@ const DataForm: FC = () => {
   ]);
 
   useEffect(() => {
-    //console.log('formValues: ', formValues);
+    console.log('formValues: ', formValues);
 
     handleTextFields({
       [PRICE_KEY]: formData && formValues[PRICE_KEY] === undefined

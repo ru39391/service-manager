@@ -22,7 +22,7 @@ interface ISelecter {
   selectedDept: TItemData;
   selectedSubdept: TItemData;
   selectedGroup: TItemData;
-  selectOption: (data: TCustomData<string | number>) => void;
+  selectOption: (data: TItemData) => void;
 }
 
 const useSelecter = (): ISelecter => {
@@ -48,7 +48,7 @@ const useSelecter = (): ISelecter => {
   }));
 
   const handleSelectedItem = (
-    data: TCustomData<string | number>
+    data: TItemData
   ): TItemData => pricelist[TYPES[data.type]].find((item: TItemsArr) => item[ID_KEY] === data[ID_KEY]);
 
   const handleItemsList = (
@@ -103,7 +103,7 @@ const useSelecter = (): ISelecter => {
     );
   }
 
-  const selectOption = (data: TCustomData<string | number>) => {
+  const selectOption = (data: TItemData) => {
     const optionData = handleSelectedItem(data);
 
     setSelectedData({});

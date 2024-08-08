@@ -2,7 +2,6 @@ import { useState, useEffect } from 'react';
 import { useSelector } from '../services/hooks';
 
 import useForm from './useForm';
-import useSelecter from './useSelecter';
 import useUrlHandler from './useUrlHandler';
 
 import type { TCustomData, TItemData } from '../types';
@@ -23,7 +22,7 @@ interface ICurrentData {
   pageTitle: string;
   currentCategory: TItemData;
   currentFormData: TCustomData<string | number | null | TItemData>;
-  setCurrentFormValues: (type: string) => TCustomData<string | number>;
+  setCurrentFormValues: (type: string) => TItemData;
 }
 
 /**
@@ -64,7 +63,7 @@ const useCurrentData = (): ICurrentData => {
     });
   };
 
-  const setCurrentFormValues = (type: string): TCustomData<string | number> => {
+  const setCurrentFormValues = (type: string): TItemData => {
     //console.log('currentCategory: ', currentCategory);
 
     // TODO: решить проблему с undefined (пробрасыванием из другого хука) - или для отслеживания обновления не нужно?

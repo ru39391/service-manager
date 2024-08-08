@@ -33,7 +33,7 @@ interface IComplex {
   currComplexItems: TItemsArr;
   currComplexSumm: number;
   setItemId: () => TCustomData<number>;
-  handleComplexItem: (data: TCustomData<string | number>) => void;
+  handleComplexItem: (data: TItemData) => void;
 }
 
 const useComplex = (): IComplex => {
@@ -155,7 +155,7 @@ const useComplex = (): IComplex => {
     updateComplex([...currComplexItems, {...complexItemsArr[0], [QUANTITY_KEY]: data[QUANTITY_KEY]}]);
   }
 
-  const handleComplexItem = (data: TCustomData<string | number>) => {
+  const handleComplexItem = (data: TItemData) => {
     console.log(data);
 
     switch(data.action) {

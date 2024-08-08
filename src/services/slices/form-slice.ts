@@ -7,7 +7,7 @@ export type TFormAction = {
     title?: string;
     desc?: string;
     data?: TCustomData<string | TItemData> | null;
-    values?: TCustomData<number | string | null> | null;
+    values?: TItemData | null;
   };
 };
 
@@ -16,7 +16,7 @@ export type TFormState = {
   formTitle: string;
   formDesc: string;
   formData: TCustomData<string | TItemData> | null;
-  formValues: TCustomData<number | string | null>;
+  formValues: TItemData;
 };
 
 const initialState: TFormState = {

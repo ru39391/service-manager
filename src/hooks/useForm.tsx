@@ -76,12 +76,11 @@ const useForm = (): IForm => {
       .filter(
         key => [...formFields[type as string]].includes(key)
       );
+      // TODO:
     const editedValues: TItemData = currKeys
       .reduce(
-        (
-          acc: TItemData,
-          key: string
-        ) => currValues[key] === formValues[key] ? acc : {...acc, [key]: formValues[key]}, {}
+        (acc: TItemData, key: string) => currValues[key] === formValues[key] ? acc : {...acc, [key]: formValues[key]},
+        {}
       );
     const isValuesEdited: boolean = !Object.values(editedValues).length;
     const undefinedRequiredValues: string[] = currRequiredFields

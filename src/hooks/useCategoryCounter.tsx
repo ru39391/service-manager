@@ -27,7 +27,7 @@ interface ICategoryCounter {
 const useCategoryCounter = (): ICategoryCounter => {
   const [categoryList, setCategoryList] = useState<string[] | null>(null);
   const [subCategoryCounter, setSubCategoryCounter] = useState<string>('');
-  const [sortedParams, setSortedParams] = useState<TCustomData<string | number> | null>(null);
+  const [sortedParams, setSortedParams] = useState<TItemData | null>(null);
 
   const pricelist = useSelector(state => state.pricelist);
 

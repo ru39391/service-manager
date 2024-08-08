@@ -45,7 +45,7 @@ interface ITableData {
 const useTableData = (): ITableData => {
   const [tableData, setTableData] = useState<TTableData>(null);
 
-  const setBooleanCaption =(item: TCustomData<string | number>, key: string): TCustomData<string> => ({ [key]: item[key] ? 'Да' : 'Нет' });
+  const setBooleanCaption =(item: TItemData, key: string): TCustomData<string> => ({ [key]: item[key] ? 'Да' : 'Нет' });
 
   const isValueExist = (value: string | number | undefined): boolean => ['string', 'number'].includes(typeof value);
 

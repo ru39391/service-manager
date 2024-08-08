@@ -1,26 +1,26 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import type { TCustomData } from '../../types';
+import type { TItemData } from '../../types';
 
 export type TFileAction = {
   payload: {
-    depts?: TCustomData<string | number>[];
-    subdepts?: TCustomData<string | number>[];
-    groups?: TCustomData<string | number>[];
-    pricelist?: TCustomData<string | number>[];
-    data?: TCustomData<string | number> | null;
-    item?: TCustomData<string | number>;
+    depts?: TItemData[];
+    subdepts?: TItemData[];
+    groups?: TItemData[];
+    pricelist?: TItemData[];
+    data?: TItemData | null;
+    item?: TItemData;
     key?: string;
     errorMsg?: string;
   };
 };
 
 export type TFileState = {
-  depts: TCustomData<string | number>[];
-  subdepts: TCustomData<string | number>[];
-  groups: TCustomData<string | number>[];
-  pricelist: TCustomData<string | number>[];
-  rowData: TCustomData<string | number> | null;
+  depts: TItemData[];
+  subdepts: TItemData[];
+  groups: TItemData[];
+  pricelist: TItemData[];
+  rowData: TItemData | null;
   isFileUploading: boolean;
   isFileUploadingFailed: boolean;
   errorMsg: string;
@@ -67,7 +67,6 @@ const fileSlice = createSlice({
     }),
     updateItems: (state, action: TFileAction) => ({
       ...state,
-      //@ts-expect-error
       ...(action.payload.key && {[action.payload.key]: [...state[action.payload.key], action.payload.item]})
     }),
   }

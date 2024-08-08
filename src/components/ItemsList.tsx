@@ -20,7 +20,7 @@ import useCategoryItems from '../hooks/useCategoryItems';
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
 
-import type { TCustomData } from '../types';
+import type { TCustomData, TItemData } from '../types';
 
 import {
   ADD_TITLE,
@@ -71,13 +71,13 @@ const ItemsList: FC = () => {
     }));
   }
 
-  const handleItemData = (values: TCustomData<string | number>) => {
+  const handleItemData = (values: TItemData) => {
     toggleModal({ title: `${EDIT_TITLE} «${values[NAME_KEY]}»` });
     dispatch(setFormData({
       data: {
         action: EDIT_ACTION_KEY,
         type: currSubCategory,
-        data: pricelist[currSubCategory].find((item: TCustomData<string | number>) => item[ID_KEY] === values[ID_KEY])
+        data: pricelist[currSubCategory].find((item: TItemData) => item[ID_KEY] === values[ID_KEY])
       }
     }));
   }
@@ -127,7 +127,7 @@ const ItemsList: FC = () => {
           }}
           columns={tableData ? tableData.cols : []}
           rows={tableData ? tableData.rows : []}
-          onRowClick={({ row }: { row: TCustomData<string | number> }) => handleItemData(row)}
+          onRowClick={({ row }: { row: TItemData }) => handleItemData(row)}
         />
         : <Typography sx={{ mb: 1, typography: 'body1' }}>{NO_ITEMS_TITLE}</Typography>
       }

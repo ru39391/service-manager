@@ -21,25 +21,20 @@ import { useSelector, useDispatch } from '../services/hooks';
 import { handleFile } from '../services/actions/file';
 import { setRowData } from '../services/slices/file-slice';
 
-import type { TPricelistData, TCustomData, TItemsArr } from '../types';
+import type { TPricelistData, TCustomData, TItemData } from '../types';
 
 interface IFileUploaderHook {
   uploadFile: (event: ChangeEvent<HTMLInputElement>) => void;
-  getRowData: (data: TCustomData<string | number> | null) => void;
+  getRowData: (data: TItemData | null) => void;
 }
 
 // TODO: проверить код
 const useFileUploader = (): IFileUploaderHook => {
-  const {
-    depts,
-    subdepts,
-    groups,
-    items
-  } = useSelector(state => state.file);
+  const file = useSelector(state => state.file);
   const dispatch = useDispatch();
 
   const handleComplexItem = (
-    items: TCustomData<string | number>[],
+    items: TItemData[],
     arr: TCustomData<number>[],
     itemId: number
   ): { ids: TCustomData<number>[], summ: number } => {
@@ -61,7 +56,7 @@ const useFileUploader = (): IFileUploaderHook => {
     };
   };
 
-  const handleDepts = (arr: TCustomData<string | number>[]): TCustomData<TCustomData<string | number>[]> => {
+  const handleDepts = (arr: TItemData[]): TCustomData<TItemData[]> => {
     const deptsdArr = arr
       .map(
         ({ RAZDID, RAZDNAME }) => ({
@@ -73,7 +68,7 @@ const useFileUploader = (): IFileUploaderHook => {
     return { [TYPES[DEPT_KEY]]: fetchArray(deptsdArr, ID_KEY) };
   };
 
-  const handleSubdepts = (arr: TCustomData<string | number>[]): TCustomData<TCustomData<string | number>[]> => {
+  const handleSubdepts = (arr: TItemData[]): TCustomData<TItemData[]> => {
     const subdeptsArr = arr
       .map(
         ({ SPECID, SPECNAME, RAZDID }) => ({
@@ -86,7 +81,7 @@ const useFileUploader = (): IFileUploaderHook => {
     return { [TYPES[SUBDEPT_KEY]]: fetchArray(subdeptsArr, ID_KEY) };
   };
 
-  const handleGroups = (arr: TCustomData<string | number>[]): TCustomData<TCustomData<string | number>[]> => {
+  const handleGroups = (arr: TItemData[]): TCustomData<TItemData[]> => {
     const groupsArr = arr
       .filter(({ ISCAPTION_1 }) => Number(ISCAPTION_1) === 1)
       .map(
@@ -102,7 +97,7 @@ const useFileUploader = (): IFileUploaderHook => {
     return { [TYPES[GROUP_KEY]]: fetchArray(groupsArr, ID_KEY) };
   };
 
-  const handleItems = (arr: TCustomData<string | number>[]): TPricelistData => {
+  const handleItems = (arr: TItemData[]): TPricelistData => {
     //@ts-expect-error
     const complexItemsArr: TCustomData<number>[] = arr
       .filter(({ ISCOMPLEX }) => Number(ISCOMPLEX) === 1)
@@ -156,7 +151,7 @@ const useFileUploader = (): IFileUploaderHook => {
 
     const wb = read(result, { type: 'binary' });
     const ws = wb.Sheets[wb.SheetNames[0]];
-    const parsedData: TCustomData<string | number>[] = utils.sheet_to_json((ws), { defval: '' });
+    const parsedData: TItemData[] = utils.sheet_to_json((ws), { defval: '' });
 
     dispatch(handleFile({
       ...handleDepts(parsedData),
@@ -178,17 +173,16 @@ const useFileUploader = (): IFileUploaderHook => {
     reader.addEventListener('load', handleUploadedFile);
   };
 
-  const getRowData = (data: TCustomData<string | number> | null = null): void => {
+  const getRowData = (data: TItemData | null = null): void => {
     const parsedData = [
-      depts,
-      subdepts,
-      groups,
-      items
+      file[TYPES[DEPT_KEY]],
+      file[TYPES[SUBDEPT_KEY]],
+      file[TYPES[GROUP_KEY]],
+      file[TYPES[ITEM_KEY]]
     ].reduce((acc, item) => ({...acc, [Object.keys(item[0]).length]: item}), {});
 
     data
-      //@ts-expect-error
-      ? dispatch(setRowData({ data: parsedData[data.key].find((item: TCustomData<string | number>) => item[ID_KEY] === data.id) }))
+      ? dispatch(setRowData({ data: parsedData[data.key].find((item: TItemData) => item[ID_KEY] === data.id) }))
       : dispatch(setRowData({ data }));
   }
 

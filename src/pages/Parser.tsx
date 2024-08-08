@@ -32,7 +32,7 @@ import useFileDataNav from '../hooks/useFileDataNav';
 
 import { useSelector } from '../services/hooks';
 
-import type { TCustomData } from '../types';
+import type { TCustomData, TItemData } from '../types';
 
 import {
   DEFAULT_DOC_TITLE,
@@ -233,7 +233,7 @@ const Parser: FC = () => {
             }}
             columns={tableData ? tableData.cols : []}
             rows={tableData ? tableData.rows : []}
-            onRowClick={({ row }: { row: TCustomData<string | number> }) => console.log(row)}
+            onRowClick={({ row }: { row: TItemData }) => console.log(row)}
           />
           : ''
         }
