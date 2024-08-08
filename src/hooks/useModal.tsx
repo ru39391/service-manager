@@ -11,12 +11,17 @@ import { setFormVisible, setFormHidden } from '../services/slices/form-slice';
 
 import type { TCustomData } from '../types';
 
+type TModalData = {
+  fc: FunctionComponent | undefined;
+  payload?: TCustomData<null> | undefined;
+};
+
 interface IModal {
   modalContent: ReactNode | null;
   toggleModal: (data: TCustomData<string> | null) => void;
 }
 
-const useModal = (fc: FunctionComponent | undefined = undefined): IModal => {
+const useModal = ({ fc, payload }:TModalData = { fc: undefined, payload: { data: null } }): IModal => {
   const [modalContent, setModalContent] = useState<ReactNode | null>(null);
 
   const dispatch = useDispatch();
@@ -34,9 +39,7 @@ const useModal = (fc: FunctionComponent | undefined = undefined): IModal => {
   useEffect(() => {
     handleComponent({
       el: fc,
-      props: {
-        data: null,
-      },
+      props: payload ? {...payload} : {}
     });
   }, []);
 

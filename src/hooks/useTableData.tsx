@@ -113,7 +113,7 @@ const useTableData = (): ITableData => {
     {data, category, params}: TCategoryData,
     fileData: TPricelistData | null = null
   ): void => {
-    console.log({data, category, params});
+    //console.log({data, category, params});
     const key = params !== null ? Object.keys(params)[0] : null;
     const id = params !== null && key !== null ? params[key] : null;
     const arr = category ? data[category] : data[TYPES[ITEM_KEY]];

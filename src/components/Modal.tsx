@@ -32,6 +32,7 @@ import {
 
 interface IModal {
   fc?: FunctionComponent;
+  payload?: {};
 }
 
 const Transition = forwardRef(function Transition(props, ref) {
@@ -39,7 +40,7 @@ const Transition = forwardRef(function Transition(props, ref) {
   return <Slide direction="up" ref={ref} {...props} />;
 });
 
-const Modal: FC<IModal> = ({ fc }) => {
+const Modal: FC<IModal> = ({ fc, payload }) => {
   const dispatch = useDispatch();
   const {
     isVisible,
@@ -48,7 +49,7 @@ const Modal: FC<IModal> = ({ fc }) => {
     formDesc
   } = useSelector(state => state.form);
 
-  const { modalContent, toggleModal } = useModal(fc);
+  const { modalContent, toggleModal } = useModal({ fc, payload });
 
   const closeModal = () => {
     const isSucceed = false;
