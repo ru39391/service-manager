@@ -2,7 +2,8 @@ import {
   FC,
   Fragment,
   useState,
-  useEffect
+  useEffect,
+  useCallback
 } from 'react';
 import { styled } from '@mui/material/styles';
 import {
@@ -20,7 +21,7 @@ import {
   Typography
 } from '@mui/material';
 import { DataGrid } from '@mui/x-data-grid';
-import { CloudUpload, FolderOpen } from '@mui/icons-material';
+import { CloudUpload, FolderOpen, Sync } from '@mui/icons-material';
 
 import Layout from '../components/Layout';
 
@@ -30,16 +31,24 @@ import useFileUploader from '../hooks/useFileUploader';
 import useDataComparer from '../hooks/useDataComparer';
 import useFileDataNav from '../hooks/useFileDataNav';
 
-import { useSelector } from '../services/hooks';
+import { useSelector, useDispatch } from '../services/hooks';
 
-import type { TCustomData, TItemData } from '../types';
+import { handlePricelistData } from '../services/actions/pricelist';
+
+import type { TCustomData, TPricelistData, TItemData, TItemsArr } from '../types';
 
 import {
-  DEFAULT_DOC_TITLE,
+  ADD_ACTION_KEY,
+  EDIT_ACTION_KEY,
+  REMOVE_ACTION_KEY,
+  CREATED_KEY,
+  UPDATED_KEY,
+  REMOVED_KEY,
   HANDLED_ITEMS_CAPTIONS,
+  DEFAULT_DOC_TITLE,
   NO_FILE_ITEMS_TITLE,
   FILE_ITEMS_TITLE,
-  CREATED_KEY,
+  APPLY_TITLE,
   TYPES
 } from '../utils/constants';
 
@@ -54,15 +63,39 @@ const InvisibleInput = styled('input')({
 });
 
 const Parser: FC = () => {
-  const [currCategory, setCurrCategory] = useState(CREATED_KEY);
+  const [currCategory, setCurrCategory] = useState<string>(CREATED_KEY);
 
   const file = useSelector(state => state.file);
 
+  const dispatch = useDispatch();
   const { uploadFile } = useFileUploader();
   const { comparedFileData, compareFileData } = useDataComparer();
   const { currSubCategory, categoryTypes, setCurrSubCategory } = useCategoryItems();
   const { fileDataNav, updateFileDataNav } = useFileDataNav();
   const { tableData, handleTableData } = useTableData();
+
+  const setDataItems = (isEmpty: boolean = true): TPricelistData => Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: isEmpty ? [] : file[key]}), {});
+
+  const handleComparedData = useCallback(() => {
+    const keys = {
+      [CREATED_KEY]: ADD_ACTION_KEY,
+      [UPDATED_KEY]: EDIT_ACTION_KEY,
+      [REMOVED_KEY]: REMOVE_ACTION_KEY
+    };
+
+    dispatch(handlePricelistData({
+      action: keys[currCategory],
+      alias: currSubCategory,
+      items: comparedFileData
+        ? comparedFileData[currCategory][currSubCategory]
+        : setDataItems()[currSubCategory],
+    }));
+  }, [
+    dispatch,
+    currCategory,
+    currSubCategory,
+    comparedFileData
+  ]);
 
   const selectFileCategory = ({ category, subCategory }: TCustomData<string>): void => {
     setCurrCategory(category);
@@ -71,21 +104,22 @@ const Parser: FC = () => {
       {
         data: comparedFileData
           ? comparedFileData[category]
-          : Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: []}), {}),
+          : setDataItems(),
         category: subCategory,
         params: null
       },
-      Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: file[key]}), {})
+      setDataItems(false)
     );
   };
 
   useEffect(() => {
-    compareFileData(Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: file[key]}), {}));
+    compareFileData(setDataItems(false));
   }, [
     file
   ]);
 
   useEffect(() => {
+    console.log(comparedFileData);
     updateFileDataNav(comparedFileData);
   }, [
     comparedFileData
@@ -98,12 +132,6 @@ const Parser: FC = () => {
     });
   }, [
     fileDataNav
-  ]);
-
-  useEffect(() => {
-    //console.log(tableData && tableData.rows);
-  }, [
-    tableData
   ]);
 
   return (
@@ -191,16 +219,7 @@ const Parser: FC = () => {
           flexDirection: 'column'
         }}
       >
-        <Box
-          sx={{
-            mb: 1,
-            gap: '0 8px',
-            display: 'flex',
-            alignItems: 'center'
-          }}
-        >
-          <Typography variant="h5">{DEFAULT_DOC_TITLE}</Typography>
-        </Box>
+        <Typography variant="h5" sx={{ mb: 1 }}>{DEFAULT_DOC_TITLE}</Typography>
         <Breadcrumbs
           aria-label="breadcrumb"
           sx={{ mb: 4, typography: 'subtitle2' }}
@@ -221,7 +240,29 @@ const Parser: FC = () => {
             {HANDLED_ITEMS_CAPTIONS[currCategory]}, {categoryTypes && categoryTypes[currSubCategory].toLowerCase()}
           </Typography>
         </Breadcrumbs>
-        <Typography sx={{ mb: 1, typography: 'body1' }}>{tableData !== null ? `${FILE_ITEMS_TITLE} ${tableData.rows.length}` : NO_FILE_ITEMS_TITLE}</Typography>
+
+        <Box
+          sx={{
+            mb: 2,
+            gap: '0 16px',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'space-between'
+          }}
+        >
+          <Typography sx={{ typography: 'body1' }}>{tableData !== null ? `${FILE_ITEMS_TITLE} ${tableData.rows.length}` : NO_FILE_ITEMS_TITLE}</Typography>
+          {tableData && tableData.rows.length > 0
+            ? <Button
+              variant="outlined"
+              startIcon={<Sync />}
+              onClick={() => console.log(tableData)}
+            >
+              {APPLY_TITLE}
+            </Button>
+            : ''
+          }
+        </Box>
+
         {tableData !== null
           ? <DataGrid
             sx={{

@@ -10,6 +10,7 @@ const ADD_TITLE = 'Добавить';
 const EDIT_TITLE = 'Редактировать';
 const REMOVE_TITLE = 'Удалить';
 const SAVE_TITLE = 'Сохранить';
+const APPLY_TITLE = 'Применить обновления';
 const ADD_CATEGORY_TITLE = 'Добавить раздел';
 const EDIT_ITEM_TITLE = 'Изменить данные';
 
@@ -119,6 +120,7 @@ export {
   EDIT_TITLE,
   REMOVE_TITLE,
   SAVE_TITLE,
+  APPLY_TITLE,
   ADD_CATEGORY_TITLE,
   EDIT_ITEM_TITLE,
   REMOVE_CONFIRM_MSG,
