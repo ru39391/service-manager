@@ -20,7 +20,7 @@ import useCategoryItems from '../hooks/useCategoryItems';
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
 
-import type { TCustomData, TItemData } from '../types';
+import type { TItemData } from '../types';
 
 import {
   ADD_TITLE,

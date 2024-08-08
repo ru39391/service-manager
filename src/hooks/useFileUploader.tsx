@@ -21,7 +21,7 @@ import { useSelector, useDispatch } from '../services/hooks';
 import { handleFile } from '../services/actions/file';
 import { setRowData } from '../services/slices/file-slice';
 
-import type { TPricelistData, TCustomData, TItemData } from '../types';
+import type { TPricelistData, TCustomData, TItemData, TItemsArr } from '../types';
 
 interface IFileUploaderHook {
   uploadFile: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -34,7 +34,7 @@ const useFileUploader = (): IFileUploaderHook => {
   const dispatch = useDispatch();
 
   const handleComplexItem = (
-    items: TItemData[],
+    items: TItemsArr,
     arr: TCustomData<number>[],
     itemId: number
   ): { ids: TCustomData<number>[], summ: number } => {
@@ -56,7 +56,7 @@ const useFileUploader = (): IFileUploaderHook => {
     };
   };
 
-  const handleDepts = (arr: TItemData[]): TCustomData<TItemData[]> => {
+  const handleDepts = (arr: TItemsArr): TCustomData<TItemsArr> => {
     const deptsdArr = arr
       .map(
         ({ RAZDID, RAZDNAME }) => ({
@@ -68,7 +68,7 @@ const useFileUploader = (): IFileUploaderHook => {
     return { [TYPES[DEPT_KEY]]: fetchArray(deptsdArr, ID_KEY) };
   };
 
-  const handleSubdepts = (arr: TItemData[]): TCustomData<TItemData[]> => {
+  const handleSubdepts = (arr: TItemsArr): TCustomData<TItemsArr> => {
     const subdeptsArr = arr
       .map(
         ({ SPECID, SPECNAME, RAZDID }) => ({
@@ -81,7 +81,7 @@ const useFileUploader = (): IFileUploaderHook => {
     return { [TYPES[SUBDEPT_KEY]]: fetchArray(subdeptsArr, ID_KEY) };
   };
 
-  const handleGroups = (arr: TItemData[]): TCustomData<TItemData[]> => {
+  const handleGroups = (arr: TItemsArr): TCustomData<TItemsArr> => {
     const groupsArr = arr
       .filter(({ ISCAPTION_1 }) => Number(ISCAPTION_1) === 1)
       .map(
@@ -97,7 +97,7 @@ const useFileUploader = (): IFileUploaderHook => {
     return { [TYPES[GROUP_KEY]]: fetchArray(groupsArr, ID_KEY) };
   };
 
-  const handleItems = (arr: TItemData[]): TPricelistData => {
+  const handleItems = (arr: TItemsArr): TPricelistData => {
     //@ts-expect-error
     const complexItemsArr: TCustomData<number>[] = arr
       .filter(({ ISCOMPLEX }) => Number(ISCOMPLEX) === 1)
@@ -151,7 +151,7 @@ const useFileUploader = (): IFileUploaderHook => {
 
     const wb = read(result, { type: 'binary' });
     const ws = wb.Sheets[wb.SheetNames[0]];
-    const parsedData: TItemData[] = utils.sheet_to_json((ws), { defval: '' });
+    const parsedData: TItemsArr = utils.sheet_to_json((ws), { defval: '' });
 
     dispatch(handleFile({
       ...handleDepts(parsedData),

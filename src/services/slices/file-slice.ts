@@ -1,13 +1,13 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import type { TItemData } from '../../types';
+import type { TItemData, TItemsArr } from '../../types';
 
 export type TFileAction = {
   payload: {
-    depts?: TItemData[];
-    subdepts?: TItemData[];
-    groups?: TItemData[];
-    pricelist?: TItemData[];
+    depts?: TItemsArr;
+    subdepts?: TItemsArr;
+    groups?: TItemsArr;
+    pricelist?: TItemsArr;
     data?: TItemData | null;
     item?: TItemData;
     key?: string;
@@ -16,10 +16,10 @@ export type TFileAction = {
 };
 
 export type TFileState = {
-  depts: TItemData[];
-  subdepts: TItemData[];
-  groups: TItemData[];
-  pricelist: TItemData[];
+  depts: TItemsArr;
+  subdepts: TItemsArr;
+  groups: TItemsArr;
+  pricelist: TItemsArr;
   rowData: TItemData | null;
   isFileUploading: boolean;
   isFileUploadingFailed: boolean;
