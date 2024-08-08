@@ -28,30 +28,29 @@ interface IFileUploaderHook {
   getRowData: (data: TItemData | null) => void;
 }
 
-// TODO: проверить код
 const useFileUploader = (): IFileUploaderHook => {
   const file = useSelector(state => state.file);
   const dispatch = useDispatch();
 
-  const handleComplexItem = (
+  const handleComplex = (
     items: TItemsArr,
     arr: TCustomData<number>[],
     itemId: number
-  ): { ids: TCustomData<number>[], summ: number } => {
+  ): { ids: TCustomData<number>[]; complexItemIds: number[]; summ: number } => {
     const complexArr: TCustomData<number>[] = arr.filter(({ parent }) => parent === itemId).map(({ id, quantity }) => ({ [id]: quantity }));
     const summ: number = complexArr
       .map(item => {
         const id = Number(Object.keys(item)[0]);
         const quantity = Object.values(item)[0];
-        //@ts-expect-error
-        const { SPRICE }: { SPRICE: number } = items.find(({ SCHID }) => SCHID === id);
+        const data = items.find(({ SCHID }) => SCHID === id);
 
-        return quantity*SPRICE;
+        return data ? Number(data.SPRICE)*quantity : 0;
       })
       .reduce((acc, item) => acc + item, 0);
 
     return {
       ids: complexArr,
+      complexItemIds: fetchArray(arr, 'id').map(({ id }) => id as number),
       summ
     };
   };
@@ -98,14 +97,17 @@ const useFileUploader = (): IFileUploaderHook => {
   };
 
   const handleItems = (arr: TItemsArr): TPricelistData => {
-    //@ts-expect-error
     const complexItemsArr: TCustomData<number>[] = arr
-      .filter(({ ISCOMPLEX }) => Number(ISCOMPLEX) === 1)
+      .filter(({ ISCOMPLEX } ) => Number(ISCOMPLEX) === 1)
       .map(({
-        SCHID: parent,
-        ID_SCHEMA_IN_COMPLEX: id,
-        KOLVO_IN_COMPLEX: quantity
-      }) => ({ parent, id, quantity }));
+        SCHID,
+        ID_SCHEMA_IN_COMPLEX,
+        KOLVO_IN_COMPLEX
+      }) => ({
+        parent: Number(SCHID),
+        id: Number(ID_SCHEMA_IN_COMPLEX),
+        quantity: Number(KOLVO_IN_COMPLEX)
+      }));
     const itemsArr = arr
       .filter(({ ISCAPTION_1 }) => Number(ISCAPTION_1) === 0)
       .map(
@@ -121,7 +123,7 @@ const useFileUploader = (): IFileUploaderHook => {
           VIEWINWEB,
           SORTIROVKA_SPEC
         }, _, array) => {
-          const { ids, summ } = handleComplexItem(array, complexItemsArr, SCHID as number);
+          const { ids, complexItemIds, summ } = handleComplex(array, complexItemsArr, Number(SCHID));
 
           return {
             [ID_KEY]: Number(SCHID),
@@ -130,7 +132,9 @@ const useFileUploader = (): IFileUploaderHook => {
             [DEPT_KEY]: Number(RAZDID),
             [SUBDEPT_KEY]: Number(SPECID),
             [GROUP_KEY]: Number(ZAGOLOVOK_ID),
-            [IS_COMPLEX_ITEM_KEY]: Number(VIEWINCOMPLEX_ONLY) || 0,
+            [IS_COMPLEX_ITEM_KEY]: complexItemIds.includes(Number(SCHID))
+              ? 1
+              : Number(VIEWINCOMPLEX_ONLY) || 0,
             [IS_COMPLEX_KEY]: Number(ISCOMPLEX) || 0,
             [COMPLEX_KEY]: JSON.stringify(ids),
             [IS_VISIBLE_KEY]: Number(VIEWINWEB) || 1,
@@ -139,10 +143,7 @@ const useFileUploader = (): IFileUploaderHook => {
         }
       );
 
-    const data = { [TYPES[ITEM_KEY]]: fetchArray(itemsArr, ID_KEY) };
-    console.log(data);
-
-    return data;
+    return { [TYPES[ITEM_KEY]]: fetchArray(itemsArr, ID_KEY) };
   };
 
   const handleUploadedFile = (event: Event): void => {
@@ -173,6 +174,7 @@ const useFileUploader = (): IFileUploaderHook => {
     reader.addEventListener('load', handleUploadedFile);
   };
 
+  // TODO: проверить код
   const getRowData = (data: TItemData | null = null): void => {
     const parsedData = [
       file[TYPES[DEPT_KEY]],
