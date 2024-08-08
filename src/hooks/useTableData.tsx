@@ -39,7 +39,7 @@ type TTableData = {
 
 interface ITableData {
   tableData: TTableData | null;
-  handleTableData: (data: TCategoryData) => void;
+  handleTableData: (data: TCategoryData, fileData: TPricelistData | null) => void;
 }
 
 const useTableData = (): ITableData => {
@@ -51,8 +51,6 @@ const useTableData = (): ITableData => {
 
   const getCategoryName = (arr: TItemsArr, item: GridValidRowModel, key: string): string => {
     const data = arr.find(row => row[ID_KEY] === item[key]);
-    // TODO: настроить передачу id категорий при обновлении файла
-    // console.log(arr);
 
     return data ? data[NAME_KEY] as string : '';
   }
@@ -67,11 +65,16 @@ const useTableData = (): ITableData => {
    }, []).join(', ')
    : '';
 
-  const handleArr = (arr: TItemsArr, items: TPricelistData): TTableData => {
+  const handleArr = (
+    arr: TItemsArr,
+    data: TPricelistData,
+    fileData: TPricelistData | null = null
+  ): TTableData => {
     if(!(Array.isArray(arr) && arr.length)) {
       return null;
     }
 
+    const items = fileData || data;
     const rows: GridValidRowModel[] = sortStrArray([...arr], NAME_KEY)
       .map(item => {
         const data = {...item};
@@ -106,7 +109,10 @@ const useTableData = (): ITableData => {
     };
   }
 
-  const handleTableData = ({data, category, params}: TCategoryData): void => {
+  const handleTableData = (
+    {data, category, params}: TCategoryData,
+    fileData: TPricelistData | null = null
+  ): void => {
     console.log({data, category, params});
     const key = params !== null ? Object.keys(params)[0] : null;
     const id = params !== null && key !== null ? params[key] : null;
@@ -118,7 +124,8 @@ const useTableData = (): ITableData => {
     setTableData(
       handleArr(
         filtredArr,
-        data
+        data,
+        fileData
       )
     );
   }

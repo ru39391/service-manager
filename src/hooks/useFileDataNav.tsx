@@ -1,6 +1,6 @@
 import { useState } from 'react';
 
-import type { TCustomData, TItemsArr } from '../types';
+import type { TPricelistData, TCustomData } from '../types';
 
 import { HANDLED_ITEMS_CAPTIONS } from '../utils/constants';
 
@@ -13,13 +13,13 @@ type TFileDataNav = {
 
 interface IFileDataNav {
   fileDataNav: TFileDataNav;
-  updateFileDataNav: (data: TCustomData<TCustomData<TItemsArr>> | null) => void;
+  updateFileDataNav: (data: TCustomData<TPricelistData> | null) => void;
 }
 
 const useFileDataNav = (): IFileDataNav => {
   const [fileDataNav, setFileDataNav] = useState<TFileDataNav>([]);
 
-  const updateFileDataNav = (data: TCustomData<TCustomData<TItemsArr>> | null): void => {
+  const updateFileDataNav = (data: TCustomData<TPricelistData> | null): void => {
     const [keys, items] = data ? [Object.keys(data), Object.values(data)] : [[], []];
 
     setFileDataNav(

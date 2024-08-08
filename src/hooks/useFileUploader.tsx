@@ -21,7 +21,7 @@ import { useSelector, useDispatch } from '../services/hooks';
 import { handleFile } from '../services/actions/file';
 import { setRowData } from '../services/slices/file-slice';
 
-import type { TCustomData, TItemsArr } from '../types';
+import type { TPricelistData, TCustomData, TItemsArr } from '../types';
 
 interface IFileUploaderHook {
   uploadFile: (event: ChangeEvent<HTMLInputElement>) => void;
@@ -102,7 +102,7 @@ const useFileUploader = (): IFileUploaderHook => {
     return { [TYPES[GROUP_KEY]]: fetchArray(groupsArr, ID_KEY) };
   };
 
-  const handleItems = (arr: TCustomData<string | number>[]): TCustomData<TItemsArr> => {
+  const handleItems = (arr: TCustomData<string | number>[]): TPricelistData => {
     //@ts-expect-error
     const complexItemsArr: TCustomData<number>[] = arr
       .filter(({ ISCOMPLEX }) => Number(ISCOMPLEX) === 1)

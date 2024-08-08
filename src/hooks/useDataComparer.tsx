@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useSelector } from '../services/hooks';
 
 import type {
+  TPricelistData,
   TCustomData,
   TItemsArr,
   TItemData
@@ -21,12 +22,12 @@ type TFileHandlerData = {
 }
 
 interface IDataComparer {
-  comparedFileData: TCustomData<TCustomData<TItemsArr>> | null;
-  compareFileData: (data: TCustomData<TItemsArr>) => void;
+  comparedFileData: TCustomData<TPricelistData> | null;
+  compareFileData: (data: TPricelistData) => void;
 }
 
 const useDataComparer = (): IDataComparer => {
-  const [comparedFileData, setComparedFileData] = useState<TCustomData<TCustomData<TItemsArr>> | null>(null);
+  const [comparedFileData, setComparedFileData] = useState<TCustomData<TPricelistData> | null>(null);
 
   const pricelist = useSelector(state => state.pricelist);
 
@@ -117,7 +118,7 @@ const useDataComparer = (): IDataComparer => {
       keys: string[];
       items: TItemsArr[];
     }
-  ): TCustomData<TItemsArr> => keys.reduce((acc, item, index) => {
+  ): TPricelistData => keys.reduce((acc, item, index) => {
     const { ids, arr } = setItemIds({ key: item, arr: items[index] })[key];
 
     return {
@@ -134,7 +135,7 @@ const useDataComparer = (): IDataComparer => {
     [REMOVED_KEY]: ({keys, items}: TFileHandlerData) => handleItems({key: REMOVED_KEY, keys, items})
   };
 
-  const compareFileData = (data: TCustomData<TItemsArr>): void => {
+  const compareFileData = (data: TPricelistData): void => {
     const [keys, items] = [Object.keys(data), Object.values(data)];
 
     setComparedFileData(

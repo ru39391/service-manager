@@ -67,13 +67,16 @@ const Parser: FC = () => {
   const selectFileCategory = ({ category, subCategory }: TCustomData<string>): void => {
     setCurrCategory(category);
     setCurrSubCategory(subCategory);
-    handleTableData({
-      data: comparedFileData
-        ? comparedFileData[category]
-        : Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: []}), {}),
-      category: subCategory,
-      params: null
-    });
+    handleTableData(
+      {
+        data: comparedFileData
+          ? comparedFileData[category]
+          : Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: []}), {}),
+        category: subCategory,
+        params: null
+      },
+      Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: file[key]}), {})
+    );
   };
 
   useEffect(() => {
