@@ -3,7 +3,12 @@ import { createSlice } from '@reduxjs/toolkit'
 import type { TItemData, TItemsArr } from '../../types';
 
 import { fetchItemsArr } from '../../utils';
-import { ID_KEY } from '../../utils/constants';
+import {
+  ADD_ACTION_KEY,
+  EDIT_ACTION_KEY,
+  REMOVE_ACTION_KEY,
+  ID_KEY
+} from '../../utils/constants';
 
 export type TPricelistAction = {
   payload: {
@@ -13,7 +18,7 @@ export type TPricelistAction = {
     pricelist?: TItemsArr;
     alertType?: string;
     alertMsg?: string;
-    key?: string;
+    type?: string;
     items?: TItemsArr;
   };
 };
@@ -71,13 +76,18 @@ const pricelistSlice = createSlice({
       alertMsg: action.payload.alertMsg || ''
     }),
     createItems(state, action: TPricelistAction) {
-      const {key, items} = action.payload;
+      const {type, items} = action.payload;
       console.log(action.payload);
+      console.log({
+        action: ADD_ACTION_KEY,
+        type,
+        ids: items ? items.map((item) => item[ID_KEY] as number) : []
+      });
 
       return {
         ...state,
-        ...([key] && Array.isArray(items) && {
-          [key as string]: [...state[key as string], ...items]
+        ...(type && Array.isArray(items) && {
+          [type as string]: [...state[type as string], ...items]
         }),
         isPricelistLoading: false,
         isPricelistSucceed: true,
@@ -87,15 +97,16 @@ const pricelistSlice = createSlice({
       };
     },
     updateItems(state, action: TPricelistAction) {
-      const {key, items} = action.payload;
+      const {type, items} = action.payload;
       const ids = items ? items.map((item) => item[ID_KEY] as number) : [];
-      const currItems = [...state[key as string]].filter((item: TItemData) => !ids.includes(item[ID_KEY] as number));
+      const currItems = [...state[type as string]].filter((item: TItemData) => !ids.includes(item[ID_KEY] as number));
       console.log(action.payload);
+      console.log({action: EDIT_ACTION_KEY, type, ids});
 
       return {
         ...state,
-        ...([key] && Array.isArray(items) && {
-          [key as string]: [...currItems, ...items]
+        ...(type && Array.isArray(items) && {
+          [type as string]: [...currItems, ...items]
         }),
         isPricelistLoading: false,
         isPricelistSucceed: true,
@@ -105,13 +116,14 @@ const pricelistSlice = createSlice({
       };
     },
     removeItems(state, action: TPricelistAction) {
-      const {key, items} = action.payload;
+      const {type, items} = action.payload;
       const ids = items ? items.map((item) => item[ID_KEY] as number) : [];
+      console.log({action: REMOVE_ACTION_KEY, type, ids});
 
       return {
         ...state,
-        ...([key] && {
-          [key as string]: [...state[key as string]].filter((item: TItemData) => !ids.includes(item[ID_KEY] as number))
+        ...(type && {
+          [type as string]: [...state[type as string]].filter((item: TItemData) => !ids.includes(item[ID_KEY] as number))
         }),
         isPricelistLoading: false,
         isPricelistSucceed: true,

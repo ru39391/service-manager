@@ -50,7 +50,7 @@ const ItemsList: FC = () => {
 
   useEffect(() => {
     handleTableData({
-      data: Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: pricelist[key]}), {}),
+      data: Object.values(TYPES).reduce((acc, type) => ({...acc, [type]: pricelist[type]}), {}),
       category: currSubCategory,
       params: categoryParams
     });

@@ -88,7 +88,12 @@ const Parser: FC = () => {
   const { fileDataNav, updateFileDataNav } = useFileDataNav();
   const { tableData, handleTableData } = useTableData();
 
-  const setDataItems = (isEmpty: boolean = true): TPricelistData => Object.values(TYPES).reduce((acc, key) => ({...acc, [key]: isEmpty ? [] : file[key]}), {});
+  const setDataItems = (): TPricelistData | null => {
+    const data:TPricelistData = Object.values(TYPES).reduce((acc, type) => ({...acc, [type]: file[type]}), {});
+    const dataItems = Object.values(data).filter(item => item.length === 0);
+
+    return Object.values(data).length === dataItems.length ? null : data;
+  };
 
   const handleComparedData = useCallback(() => {
     const keys = {
@@ -97,12 +102,14 @@ const Parser: FC = () => {
       [REMOVED_KEY]: REMOVE_ACTION_KEY
     };
 
+    if(!comparedFileData) {
+      return;
+    }
+
     dispatch(handlePricelistData({
       action: keys[currCategory],
-      alias: currSubCategory,
-      items: comparedFileData
-        ? comparedFileData[currCategory][currSubCategory]
-        : setDataItems()[currSubCategory],
+      type: currSubCategory,
+      items: comparedFileData[currCategory][currSubCategory]
     }));
   }, [
     dispatch,
@@ -112,17 +119,19 @@ const Parser: FC = () => {
   ]);
 
   const selectFileCategory = ({ category, subCategory }: TCustomData<string>): void => {
+    if(!comparedFileData) {
+      return;
+    }
+
     setCurrCategory(category);
     setCurrSubCategory(subCategory);
     handleTableData(
       {
-        data: comparedFileData
-          ? comparedFileData[category]
-          : setDataItems(),
+        data: comparedFileData[category],
         category: subCategory,
         params: null
       },
-      setDataItems(false)
+      setDataItems()
     );
   };
 
@@ -137,7 +146,7 @@ const Parser: FC = () => {
   }
 
   useEffect(() => {
-    compareFileData(setDataItems(false));
+    compareFileData(setDataItems());
   }, [
     file
   ]);
@@ -197,6 +206,7 @@ const Parser: FC = () => {
               }}
               component="label"
               variant="contained"
+              disabled={file.isFileUploading}
               startIcon={<CloudUpload />}
             >
               Загрузить файл

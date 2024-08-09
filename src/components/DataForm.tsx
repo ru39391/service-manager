@@ -76,7 +76,7 @@ const DataForm: FC = () => {
     [ADD_ACTION_KEY]: useCallback(() => {
       dispatch(handlePricelistData({
         action: ADD_ACTION_KEY,
-        alias: formData ? formData.type as string : null,
+        type: formData ? formData.type as string : null,
         items: formData ? [{...formData.data as TItemData, ...formValues, ...setItemId()}] : []
       }));
     }, [
@@ -88,7 +88,7 @@ const DataForm: FC = () => {
     [EDIT_ACTION_KEY]: useCallback(() => {
       dispatch(handlePricelistData({
         action: EDIT_ACTION_KEY,
-        alias: formData ? formData.type as string : null,
+        type: formData ? formData.type as string : null,
         items: formData ? [{[ID_KEY]: formData.data[ID_KEY], ...formValues}] : []
       }));
     }, [
@@ -99,7 +99,7 @@ const DataForm: FC = () => {
     [REMOVE_ACTION_KEY]: useCallback(() => {
       dispatch(handlePricelistData({
         action: REMOVE_ACTION_KEY,
-        alias: formData ? formData.type as string : null,
+        type: formData ? formData.type as string : null,
         items: formData ? [{[ID_KEY]: formData.data[ID_KEY]}] : [],
       }));
     }, [

@@ -43,9 +43,9 @@ const useCategoryItems = (): ICategoryItems => {
   };
   const keysData: TCustomData<string> =
     Object.values(TYPES).reduce(
-      (acc, key, index) => ({
+      (acc, type, index) => ({
         ...acc,
-        [key]: Object.keys(TYPES)[index]
+        [type]: Object.keys(TYPES)[index]
       }), {}
     );
 

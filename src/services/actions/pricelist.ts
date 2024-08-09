@@ -46,13 +46,13 @@ import {
 } from '../../utils/constants';
 import { handleRespData, setRespMessage } from '../../utils';
 
-import { deleteDepts } from '../../mocks';
+import { fetchData } from '../../mocks';
 
 const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
   try {
-    const response = await Promise.all(Object.values(TYPES).map(alias => axios.get(`${API_URL}${alias}`)));
+    const response = await Promise.all(Object.values(TYPES).map(type => axios.get(`${API_URL}${type}`)));
     //console.log(response);
 
     const { success, data }: TResponseData = response
@@ -79,7 +79,7 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
   }
 };
 
-const handlePricelistData = ({ action, alias, items }: { action: string; alias: string | null; items: TItemsArr; }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
+const handlePricelistData = ({ action, type, items }: { action: string; type: string | null; items: TItemsArr; }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   const actionData = {
     [ADD_ACTION_KEY]: {
       handler: async (url: string, data: TCustomData<TItemData>) => await axios.post(url, data),
@@ -120,7 +120,7 @@ const handlePricelistData = ({ action, alias, items }: { action: string; alias: 
   //console.log(actionData[action]);
   //return;
 
-  if(!alias) {
+  if(!type) {
     dispatch(getPricelistFailed({ alertMsg: 'Не удалось определить тип переданного элемента' }));
     return;
   }
@@ -129,7 +129,7 @@ const handlePricelistData = ({ action, alias, items }: { action: string; alias: 
 
   console.log({
     action,
-    url: `${API_URL}${alias}`,
+    url: `${API_URL}${type}`,
     payload: { ...items.reduce((acc, item, index) => ({...acc, [index]: item }), {}) }
   });
 
@@ -138,12 +138,12 @@ const handlePricelistData = ({ action, alias, items }: { action: string; alias: 
       success,
       data,
       errors
-    }: TResponseDefault = await deleteDepts();
+    }: TResponseDefault = await fetchData(items);
     /*
-    await handler(`${API_URL}${alias}`, {
+    await handler(`${API_URL}${type}`, {
       ...items.reduce((acc, item, index) => ({...acc, [index]: item }), {})
     });
-    await axios.delete(`${API_URL}${alias}`, {
+    await axios.delete(`${API_URL}${type}`, {
       ...items.reduce((acc, item, index) => ({...acc, [index]: item }), {})
     });
     */
@@ -175,8 +175,8 @@ const handlePricelistData = ({ action, alias, items }: { action: string; alias: 
 
     if(success) {
       dispatch(dispatcher({
-        key: alias as string,
-        items: itemsArr.filter((item) => item[UPDATEDON_KEY] !== null),
+        type,
+        items: itemsArr, // .filter((item) => item[UPDATEDON_KEY] !== null)
         alertMsg: `${successMsg}, обработано элементов: ${succeedValue}`
       }));
       failedValue || inValidValue

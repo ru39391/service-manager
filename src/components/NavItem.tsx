@@ -39,11 +39,11 @@ const NavItem: FC<INavItem> = ({
   const [currSubCategoryId, setCurrSubCategoryId] = useState<number | null>(null);
   const navigate = useNavigate();
 
-  const changeLoc = (id: number, key: string): void => {
-    navigate(`/${TYPES[key]}/${id.toString()}`, { replace: true });
+  const changeLoc = (id: number, type: string): void => {
+    navigate(`/${TYPES[type]}/${id.toString()}`, { replace: true });
     setCurrSubCategoryId(id);
 
-    if(key === DEPT_KEY) {
+    if(type === DEPT_KEY) {
       setSubNav(id);
     }
   }

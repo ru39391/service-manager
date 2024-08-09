@@ -51,7 +51,7 @@ const Modal: FC<IModal> = ({ fc, payload }) => {
 
   const { modalContent, toggleModal } = useModal({ fc, payload });
 
-  const closeModal = () => {
+  const closeModal = (): Promise<{ isSucceed: boolean; }> => {
     const isSucceed = false;
 
     toggleModal(null);
@@ -71,7 +71,6 @@ const Modal: FC<IModal> = ({ fc, payload }) => {
     const { data, type } = payload;
 
     try {
-      //@ts-expect-error
       const { isSucceed } = await closeModal();
 
       if(isSucceed) {

@@ -23,7 +23,7 @@ type TFileHandlerData = {
 
 interface IDataComparer {
   comparedFileData: TCustomData<TPricelistData> | null;
-  compareFileData: (data: TPricelistData) => void;
+  compareFileData: (data: TPricelistData | null) => void;
 }
 
 const useDataComparer = (): IDataComparer => {
@@ -135,7 +135,11 @@ const useDataComparer = (): IDataComparer => {
     [REMOVED_KEY]: ({keys, items}: TFileHandlerData) => handleItems({key: REMOVED_KEY, keys, items})
   };
 
-  const compareFileData = (data: TPricelistData): void => {
+  const compareFileData = (data: TPricelistData | null): void => {
+    if(!data) {
+      return;
+    }
+
     const [keys, items] = [Object.keys(data), Object.values(data)];
 
     setComparedFileData(

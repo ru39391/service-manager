@@ -47,7 +47,7 @@ const useCategoryCounter = (): ICategoryCounter => {
   }
 
   const countSubCategoryItems = () => {
-    const typesData: TCustomData<string> = Object.values(TYPES).reduce((acc, item, index) => ({ ...acc, [item]: Object.keys(TYPES)[index] }), {})
+    const typesData: TCustomData<string> = Object.values(TYPES).reduce((acc, type, index) => ({ ...acc, [type]: Object.keys(TYPES)[index] }), {})
 
     if(categoryList && categoryList.length) {
       const countedData: TCustomData<number> = categoryList.reduce((acc, item) => (
