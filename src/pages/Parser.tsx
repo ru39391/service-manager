@@ -68,7 +68,6 @@ const InvisibleInput = styled('input')({
   opacity: 0
 });
 
-// TODO: настроить обновление массива данных файла после успешной операции
 const Parser: FC = () => {
   const [currCategory, setCurrCategory] = useState<string>(CREATED_KEY);
 
@@ -79,6 +78,7 @@ const Parser: FC = () => {
     file: state.file,
     form: state.form
   }));
+  const { isFileUploading } = file;
 
   const dispatch = useDispatch();
   const { toggleModal } = useModal();
@@ -166,24 +166,6 @@ const Parser: FC = () => {
     fileDataNav
   ]);
 
-  /*
-  const updateComparedFileData = ({ action, key, ids }) => {
-    const keys = {
-      [ADD_ACTION_KEY]: CREATED_KEY,
-      [EDIT_ACTION_KEY]: UPDATED_KEY,
-      [REMOVE_ACTION_KEY]: REMOVED_KEY
-    };
-
-    handleComparedFileData({ key: keys[action], type: key, ids });
-  }
-
-  useEffect(() => {
-    updateComparedFileData(payload);
-  }, [
-    payload
-  ]);
-  */
-
   return (
     <>
       <Layout>
@@ -206,7 +188,7 @@ const Parser: FC = () => {
               }}
               component="label"
               variant="contained"
-              disabled={file.isFileUploading}
+              disabled={isFileUploading}
               startIcon={<CloudUpload />}
             >
               Загрузить файл

@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import type { TItemData, TItemsArr } from '../../types';
+import type { TCustomData, TItemData, TItemsArr } from '../../types';
 
 import { fetchItemsArr } from '../../utils';
 import {
@@ -33,6 +33,7 @@ export type TPricelistState = {
   isPricelistFailed: boolean;
   alertType: string;
   alertMsg: string;
+  response: TCustomData<string | number[]> | null;
 };
 
 const initialState: TPricelistState = {
@@ -45,6 +46,7 @@ const initialState: TPricelistState = {
   isPricelistFailed: false,
   alertType: 'info',
   alertMsg: '',
+  response: null
 };
 
 const pricelistSlice = createSlice({
@@ -65,7 +67,8 @@ const pricelistSlice = createSlice({
       isPricelistSucceed: true,
       isPricelistFailed: false,
       alertType: '',
-      alertMsg: ''
+      alertMsg: '',
+      response: null
     }),
     getPricelistFailed: (state, action: TPricelistAction) => ({
       ...state,
@@ -73,63 +76,65 @@ const pricelistSlice = createSlice({
       isPricelistSucceed: false,
       isPricelistFailed: true,
       alertType: 'error',
-      alertMsg: action.payload.alertMsg || ''
+      alertMsg: action.payload.alertMsg || '',
+      response: null
     }),
     createItems(state, action: TPricelistAction) {
-      const {type, items} = action.payload;
-      console.log(action.payload);
-      console.log({
-        action: ADD_ACTION_KEY,
-        type,
-        ids: items ? items.map((item) => item[ID_KEY] as number) : []
-      });
+      const { type, items } = {
+        type: action.payload.type as string,
+        items: action.payload.items as TItemsArr
+      };
 
       return {
         ...state,
-        ...(type && Array.isArray(items) && {
-          [type as string]: [...state[type as string], ...items]
-        }),
+        ...(type && Array.isArray(items) && { [type]: [...state[type], ...items] }),
         isPricelistLoading: false,
         isPricelistSucceed: true,
         isPricelistFailed: false,
         alertType: 'success',
-        alertMsg: action.payload.alertMsg || ''
+        alertMsg: action.payload.alertMsg || '',
+        response: {
+          action: ADD_ACTION_KEY,
+          type,
+          ids: items ? items.map((item) => item[ID_KEY] as number) : []
+        }
       };
     },
     updateItems(state, action: TPricelistAction) {
-      const {type, items} = action.payload;
+      const { type, items } = {
+        type: action.payload.type as string,
+        items: action.payload.items as TItemsArr
+      };
       const ids = items ? items.map((item) => item[ID_KEY] as number) : [];
-      const currItems = [...state[type as string]].filter((item: TItemData) => !ids.includes(item[ID_KEY] as number));
-      console.log(action.payload);
-      console.log({action: EDIT_ACTION_KEY, type, ids});
+      const currItems = [...state[type]].filter((item: TItemData) => !ids.includes(item[ID_KEY] as number));
 
       return {
         ...state,
-        ...(type && Array.isArray(items) && {
-          [type as string]: [...currItems, ...items]
-        }),
+        ...(type && Array.isArray(items) && { [type]: [...currItems, ...items] }),
         isPricelistLoading: false,
         isPricelistSucceed: true,
         isPricelistFailed: false,
         alertType: 'success',
-        alertMsg: action.payload.alertMsg || ''
+        alertMsg: action.payload.alertMsg || '',
+        response: { action: EDIT_ACTION_KEY, type, ids }
       };
     },
     removeItems(state, action: TPricelistAction) {
-      const {type, items} = action.payload;
+      const { type, items } = {
+        type: action.payload.type as string,
+        items: action.payload.items as TItemsArr
+      };
       const ids = items ? items.map((item) => item[ID_KEY] as number) : [];
-      console.log({action: REMOVE_ACTION_KEY, type, ids});
 
       return {
         ...state,
-        ...(type && {
-          [type as string]: [...state[type as string]].filter((item: TItemData) => !ids.includes(item[ID_KEY] as number))
-        }),
+        ...(type && { [type]: [...state[type]].filter((item: TItemData) => !ids.includes(item[ID_KEY] as number)) }),
         isPricelistLoading: false,
         isPricelistSucceed: true,
         isPricelistFailed: false,
         alertType: 'success',
-        alertMsg: action.payload.alertMsg || ''
+        alertMsg: action.payload.alertMsg || '',
+        response: { action: REMOVE_ACTION_KEY, type, ids }
       };
     },
     resetPricelist: (state) => ({

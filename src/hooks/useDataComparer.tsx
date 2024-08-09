@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useSelector } from '../services/hooks';
 
 import type {
@@ -7,13 +7,16 @@ import type {
   TItemsArr,
   TItemData
 } from '../types';
+import type { TPricelistState } from '../services/slices/pricelist-slice';
 
 import {
   CREATED_KEY,
   UPDATED_KEY,
   REMOVED_KEY,
-  ID_KEY,
-  TYPES,
+  ADD_ACTION_KEY,
+  EDIT_ACTION_KEY,
+  REMOVE_ACTION_KEY,
+  ID_KEY
 } from '../utils/constants';
 
 type TFileHandlerData = {
@@ -30,6 +33,7 @@ const useDataComparer = (): IDataComparer => {
   const [comparedFileData, setComparedFileData] = useState<TCustomData<TPricelistData> | null>(null);
 
   const pricelist = useSelector(state => state.pricelist);
+  const { response } = pricelist;
 
   const setItemIds = (
     {
@@ -148,6 +152,39 @@ const useDataComparer = (): IDataComparer => {
       ), {})
     );
   };
+
+  const updateComparedFileData = (data: TPricelistState['response']) => {
+    if(!data || !comparedFileData) {
+      return;
+    }
+
+    const { action, type, ids } = {
+      action: data.action as string,
+      type: data.type as string,
+      ids: data.ids as number[]
+    };
+    const keys = {
+      [ADD_ACTION_KEY]: CREATED_KEY,
+      [EDIT_ACTION_KEY]: UPDATED_KEY,
+      [REMOVE_ACTION_KEY]: REMOVED_KEY
+    };
+    const itemsData = comparedFileData[keys[action]];
+    const items = itemsData[type].filter(item => !ids.includes(item[ID_KEY] as number));
+
+    setComparedFileData({
+      ...comparedFileData,
+      [keys[action]]: {
+        ...itemsData,
+        [type]: [...items]
+      }
+    });
+  }
+
+  useEffect(() => {
+    updateComparedFileData(response);
+  }, [
+    response
+  ]);
 
   return {
     comparedFileData,
