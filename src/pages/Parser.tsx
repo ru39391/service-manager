@@ -25,6 +25,7 @@ import { CloudUpload, FolderOpen, Sync } from '@mui/icons-material';
 
 import Layout from '../components/Layout';
 import Modal from '../components/Modal';
+import DataForm from '../components/DataForm';
 import FileDataForm from '../components/FileDataForm';
 
 import useModal from '../hooks/useModal';
@@ -35,6 +36,7 @@ import useDataComparer from '../hooks/useDataComparer';
 import useFileDataNav from '../hooks/useFileDataNav';
 
 import { useSelector, useDispatch } from '../services/hooks';
+import { setFormData } from '../services/slices/form-slice';
 
 import { handlePricelistData } from '../services/actions/pricelist';
 
@@ -55,7 +57,11 @@ import {
   ADD_TITLE,
   EDIT_TITLE,
   REMOVE_TITLE,
-  TYPES
+  EDIT_ITEM_TITLE,
+  ID_KEY,
+  NAME_KEY,
+  TYPES,
+  TITLES
 } from '../utils/constants';
 
 const InvisibleInput = styled('input')({
@@ -143,6 +149,40 @@ const Parser: FC = () => {
     };
 
     toggleModal({ title: `${keys[currCategory]} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}` })
+  }
+
+  const handleItemData = (
+    {
+      values,
+      currCategory,
+      currSubCategory
+    }: {
+      values: TItemData;
+      currCategory: string;
+      currSubCategory: string;
+    }
+  ) => {
+    const keys = {
+      [CREATED_KEY]: ADD_ACTION_KEY,
+      [UPDATED_KEY]: EDIT_ACTION_KEY,
+      [REMOVED_KEY]: REMOVE_ACTION_KEY
+    };
+    const titles = {
+      [CREATED_KEY]: ADD_TITLE,
+      [UPDATED_KEY]: EDIT_ITEM_TITLE,
+      [REMOVED_KEY]: REMOVE_TITLE
+    };
+    const items = comparedFileData ? comparedFileData[currCategory][currSubCategory] : [];
+    const data = items.length ? items.find((item: TItemData) => item[ID_KEY] === values[ID_KEY]) : {};
+
+    toggleModal({ title: `${titles[currCategory]} «${values[NAME_KEY]}»` });
+    dispatch(setFormData({
+      data: {
+        action: keys[currCategory],
+        type: currSubCategory,
+        ...( data ? { data } : { data: {} } )
+      }
+    }));
   }
 
   useEffect(() => {
@@ -309,13 +349,14 @@ const Parser: FC = () => {
               columns={tableData ? tableData.cols : []}
               rows={tableData ? tableData.rows : []}
               // TODO: настроить отображение подробных данных (нужна ли форма для обновления?), возможность удалять лишние записи
-              onRowClick={({ row }: { row: TItemData }) => console.log(row)}
+              onRowClick={({ row }: { row: TItemData }) => handleItemData({ values: row, currCategory, currSubCategory })}
             />
             : ''
           }
         </Grid>
       </Layout>
-      {isModalVisible
+      <Modal fc={DataForm} />
+      {/*isModalVisible
         ? <Modal
             fc={FileDataForm}
             payload={{
@@ -325,7 +366,7 @@ const Parser: FC = () => {
             }}
           />
         : ''
-      }
+      */}
     </>
   )
 };

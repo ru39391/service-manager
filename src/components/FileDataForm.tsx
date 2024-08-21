@@ -1,4 +1,9 @@
 import { FC, useState, useEffect } from 'react';
+import {
+  List,
+  ListItem,
+  ListItemText,
+} from '@mui/material';
 import { Check, Delete } from '@mui/icons-material';
 
 import ModalFooter from './ModalFooter';
@@ -60,6 +65,26 @@ const FileDataForm: FC<IFileDataForm> = ({
   }, [
     alertMsg
   ]);
+
+  return (
+    <List>
+      <ListItem>
+        <ListItemText primary="Имя" secondary="ex72, Перья птиц: попугайчика волнистого, (e78,  Melopsittacus undulatus),  канарейки домашней (e201, Serinus canarius),   попугайчика длиннохвостого (e196), попугая (e213, Ara spp.), вьюрков (e214, Lonchura domestrica). Ig E,  ImmunoCAP® (Phadia AB), био" />
+      </ListItem>
+      <ListItem>
+        <ListItemText primary="Цена" secondary="1250" />
+      </ListItem>
+      <ListItem>
+        <ListItemText primary="Отделение" secondary="Медицина" />
+      </ListItem>
+      <ListItem>
+        <ListItemText primary="Специализация" secondary="Лабораторная диагностика CMD" />
+      </ListItem>
+      <ListItem>
+        <ListItemText primary="Группа" secondary="Скрининг аллергенов животных и домашней пыли. Ig E, ImmunoCAP® (Phadia АВ)." />
+      </ListItem>
+    </List>
+  );
 
   return (
     confirmationModalContent
