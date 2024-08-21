@@ -44,6 +44,10 @@ import {
   TYPES
 } from '../utils/constants';
 
+interface IDataForm {
+  isFileParcing?: boolean;
+}
+
 /*
 item_id - нельзя редактировать
 
@@ -57,7 +61,7 @@ group - список
 
 // TODO: настроить установку значения для параметра "Входит в комплекс" (сейчас везде 0, см. услуги для комлекса id = 19829)
 */
-const DataForm: FC = () => {
+const DataForm: FC<IDataForm> = ({ isFileParcing }) => {
   const dispatch = useDispatch();
   const { formData, formValues } = useSelector(state => state.form);
   const { subCategoryCounter, setSubCategories } = useCategoryCounter();
@@ -77,7 +81,7 @@ const DataForm: FC = () => {
       dispatch(handlePricelistData({
         action: ADD_ACTION_KEY,
         type: formData ? formData.type as string : null,
-        items: formData ? [{...formData.data as TItemData, ...formValues, ...setItemId()}] : []
+        items: formData ? [{...formData.data as TItemData, ...formValues, ...( !formData.data[ID_KEY] && { ...setItemId() })}] : []
       }));
     }, [
       dispatch,
@@ -239,7 +243,11 @@ const DataForm: FC = () => {
       color='error'
       disabled={false}
       actionBtnCaption={REMOVE_TITLE}
-      introText={`${NOT_EMPTY_CATEGORY}${subCategoryCounter}`}
+      introText={
+        isFileParcing
+          ? `Вы собираетесь ${REMOVE_TITLE.toLowerCase()} позиции прайс-листа. Общее количество обновляемых записей: ${formData && 1}. Подтвердите выполнение действия`
+          : `${NOT_EMPTY_CATEGORY}${subCategoryCounter}`
+      }
       actionHandler={handlersData[formData.action]}
     />;
   }
@@ -259,7 +267,7 @@ const DataForm: FC = () => {
             margin="dense"
             type="text"
             required={requiredFormFields.includes(key)}
-            disabled={key === PRICE_KEY && Boolean(formValues[IS_COMPLEX_KEY])}
+            disabled={key === PRICE_KEY && Boolean(formValues[IS_COMPLEX_KEY]) || isFileParcing}
             onChange={({ target }) => handleInput(target, key)}
             {...(
               key === PRICE_KEY
@@ -273,6 +281,7 @@ const DataForm: FC = () => {
         <>
           <Box sx={{ mb: 4 }}>
             <Selecter
+              disabled={Boolean(isFileParcing)}
               keys={selecterFields[formData.type as string]}
             />
             {formData.type === TYPES[ITEM_KEY] && (
@@ -282,6 +291,7 @@ const DataForm: FC = () => {
                     label={CAPTIONS[IS_VISIBLE_KEY]}
                     control={
                       <Checkbox
+                        disabled={isFileParcing}
                         checked={Boolean(formValues[IS_VISIBLE_KEY])}
                         onChange={() => changeVisibility(Number(!formValues[IS_VISIBLE_KEY]))}
                       />
@@ -294,6 +304,7 @@ const DataForm: FC = () => {
                         label={CAPTIONS[key]}
                         control={
                           <Checkbox
+                            disabled={isFileParcing}
                             checked={Boolean(formValues[key])}
                             onChange={() => changeComplexData({
                               key,
@@ -305,12 +316,16 @@ const DataForm: FC = () => {
                     )
                   }
                 </FormGroup>
-                {formValues[IS_COMPLEX_KEY] ? <ComplexItemsList itemId={formData.data[ID_KEY]} /> : ''}
+                {formValues[IS_COMPLEX_KEY]
+                  ? <ComplexItemsList itemId={formData.data[ID_KEY]} disabled={Boolean(isFileParcing)} />
+                  : ''
+                }
               </>
             )}
           </Box>
+          {/* TODO: вынести из условия, создать новое */}
           <ModalFooter
-            disabled={isDisabled}
+            disabled={isFileParcing ? !isFileParcing : isDisabled}
             actionBtnCaption={SAVE_TITLE}
             actionHandler={handlersData[formData.action as string]}
           />

@@ -355,7 +355,12 @@ const Parser: FC = () => {
           }
         </Grid>
       </Layout>
-      <Modal fc={DataForm} />
+      <Modal
+        fc={DataForm}
+        payload={{
+          isFileParcing: true
+        }}
+      />
       {/*isModalVisible
         ? <Modal
             fc={FileDataForm}

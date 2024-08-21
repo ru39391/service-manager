@@ -3,6 +3,7 @@
 * @returns {Object} - объект данных
 */
 const fetchData = (arr) => {
+  console.log(arr);
   return new Promise((resolve, reject) => {
       setTimeout(() => {
           resolve({

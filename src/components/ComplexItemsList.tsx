@@ -40,9 +40,10 @@ type TQuantityInput = {
 
 interface IComplexItemsList {
   itemId: number;
+  disabled: boolean;
 }
 
-const ComplexItemsList: FC<IComplexItemsList> = ({ itemId }) => {
+const ComplexItemsList: FC<IComplexItemsList> = ({ itemId, disabled }) => {
   const {
     complexItems,
     currComplexItems,
@@ -67,7 +68,7 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId }) => {
     {currComplexItems.map((complexItem, index, arr) =>
       <Grid key={complexItem[ID_KEY] && complexItem[ID_KEY].toString()} container spacing={2}>
         <Grid item xs={8}>
-          <FormControl sx={{ my: 1 }} fullWidth>
+          <FormControl sx={{ my: 1 }} fullWidth disabled={disabled}>
             <InputLabel id={`${COMPLEX_KEY}-id-${index.toString()}`}>{CAPTIONS[NAME_KEY]}</InputLabel>
             <Select
               labelId={`${COMPLEX_KEY}-id-${index.toString()}`}
@@ -107,43 +108,50 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId }) => {
             variant="outlined"
             type="text"
             sx={{ my: 1 }}
+            disabled={disabled}
             onChange={({ target }) => handleInput({
               input: target,
               [COMPLEX_KEY]: itemId,
               [ID_KEY]: complexItem[ID_KEY] as number
             })}
           />
-          <Tooltip
-            placement="top"
-            title={REMOVE_TITLE}
-          >
-            <IconButton
-              sx={{ p: 1, color: 'text.secondary' }}
-              onClick={() => handleComplexItem({
-                action: REMOVE_ACTION_KEY,
-                [COMPLEX_KEY]: itemId,
-                [ID_KEY]: complexItem[ID_KEY] as number
-              })}
-            >
-              <DeleteOutlined fontSize="medium" />
-            </IconButton>
-          </Tooltip>
+          {!disabled
+            ? <Tooltip
+              placement="top"
+              title={REMOVE_TITLE}
+              >
+                <IconButton
+                  sx={{ p: 1, color: 'text.secondary' }}
+                  onClick={() => handleComplexItem({
+                    action: REMOVE_ACTION_KEY,
+                    [COMPLEX_KEY]: itemId,
+                    [ID_KEY]: complexItem[ID_KEY] as number
+                  })}
+                >
+                  <DeleteOutlined fontSize="medium" />
+                </IconButton>
+              </Tooltip>
+            : ''
+          }
         </Grid>
       </Grid>
     )}
-    <Button
-      color="inherit"
-      variant="outlined"
-      startIcon={<Add />}
-      disabled={complexItems.length === currComplexItems.length}
-      onClick={() => handleComplexItem({
-        action: ADD_ACTION_KEY,
-        [COMPLEX_KEY]: itemId,
-        [QUANTITY_KEY]: 1
-      })}
-    >
-      {ADD_TITLE}
-    </Button>
+    {!disabled
+      ? <Button
+          color="inherit"
+          variant="outlined"
+          startIcon={<Add />}
+          disabled={complexItems.length === currComplexItems.length}
+          onClick={() => handleComplexItem({
+            action: ADD_ACTION_KEY,
+            [COMPLEX_KEY]: itemId,
+            [QUANTITY_KEY]: 1
+          })}
+        >
+          {ADD_TITLE}
+        </Button>
+      : ''
+    }
   </>
 };
 
