@@ -6,7 +6,7 @@ import {
   FormControlLabel,
   Checkbox
 } from '@mui/material';
-import { Delete } from '@mui/icons-material';
+import { Check, Delete } from '@mui/icons-material';
 
 import Selecter from './Selecter';
 import ModalFooter from './ModalFooter';
@@ -21,7 +21,7 @@ import { setFormValues } from '../services/slices/form-slice';
 
 import { handlePricelistData } from '../services/actions/pricelist';
 
-import type { TCustomData, TItemData } from '../types';
+import type { TCustomData, TItemData, TItemsArr } from '../types';
 
 import {
   ID_KEY,
@@ -33,6 +33,7 @@ import {
   ADD_ACTION_KEY,
   EDIT_ACTION_KEY,
   REMOVE_ACTION_KEY,
+  REMOVED_KEY,
   COMPLEX_KEY,
   IS_COMPLEX_KEY,
   IS_COMPLEX_ITEM_KEY,
@@ -45,7 +46,9 @@ import {
 } from '../utils/constants';
 
 interface IDataForm {
+  confirmationData?: TCustomData<string> | null;
   isFileParcing?: boolean;
+  actionHandler?: () => void
 }
 
 /*
@@ -61,7 +64,11 @@ group - список
 
 // TODO: настроить установку значения для параметра "Входит в комплекс" (сейчас везде 0, см. услуги для комлекса id = 19829)
 */
-const DataForm: FC<IDataForm> = ({ isFileParcing }) => {
+const DataForm: FC<IDataForm> = ({
+  confirmationData,
+  isFileParcing,
+  actionHandler
+}) => {
   const dispatch = useDispatch();
   const { formData, formValues } = useSelector(state => state.form);
   const { subCategoryCounter, setSubCategories } = useCategoryCounter();
@@ -197,7 +204,7 @@ const DataForm: FC<IDataForm> = ({ isFileParcing }) => {
   };
 
   useEffect(() => {
-    //console.log(formData);
+    console.log(formData);
 
     setSubCategories({
       type: formData ? formData.type as string : null,
@@ -277,8 +284,8 @@ const DataForm: FC<IDataForm> = ({ isFileParcing }) => {
           />
         )
       }
-      {formData && formData.action !== REMOVE_ACTION_KEY && (
-        <>
+      {formData && formData.action !== REMOVE_ACTION_KEY
+        ? (<>
           <Box sx={{ mb: 4 }}>
             <Selecter
               disabled={Boolean(isFileParcing)}
@@ -323,14 +330,20 @@ const DataForm: FC<IDataForm> = ({ isFileParcing }) => {
               </>
             )}
           </Box>
-          {/* TODO: вынести из условия, создать новое */}
           <ModalFooter
             disabled={isFileParcing ? !isFileParcing : isDisabled}
             actionBtnCaption={SAVE_TITLE}
             actionHandler={handlersData[formData.action as string]}
           />
-        </>
-      )}
+        </>)
+        : <ModalFooter
+            icon={confirmationData && confirmationData.key === REMOVED_KEY ? <Delete /> : <Check />}
+            color={confirmationData && confirmationData.key === REMOVED_KEY ? 'error' : 'success'}
+            actionBtnCaption={confirmationData ? confirmationData.btnCaption : SAVE_TITLE}
+            introText={confirmationData ? confirmationData.intro : ''}
+            {...( actionHandler && { actionHandler } )}
+        />
+      }
     </>
   )
 }

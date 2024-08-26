@@ -26,7 +26,6 @@ import { CloudUpload, FolderOpen, Sync } from '@mui/icons-material';
 import Layout from '../components/Layout';
 import Modal from '../components/Modal';
 import DataForm from '../components/DataForm';
-import FileDataForm from '../components/FileDataForm';
 
 import useModal from '../hooks/useModal';
 import useTableData from '../hooks/useTableData';
@@ -75,6 +74,7 @@ const InvisibleInput = styled('input')({
 });
 
 const Parser: FC = () => {
+  const [confirmationData, setConfirmationData] = useState<TCustomData<string> | null>(null);
   const [currCategory, setCurrCategory] = useState<string>(CREATED_KEY);
 
   const {
@@ -148,7 +148,12 @@ const Parser: FC = () => {
       [REMOVED_KEY]: REMOVE_TITLE
     };
 
-    toggleModal({ title: `${keys[currCategory]} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}` })
+    toggleModal({ title: `${keys[currCategory]} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}` });
+    setConfirmationData({
+      key: currCategory,
+      btnCaption: keys[currCategory].toLowerCase(),
+      intro: `Вы собираетесь ${keys[currCategory].toLowerCase()} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}. Общее количество обновляемых записей: ${tableData ? tableData.rows.length : 0}. Подтвердите выполнение действия`
+    });
   }
 
   const handleItemData = (
@@ -348,30 +353,25 @@ const Parser: FC = () => {
               }}
               columns={tableData ? tableData.cols : []}
               rows={tableData ? tableData.rows : []}
-              // TODO: настроить отображение подробных данных (нужна ли форма для обновления?), возможность удалять лишние записи
+              // TODO: возможность удалять лишние записи
               onRowClick={({ row }: { row: TItemData }) => handleItemData({ values: row, currCategory, currSubCategory })}
             />
             : ''
           }
         </Grid>
       </Layout>
-      <Modal
-        fc={DataForm}
-        payload={{
-          isFileParcing: true
-        }}
-      />
-      {/*isModalVisible
+
+      {isModalVisible
         ? <Modal
-            fc={FileDataForm}
-            payload={{
-              action: currCategory,
-              counter: tableData ? tableData.rows.length : 0,
-              actionHandler: handleComparedData
-            }}
-          />
+          fc={DataForm}
+          payload={{
+            confirmationData,
+            isFileParcing: true,
+            actionHandler: handleComparedData
+          }}
+        />
         : ''
-      */}
+      }
     </>
   )
 };
