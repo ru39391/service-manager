@@ -87,7 +87,7 @@ const DataForm: FC<IDataForm> = ({
     [ADD_ACTION_KEY]: useCallback(() => {
       dispatch(handlePricelistData({
         action: ADD_ACTION_KEY,
-        type: formData ? formData.type as string : null,
+        type: formData ? formData.type : null,
         items: formData ? [{...formData.data as TItemData, ...formValues, ...( !formData.data[ID_KEY] && { ...setItemId() })}] : []
       }));
     }, [
@@ -99,7 +99,7 @@ const DataForm: FC<IDataForm> = ({
     [EDIT_ACTION_KEY]: useCallback(() => {
       dispatch(handlePricelistData({
         action: EDIT_ACTION_KEY,
-        type: formData ? formData.type as string : null,
+        type: formData ? formData.type : null,
         items: formData ? [{[ID_KEY]: formData.data[ID_KEY], ...formValues}] : []
       }));
     }, [
@@ -110,7 +110,7 @@ const DataForm: FC<IDataForm> = ({
     [REMOVE_ACTION_KEY]: useCallback(() => {
       dispatch(handlePricelistData({
         action: REMOVE_ACTION_KEY,
-        type: formData ? formData.type as string : null,
+        type: formData ? formData.type : null,
         items: formData ? [{[ID_KEY]: formData.data[ID_KEY]}] : [],
       }));
     }, [
@@ -172,7 +172,7 @@ const DataForm: FC<IDataForm> = ({
     };
     const isComplexItemsExist = data[COMPLEX_KEY] === undefined
       ? data[COMPLEX_KEY]
-      : JSON.parse(data[COMPLEX_KEY]).length > 0;
+      : JSON.parse(data[COMPLEX_KEY] as string).length > 0;
 
 
     dispatch(
@@ -207,7 +207,7 @@ const DataForm: FC<IDataForm> = ({
     console.log(formData);
 
     setSubCategories({
-      type: formData ? formData.type as string : null,
+      type: formData ? formData.type : null,
       data: formData ? formData.data as TCustomData<number> : null
     });
 
@@ -244,7 +244,7 @@ const DataForm: FC<IDataForm> = ({
     formValues
   ]);
 
-  if(formData && formData.action === REMOVE_ACTION_KEY) {
+  if(formData && !formData.isFormHidden && formData.action === REMOVE_ACTION_KEY) {
     return <ModalFooter
       icon={<Delete />}
       color='error'
@@ -261,7 +261,7 @@ const DataForm: FC<IDataForm> = ({
 
   return (
     <>
-      {formData && formFields[formData.type as string].map(
+      {formData && !formData.isFormHidden && formFields[formData.type].map(
         (key, index) =>
           <TextField
             key={index.toString()}
@@ -284,12 +284,12 @@ const DataForm: FC<IDataForm> = ({
           />
         )
       }
-      {formData && formData.action !== REMOVE_ACTION_KEY
+      {formData && !formData.isFormHidden && formData.action !== REMOVE_ACTION_KEY
         ? (<>
           <Box sx={{ mb: 4 }}>
             <Selecter
               disabled={Boolean(isFileParcing)}
-              keys={selecterFields[formData.type as string]}
+              keys={selecterFields[formData.type]}
             />
             {formData.type === TYPES[ITEM_KEY] && (
               <>
@@ -336,13 +336,7 @@ const DataForm: FC<IDataForm> = ({
             actionHandler={handlersData[formData.action as string]}
           />
         </>)
-        : <ModalFooter
-            icon={confirmationData && confirmationData.key === REMOVED_KEY ? <Delete /> : <Check />}
-            color={confirmationData && confirmationData.key === REMOVED_KEY ? 'error' : 'success'}
-            actionBtnCaption={confirmationData ? confirmationData.btnCaption : SAVE_TITLE}
-            introText={confirmationData ? confirmationData.intro : ''}
-            {...( actionHandler && { actionHandler } )}
-        />
+        : (<>тест</>)
       }
     </>
   )

@@ -5,12 +5,17 @@ import Preloader from './Preloader';
 import AlertError from './AlertError';
 import Modal from './Modal';
 import DataForm from './DataForm';
+import DataCard from './DataCard';
+
+import { useSelector } from '../services/hooks';
 
 interface ILayout {
   children: ReactNode;
 }
 
 const Layout: FC<ILayout> = ({ children }) => {
+  const { formData } = useSelector(state => state.form);
+
   return (
     <>
       <Preloader />
@@ -27,7 +32,9 @@ const Layout: FC<ILayout> = ({ children }) => {
       >
         {children}
       </Grid>
-      <Modal fc={DataForm} />
+      {formData && <Modal
+        {...({ fc: formData.isFormHidden ? DataCard : DataForm })}
+      />}
     </>
   )
 };
