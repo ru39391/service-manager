@@ -15,6 +15,7 @@ const ADD_CATEGORY_TITLE = 'Добавить раздел';
 const EDIT_ITEM_TITLE = 'Изменить данные';
 
 const REMOVE_CONFIRM_MSG = 'Вы действительно хотите';
+const CONFIRM_MSG = 'Подтвердите выполнение действия';
 
 const FETCHING_ERROR_MSG = 'При получении списка услуг произошла ошибка';
 const RESOURCES_ERROR_MSG = 'Ошибка при получении списка ресурсов';
@@ -124,6 +125,7 @@ export {
   ADD_CATEGORY_TITLE,
   EDIT_ITEM_TITLE,
   REMOVE_CONFIRM_MSG,
+  CONFIRM_MSG,
   CATEGORY_TITLE,
   NO_ITEMS_TITLE,
   NO_FILE_ITEMS_TITLE,

@@ -6,7 +6,7 @@ import {
   FormControlLabel,
   Checkbox
 } from '@mui/material';
-import { Check, Delete } from '@mui/icons-material';
+import { Delete } from '@mui/icons-material';
 
 import Selecter from './Selecter';
 import ModalFooter from './ModalFooter';
@@ -21,7 +21,7 @@ import { setFormValues } from '../services/slices/form-slice';
 
 import { handlePricelistData } from '../services/actions/pricelist';
 
-import type { TCustomData, TItemData, TItemsArr } from '../types';
+import type { TCustomData, TItemData } from '../types';
 
 import {
   ID_KEY,
@@ -33,7 +33,6 @@ import {
   ADD_ACTION_KEY,
   EDIT_ACTION_KEY,
   REMOVE_ACTION_KEY,
-  REMOVED_KEY,
   COMPLEX_KEY,
   IS_COMPLEX_KEY,
   IS_COMPLEX_ITEM_KEY,
@@ -42,33 +41,14 @@ import {
   REMOVE_TITLE,
   SAVE_TITLE,
   NOT_EMPTY_CATEGORY,
+  CONFIRM_MSG,
   TYPES
 } from '../utils/constants';
 
-interface IDataForm {
-  confirmationData?: TCustomData<string> | null;
-  isFileParcing?: boolean;
-  actionHandler?: () => void
-}
-
 /*
-item_id - нельзя редактировать
-
-name - поле
-price - поле
-index - поле
-
-dept - список
-subdept - список
-group - список
-
 // TODO: настроить установку значения для параметра "Входит в комплекс" (сейчас везде 0, см. услуги для комлекса id = 19829)
 */
-const DataForm: FC<IDataForm> = ({
-  confirmationData,
-  isFileParcing,
-  actionHandler
-}) => {
+const DataForm: FC = () => {
   const dispatch = useDispatch();
   const { formData, formValues } = useSelector(state => state.form);
   const { subCategoryCounter, setSubCategories } = useCategoryCounter();
@@ -211,7 +191,7 @@ const DataForm: FC<IDataForm> = ({
       data: formData ? formData.data as TCustomData<number> : null
     });
 
-    handleTextFields({ [PRICE_KEY]: formData ? formData.data[PRICE_KEY] : 0 });
+    handleTextFields({ [PRICE_KEY]: formData ? formData.data[PRICE_KEY] as number : 0 });
   }, [
     formData
   ]);
@@ -221,7 +201,7 @@ const DataForm: FC<IDataForm> = ({
 
     handleTextFields({
       [PRICE_KEY]: formData && formValues[PRICE_KEY] === undefined
-        ? formData.data[PRICE_KEY]
+        ? formData.data[PRICE_KEY] as number
         : handlePriceValue({
           [PRICE_KEY]: formValues[PRICE_KEY] as number,
           [COMPLEX_KEY]: formValues[COMPLEX_KEY] as string
@@ -229,7 +209,7 @@ const DataForm: FC<IDataForm> = ({
     });
 
     if(formData && formValues[IS_VISIBLE_KEY] === undefined) {
-      changeVisibility(formData.action === EDIT_ACTION_KEY ? formData.data[IS_VISIBLE_KEY] : 1);
+      changeVisibility(formData.action === EDIT_ACTION_KEY ? formData.data[IS_VISIBLE_KEY] as number : 1);
     }
 
     [...complexKeys].forEach(key => {
@@ -244,24 +224,20 @@ const DataForm: FC<IDataForm> = ({
     formValues
   ]);
 
-  if(formData && !formData.isFormHidden && formData.action === REMOVE_ACTION_KEY) {
+  if(formData && formData.action === REMOVE_ACTION_KEY) {
     return <ModalFooter
       icon={<Delete />}
       color='error'
       disabled={false}
       actionBtnCaption={REMOVE_TITLE}
-      introText={
-        isFileParcing
-          ? `Вы собираетесь ${REMOVE_TITLE.toLowerCase()} позиции прайс-листа. Общее количество обновляемых записей: ${formData && 1}. Подтвердите выполнение действия`
-          : `${NOT_EMPTY_CATEGORY}${subCategoryCounter}`
-      }
+      introText={subCategoryCounter ? `${NOT_EMPTY_CATEGORY}${subCategoryCounter}` : CONFIRM_MSG}
       actionHandler={handlersData[formData.action]}
     />;
   }
 
   return (
     <>
-      {formData && !formData.isFormHidden && formFields[formData.type].map(
+      {formData && formFields[formData.type].map(
         (key, index) =>
           <TextField
             key={index.toString()}
@@ -274,7 +250,7 @@ const DataForm: FC<IDataForm> = ({
             margin="dense"
             type="text"
             required={requiredFormFields.includes(key)}
-            disabled={key === PRICE_KEY && Boolean(formValues[IS_COMPLEX_KEY]) || isFileParcing}
+            disabled={key === PRICE_KEY && Boolean(formValues[IS_COMPLEX_KEY])}
             onChange={({ target }) => handleInput(target, key)}
             {...(
               key === PRICE_KEY
@@ -284,13 +260,10 @@ const DataForm: FC<IDataForm> = ({
           />
         )
       }
-      {formData && !formData.isFormHidden && formData.action !== REMOVE_ACTION_KEY
-        ? (<>
+      {formData && formData.action !== REMOVE_ACTION_KEY
+        && <>
           <Box sx={{ mb: 4 }}>
-            <Selecter
-              disabled={Boolean(isFileParcing)}
-              keys={selecterFields[formData.type]}
-            />
+            <Selecter keys={selecterFields[formData.type]} />
             {formData.type === TYPES[ITEM_KEY] && (
               <>
                 <FormGroup>
@@ -298,7 +271,6 @@ const DataForm: FC<IDataForm> = ({
                     label={CAPTIONS[IS_VISIBLE_KEY]}
                     control={
                       <Checkbox
-                        disabled={isFileParcing}
                         checked={Boolean(formValues[IS_VISIBLE_KEY])}
                         onChange={() => changeVisibility(Number(!formValues[IS_VISIBLE_KEY]))}
                       />
@@ -311,7 +283,6 @@ const DataForm: FC<IDataForm> = ({
                         label={CAPTIONS[key]}
                         control={
                           <Checkbox
-                            disabled={isFileParcing}
                             checked={Boolean(formValues[key])}
                             onChange={() => changeComplexData({
                               key,
@@ -324,19 +295,18 @@ const DataForm: FC<IDataForm> = ({
                   }
                 </FormGroup>
                 {formValues[IS_COMPLEX_KEY]
-                  ? <ComplexItemsList itemId={formData.data[ID_KEY]} disabled={Boolean(isFileParcing)} />
+                  ? <ComplexItemsList itemId={formData.data[ID_KEY] as number} />
                   : ''
                 }
               </>
             )}
           </Box>
           <ModalFooter
-            disabled={isFileParcing ? !isFileParcing : isDisabled}
+            disabled={isDisabled}
             actionBtnCaption={SAVE_TITLE}
             actionHandler={handlersData[formData.action as string]}
           />
-        </>)
-        : (<>тест</>)
+        </>
       }
     </>
   )

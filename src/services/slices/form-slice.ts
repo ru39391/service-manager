@@ -1,12 +1,14 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import type { TCustomData, TItemData } from '../../types';
+import type { TCustomData, TItemData, TItemsArr } from '../../types';
 
 type TFormData = {
-  isFormHidden?: boolean;
   action: string;
   type: string;
   data: TItemData;
+  values?: TItemData;
+  items?: TItemsArr;
+  isFormHidden?: boolean;
 };
 
 export type TFormAction = {

@@ -180,22 +180,13 @@ const Parser: FC = () => {
     const items = comparedFileData ? comparedFileData[currCategory][currSubCategory] : [];
     const data = items.length ? items.find((item: TItemData) => item[ID_KEY] === values[ID_KEY]) : {};
 
-    console.log({
-      data: {
-        isFormHidden: true,
-        action: keys[currCategory],
-        type: currSubCategory,
-        ...( data ? { data } : { data: {} } )
-      }
-    });
-    //return;
-
     toggleModal({ title: `${titles[currCategory]} «${values[NAME_KEY]}»` });
     dispatch(setFormData({
       data: {
         isFormHidden: true,
         action: keys[currCategory],
         type: currSubCategory,
+        values,
         ...( data ? { data } : { data: {} } )
       }
     }));
@@ -345,11 +336,11 @@ const Parser: FC = () => {
               ? <Button
                 variant="outlined"
                 startIcon={<Sync />}
-                onClick={() => console.log({currCategory, currSubCategory})}
+                onClick={() => setConfirmModalVisible({currCategory, currSubCategory})}
               >
                 {APPLY_TITLE}
               </Button>
-              : 'setConfirmModalVisible'
+              : ''
             }
           </Box>
 
@@ -374,18 +365,6 @@ const Parser: FC = () => {
 
     </>
   )
-};/*
-{isModalVisible
-  ? <Modal
-    fc={DataForm}
-    payload={{
-      isFileParcing: true,
-    }}
-  />
-  : ''
-}
-confirmationData,
-actionHandler: handleComparedData
-*/
+};
 
 export default Parser;

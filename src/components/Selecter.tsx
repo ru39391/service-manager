@@ -18,10 +18,9 @@ import {
 
 interface ISelecter {
   keys: string[];
-  disabled: boolean;
 }
 
-const Selecter: FC<ISelecter> = ({ keys, disabled }) => {
+const Selecter: FC<ISelecter> = ({ keys }) => {
   const {
     deptsList,
     subdeptsList,
@@ -48,7 +47,7 @@ const Selecter: FC<ISelecter> = ({ keys, disabled }) => {
         selected: selectedGroup
       }
     ].map(({ list, selected }, index) =>
-      list.length > 0 && keys[index] && <FormControl key={keys[index]} sx={{ my: 1 }} fullWidth disabled={disabled}>
+      list.length > 0 && keys[index] && <FormControl key={keys[index]} sx={{ my: 1 }} fullWidth>
       <InputLabel id={`${keys[index]}-label`}>{TITLES[keys[index]]}</InputLabel>
       {selected && <Select
         labelId={`${keys[index]}-label`}
