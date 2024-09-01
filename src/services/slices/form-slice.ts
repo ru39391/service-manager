@@ -2,7 +2,7 @@ import { createSlice } from '@reduxjs/toolkit'
 
 import type { TCustomData, TItemData, TItemsArr } from '../../types';
 
-type TFormData = {
+export type TFormData = {
   action: string;
   type: string;
   data: TItemData;

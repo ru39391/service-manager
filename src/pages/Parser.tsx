@@ -2,8 +2,7 @@ import {
   FC,
   Fragment,
   useState,
-  useEffect,
-  useCallback
+  useEffect
 } from 'react';
 import { styled } from '@mui/material/styles';
 import {
@@ -24,8 +23,6 @@ import { DataGrid } from '@mui/x-data-grid';
 import { CloudUpload, FolderOpen, Sync } from '@mui/icons-material';
 
 import Layout from '../components/Layout';
-import Modal from '../components/Modal';
-import DataForm from '../components/DataForm';
 
 import useModal from '../hooks/useModal';
 import useTableData from '../hooks/useTableData';
@@ -36,8 +33,6 @@ import useFileDataNav from '../hooks/useFileDataNav';
 
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
-
-import { handlePricelistData } from '../services/actions/pricelist';
 
 import type { TCustomData, TPricelistData, TItemData } from '../types';
 
@@ -54,13 +49,11 @@ import {
   FILE_ITEMS_TITLE,
   APPLY_TITLE,
   ADD_TITLE,
-  EDIT_TITLE,
   REMOVE_TITLE,
   EDIT_ITEM_TITLE,
   ID_KEY,
   NAME_KEY,
-  TYPES,
-  TITLES
+  TYPES
 } from '../utils/constants';
 
 const InvisibleInput = styled('input')({
@@ -74,16 +67,9 @@ const InvisibleInput = styled('input')({
 });
 
 const Parser: FC = () => {
-  const [confirmationData, setConfirmationData] = useState<TCustomData<string> | null>(null);
   const [currCategory, setCurrCategory] = useState<string>(CREATED_KEY);
 
-  const {
-    file,
-    form: { isVisible: isModalVisible }
-  } = useSelector(state => ({
-    file: state.file,
-    form: state.form
-  }));
+  const file = useSelector(state => state.file);
   const { isFileUploading } = file;
 
   const dispatch = useDispatch();
@@ -94,35 +80,27 @@ const Parser: FC = () => {
   const { fileDataNav, updateFileDataNav } = useFileDataNav();
   const { tableData, handleTableData } = useTableData();
 
+  const params = {
+    [CREATED_KEY]: {
+      key: ADD_ACTION_KEY,
+      title: ADD_TITLE
+    },
+    [UPDATED_KEY]: {
+      key: EDIT_ACTION_KEY,
+      title: EDIT_ITEM_TITLE
+    },
+    [REMOVED_KEY]: {
+      key: REMOVE_ACTION_KEY,
+      title: REMOVE_TITLE
+    }
+  };
+
   const setDataItems = (): TPricelistData | null => {
     const data:TPricelistData = Object.values(TYPES).reduce((acc, type) => ({...acc, [type]: file[type]}), {});
     const dataItems = Object.values(data).filter(item => item.length === 0);
 
     return Object.values(data).length === dataItems.length ? null : data;
   };
-
-  const handleComparedData = useCallback(() => {
-    const keys = {
-      [CREATED_KEY]: ADD_ACTION_KEY,
-      [UPDATED_KEY]: EDIT_ACTION_KEY,
-      [REMOVED_KEY]: REMOVE_ACTION_KEY
-    };
-
-    if(!comparedFileData) {
-      return;
-    }
-
-    dispatch(handlePricelistData({
-      action: keys[currCategory],
-      type: currSubCategory,
-      items: comparedFileData[currCategory][currSubCategory]
-    }));
-  }, [
-    dispatch,
-    currCategory,
-    currSubCategory,
-    comparedFileData
-  ]);
 
   const selectFileCategory = ({ category, subCategory }: TCustomData<string>): void => {
     if(!comparedFileData) {
@@ -142,18 +120,19 @@ const Parser: FC = () => {
   };
 
   const setConfirmModalVisible = ({currCategory, currSubCategory}: TCustomData<string>): void => {
-    const keys = {
-      [CREATED_KEY]: ADD_TITLE,
-      [UPDATED_KEY]: EDIT_TITLE,
-      [REMOVED_KEY]: REMOVE_TITLE
-    };
-
-    toggleModal({ title: `${keys[currCategory]} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}` });
-    setConfirmationData({
-      key: currCategory,
-      btnCaption: keys[currCategory].toLowerCase(),
-      intro: `Вы собираетесь ${keys[currCategory].toLowerCase()} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}. Общее количество обновляемых записей: ${tableData ? tableData.rows.length : 0}. Подтвердите выполнение действия`
+    toggleModal({
+      title: `${params[currCategory].title} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}`,
+      desc: `Вы собираетесь ${params[currCategory].title.toLowerCase()} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}. Общее количество обновляемых записей: ${tableData ? tableData.rows.length : 0}`
     });
+    dispatch(setFormData({
+      data: {
+        isFormHidden: true,
+        action: params[currCategory].key,
+        type: currSubCategory,
+        items: comparedFileData ? comparedFileData[currCategory][currSubCategory] : [],
+        data: {}
+      }
+    }));
   }
 
   const handleItemData = (
@@ -167,24 +146,14 @@ const Parser: FC = () => {
       currSubCategory: string;
     }
   ) => {
-    const keys = {
-      [CREATED_KEY]: ADD_ACTION_KEY,
-      [UPDATED_KEY]: EDIT_ACTION_KEY,
-      [REMOVED_KEY]: REMOVE_ACTION_KEY
-    };
-    const titles = {
-      [CREATED_KEY]: ADD_TITLE,
-      [UPDATED_KEY]: EDIT_ITEM_TITLE,
-      [REMOVED_KEY]: REMOVE_TITLE
-    };
     const items = comparedFileData ? comparedFileData[currCategory][currSubCategory] : [];
     const data = items.length ? items.find((item: TItemData) => item[ID_KEY] === values[ID_KEY]) : {};
 
-    toggleModal({ title: `${titles[currCategory]} «${values[NAME_KEY]}»` });
+    toggleModal({ title: `${params[currCategory].title} «${values[NAME_KEY]}»` });
     dispatch(setFormData({
       data: {
         isFormHidden: true,
-        action: keys[currCategory],
+        action: params[currCategory].key,
         type: currSubCategory,
         values,
         ...( data ? { data } : { data: {} } )
