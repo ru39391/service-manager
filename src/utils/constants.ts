@@ -52,6 +52,7 @@ const QUANTITY_KEY = 'quantity';
 
 const ITEM_KEY = 'items';
 const RES_KEY = 'res';
+const RES_ID_KEY = 'id';
 
 const ADD_ACTION_KEY = 'add';
 const EDIT_ACTION_KEY = 'edit';
@@ -101,7 +102,8 @@ const TYPES = {
   [ITEM_KEY]: 'pricelist'
 };
 
-const API_URL = 'http://localhost/api/';//'http://stomistok.local/api/';
+const SITE_URL = `http://localhost/`;
+const API_URL = `${SITE_URL}api/`;//'http://stomistok.local/api/';
 
 export {
   DEFAULT_DOC_TITLE,
@@ -131,6 +133,8 @@ export {
   NO_FILE_ITEMS_TITLE,
   FILE_ITEMS_TITLE,
   NOT_EMPTY_CATEGORY,
+  RES_KEY,
+  RES_ID_KEY,
   INDEX_KEY,
   ITEM_KEY,
   ADD_ACTION_KEY,
@@ -157,5 +161,6 @@ export {
   HANDLED_ITEMS_CAPTIONS,
   TITLES,
   TYPES,
-  API_URL
+  API_URL,
+  SITE_URL
 };

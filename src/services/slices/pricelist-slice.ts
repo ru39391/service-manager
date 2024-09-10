@@ -1,6 +1,11 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import type { TCustomData, TItemData, TItemsArr } from '../../types';
+import type {
+  TResourceData,
+  TCustomData,
+  TItemData,
+  TItemsArr,
+} from '../../types';
 
 import { fetchItemsArr } from '../../utils';
 import {
@@ -16,6 +21,7 @@ export type TPricelistAction = {
     subdepts?: TItemsArr;
     groups?: TItemsArr;
     pricelist?: TItemsArr;
+    res?: TResourceData[];
     alertType?: string;
     alertMsg?: string;
     type?: string;
@@ -28,6 +34,7 @@ export type TPricelistState = {
   subdepts: TItemsArr;
   groups: TItemsArr;
   pricelist: TItemsArr;
+  res: TResourceData[];
   isPricelistLoading: boolean;
   isPricelistSucceed: boolean;
   isPricelistFailed: boolean;
@@ -41,6 +48,7 @@ const initialState: TPricelistState = {
   subdepts: [],
   groups: [],
   pricelist: [],
+  res: [],
   isPricelistLoading: false,
   isPricelistSucceed: false,
   isPricelistFailed: false,
@@ -63,6 +71,7 @@ const pricelistSlice = createSlice({
       subdepts: fetchItemsArr(action.payload.subdepts),
       groups: fetchItemsArr(action.payload.groups),
       pricelist: fetchItemsArr(action.payload.pricelist),
+      res: action.payload.res || [],
       isPricelistLoading: false,
       isPricelistSucceed: true,
       isPricelistFailed: false,

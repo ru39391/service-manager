@@ -30,3 +30,30 @@ export type TResponseData = {
   success: boolean[];
   data: TCustomData<TItemsArr>;
 };
+
+type TResParent = {
+  parent_id: number,
+  name: string,
+  uri: string,
+};
+
+type TResTemplate = {
+  template_id: number,
+  name: string,
+};
+
+type TResDate = {
+  value: number,
+  date: string,
+};
+
+export type TResourceData = {
+  id: number,
+  isParent: boolean,
+  name: string,
+  uri: string,
+  parent: TResParent,
+  template: TResTemplate,
+  publishedon: TResDate,
+  editedon: TResDate,
+};

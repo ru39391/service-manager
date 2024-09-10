@@ -20,6 +20,7 @@ import { useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
 
 import {
+  RES_KEY,
   EDIT_TITLE,
   REMOVE_TITLE,
   EDIT_ITEM_TITLE,
@@ -83,7 +84,7 @@ const Header: FC = () => {
         }}
       >
         <Typography variant="h5">{title}</Typography>
-        {currentFormData.id && <Tooltip
+        {currentFormData.id && currentFormData.type !== RES_KEY && <Tooltip
           placement="top"
           title={EDIT_ITEM_TITLE}
         >
@@ -94,7 +95,7 @@ const Header: FC = () => {
             <EditOutlined fontSize="medium" />
           </IconButton>
         </Tooltip>}
-        <Tooltip
+        {currentFormData.type !== RES_KEY && <Tooltip
           placement="top"
           title={ADD_CATEGORY_TITLE}
         >
@@ -104,8 +105,8 @@ const Header: FC = () => {
           >
             <Add fontSize="large" />
           </IconButton>
-        </Tooltip>
-        {currentFormData.id && <Tooltip
+        </Tooltip>}
+        {currentFormData.id && currentFormData.type !== RES_KEY && <Tooltip
           placement="top"
           title={REMOVE_TITLE}
         >
@@ -129,14 +130,14 @@ const Header: FC = () => {
         >
           Главная
         </Link>
-        <Link
+        {currentFormData.type !== RES_KEY && <Link
           href={`/${currentFormData.type}`}
           color="inherit"
           underline="hover"
           sx={{ display: 'flex', alignItems: 'center' }}
-        >
-          {currentFormData.caption as string}
-        </Link>
+          >
+            {currentFormData.caption as string}
+        </Link>}
         {pageTitle && <Typography
           variant="subtitle2"
           color="text.primary"

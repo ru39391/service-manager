@@ -27,6 +27,7 @@ import type { TAppThunk, TAppDispatch } from '../../services/store';
 import type { TPricelistAction } from '../slices/pricelist-slice';
 
 import {
+  RES_KEY,
   ADD_ACTION_KEY,
   EDIT_ACTION_KEY,
   REMOVE_ACTION_KEY,
@@ -40,7 +41,6 @@ import {
   REMOVE_ITEM_SUCCESS_MSG,
   REMOVE_ITEM_WARNING_MSG,
   REMOVE_ITEM_ERROR_MSG,
-  UPDATEDON_KEY,
   API_URL,
   TYPES
 } from '../../utils/constants';
@@ -51,8 +51,10 @@ import { fetchData } from '../../mocks';
 const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
+  const keys = [...Object.values(TYPES), RES_KEY];
+
   try {
-    const response = await Promise.all(Object.values(TYPES).map(type => axios.get(`${API_URL}${type}`)));
+    const response = await Promise.all(keys.map(type => axios.get(`${API_URL}${type}`)));
     //console.log(response);
 
     const { success, data }: TResponseData = response
@@ -62,7 +64,7 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
         success: [...acc.success, item.success],
         data: {
           ...acc.data,
-          [Object.values(TYPES)[index]]: item.data && Object.values(item.data).filter((value) => typeof value !== 'boolean')
+          [keys[index]]: item.data && Object.values(item.data).filter((value) => typeof value !== 'boolean')
         }
       }), {
         success: [],

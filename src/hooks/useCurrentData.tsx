@@ -4,9 +4,11 @@ import { useSelector } from '../services/hooks';
 import useForm from './useForm';
 import useUrlHandler from './useUrlHandler';
 
-import type { TCustomData, TItemData } from '../types';
+import type { TCustomData, TItemData, TResourceData } from '../types';
 
 import {
+  RES_KEY,
+  RES_ID_KEY,
   ID_KEY,
   NAME_KEY,
   TYPES,
@@ -20,7 +22,7 @@ import { sortStrArray } from '../utils';
 
 interface ICurrentData {
   pageTitle: string;
-  currentCategory: TItemData;
+  currentCategory: TItemData | TResourceData;
   currentFormData: TCustomData<string | number | null | TItemData>;
   setCurrentFormValues: (type: string) => TItemData;
 }
@@ -35,7 +37,7 @@ interface ICurrentData {
  */
 const useCurrentData = (): ICurrentData => {
   const [pageTitle, setPageTitle] = useState<string>('');
-  const [currentCategory, setCurrentCategory] = useState<TItemData>({});
+  const [currentCategory, setCurrentCategory] = useState<TItemData | TResourceData>({});
   const [currentFormData, setCurrentFormData] = useState<TCustomData<string | number | null | TItemData>>({});
 
   const pricelist = useSelector(state => state.pricelist);
@@ -53,9 +55,14 @@ const useCurrentData = (): ICurrentData => {
     const { type, id } = currUrlData;
     const isItemExist = id !== null && Boolean(type) && Boolean(pricelist[type].length);
     const itemData: TItemData = isItemExist ? pricelist[type].find((item: TItemData) => item[ID_KEY] === id) : {};
+    const resData: TResourceData = isItemExist ? pricelist[type].find((item: TResourceData) => item[RES_ID_KEY] === id) : {};
 
-    setCurrentCategory(itemData);
-    setPageTitle(isItemExist ? itemData[NAME_KEY] as string : '');
+    setCurrentCategory(type === RES_KEY ? resData : itemData);
+    setPageTitle(
+      isItemExist
+        ? type === RES_KEY ? resData[NAME_KEY] : itemData[NAME_KEY] as string
+        : ''
+    );
 
     setCurrentFormData({
       ...currUrlData,

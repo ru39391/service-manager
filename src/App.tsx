@@ -11,6 +11,7 @@ import '@fontsource/roboto/400.css';
 import Home from './pages/Home';
 import Parser from './pages/Parser';
 import Category from './pages/Category';
+import SubdeptsList from './pages/SubdeptsList';
 
 import { useSelector, useDispatch } from './services/hooks';
 import { fetchPricelistData } from './services/actions/pricelist';
@@ -20,6 +21,7 @@ import {
   SUBDEPT_KEY,
   GROUP_KEY,
   ITEM_KEY,
+  RES_KEY,
   TYPES,
   DEFAULT_DOC_TITLE
 } from './utils/constants';
@@ -54,7 +56,10 @@ const App: FC = () => {
   return (
     <ThemeProvider theme={theme}>
       <Routes>
-        <Route path='/' element={<Home />} />
+        <Route  path='/' element={<Outlet />}>
+          <Route index element={<Home />} />
+          <Route path={`/${RES_KEY}/:id`} element={<SubdeptsList />} />
+        </Route>
         <Route path={`/${TYPES[DEPT_KEY]}`} element={<Outlet />}>
           <Route index element={<Category />} />
           <Route path=':id' element={<Category />} />
