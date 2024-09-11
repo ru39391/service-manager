@@ -331,7 +331,6 @@ const Parser: FC = () => {
           }
         </Grid>
       </Layout>
-
     </>
   )
 };

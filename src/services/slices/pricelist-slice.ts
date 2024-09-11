@@ -12,7 +12,9 @@ import {
   ADD_ACTION_KEY,
   EDIT_ACTION_KEY,
   REMOVE_ACTION_KEY,
-  ID_KEY
+  ID_KEY,
+  NAME_KEY,
+  PARENT_KEY
 } from '../../utils/constants';
 
 export type TPricelistAction = {
@@ -71,7 +73,14 @@ const pricelistSlice = createSlice({
       subdepts: fetchItemsArr(action.payload.subdepts),
       groups: fetchItemsArr(action.payload.groups),
       pricelist: fetchItemsArr(action.payload.pricelist),
-      res: action.payload.res || [],
+      res: action.payload.res?.map(item => ({
+        ...item,
+        [NAME_KEY]: item[NAME_KEY].replace(/<[^>]*>/g, ''),
+        [PARENT_KEY]: {
+          ...item[PARENT_KEY],
+          [NAME_KEY]: item[PARENT_KEY][NAME_KEY].replace(/<[^>]*>/g, '')
+        },
+      })) || [],
       isPricelistLoading: false,
       isPricelistSucceed: true,
       isPricelistFailed: false,

@@ -53,6 +53,7 @@ const QUANTITY_KEY = 'quantity';
 const ITEM_KEY = 'items';
 const RES_KEY = 'res';
 const RES_ID_KEY = 'id';
+const PARENT_KEY = 'parent';
 
 const ADD_ACTION_KEY = 'add';
 const EDIT_ACTION_KEY = 'edit';
@@ -105,6 +106,8 @@ const TYPES = {
 const SITE_URL = `http://localhost/`;
 const API_URL = `${SITE_URL}api/`;//'http://stomistok.local/api/';
 
+const PAGE_COUNTER = 15;
+
 export {
   DEFAULT_DOC_TITLE,
   CREATE_ITEM_SUCCESS_MSG,
@@ -135,6 +138,7 @@ export {
   NOT_EMPTY_CATEGORY,
   RES_KEY,
   RES_ID_KEY,
+  PARENT_KEY,
   INDEX_KEY,
   ITEM_KEY,
   ADD_ACTION_KEY,
@@ -162,5 +166,6 @@ export {
   TITLES,
   TYPES,
   API_URL,
-  SITE_URL
+  SITE_URL,
+  PAGE_COUNTER
 };

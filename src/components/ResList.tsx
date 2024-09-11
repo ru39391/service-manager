@@ -1,15 +1,20 @@
-import { FC, useState, useEffect } from 'react';
+import { FC, useState, useEffect, ChangeEvent } from 'react';
 import {
+  Box,
   Breadcrumbs,
+  Button,
   ButtonGroup,
   Card,
   CardActions,
   CardContent,
   IconButton,
   Grid,
+  Pagination,
   Typography
 } from '@mui/material';
 import { Edit, RemoveRedEye, Settings } from '@mui/icons-material';
+
+import usePagination from '../hooks/usePagination';
 
 import { useSelector } from '../services/hooks';
 import { NAME_KEY, RES_ID_KEY, RES_KEY, SITE_URL } from '../utils/constants';
@@ -17,14 +22,13 @@ import { NAME_KEY, RES_ID_KEY, RES_KEY, SITE_URL } from '../utils/constants';
 import type { TResourceData } from '../types';
 
 const ResList: FC = () => {
-  const [resList, setResList] = useState<TResourceData[]>([]);
   const { res } = useSelector(state => state.pricelist);
-
-  useEffect(() => {
-    setResList(res.filter((_, index) => index < 16));
-  }, [
-    res
-  ]);
+  const {
+    currentPage,
+    currentPageCounter,
+    currentPageItems,
+    setCurrentPage
+  } = usePagination();
 
   return (
     <>
@@ -38,16 +42,23 @@ const ResList: FC = () => {
           color="text.primary"
           sx={{ display: 'flex', alignItems: 'center' }}
         >
-          Главная
+          Ресурсы
         </Typography>
+        {currentPageCounter && <Typography
+          variant="subtitle2"
+          color="text.primary"
+          sx={{ display: 'flex', alignItems: 'center' }}
+        >
+          Страница: {currentPage}
+        </Typography>}
       </Breadcrumbs>
 
-      {Boolean(resList.length) && <Grid container spacing={2}>
-        {resList.map(item => (<Grid item key={item[RES_ID_KEY].toString()} xs={3}>
+      {Boolean(currentPageItems.length) && <Grid container spacing={2} sx={{ mb: 3 }}>
+        {currentPageItems.map(item => (<Grid item key={item[RES_ID_KEY].toString()} xs={4}>
           <Card variant="outlined">
             <CardContent>
               <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>{item.parent[NAME_KEY]}</Typography>
-              <Typography variant="h5" component="div">{item[NAME_KEY]}</Typography>
+              <Typography variant="h5" component="div">{res.indexOf(item).toString()}. {item[NAME_KEY]}</Typography>
               <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>{item.template[NAME_KEY]}</Typography>
               <Typography variant="body2">
                 Категория: <Typography variant="body2" sx={{ color: 'text.secondary' }} component="span">{item.isParent ? 'Да' : 'Нет'}</Typography><br />
@@ -65,6 +76,17 @@ const ResList: FC = () => {
           </Card>
         </Grid>))}
       </Grid>}
+      {currentPageCounter
+        ? <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+            <Pagination
+              size="large"
+              color="primary"
+              count={currentPageCounter}
+              onChange={(event: ChangeEvent<unknown>, value: number) => setCurrentPage(value)}
+            />
+          </Box>
+        : ''
+      }
     </>
   )
 };
