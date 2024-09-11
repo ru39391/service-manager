@@ -54,6 +54,7 @@ const ITEM_KEY = 'items';
 const RES_KEY = 'res';
 const RES_ID_KEY = 'id';
 const PARENT_KEY = 'parent';
+const TEMPLATE_KEY = 'template';
 
 const ADD_ACTION_KEY = 'add';
 const EDIT_ACTION_KEY = 'edit';
@@ -139,6 +140,7 @@ export {
   RES_KEY,
   RES_ID_KEY,
   PARENT_KEY,
+  TEMPLATE_KEY,
   INDEX_KEY,
   ITEM_KEY,
   ADD_ACTION_KEY,

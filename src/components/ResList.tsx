@@ -10,14 +10,23 @@ import {
   IconButton,
   Grid,
   Pagination,
+  TextField,
   Typography
 } from '@mui/material';
 import { Edit, RemoveRedEye, Settings } from '@mui/icons-material';
 
+import useFilter from '../hooks/useFilter';
 import usePagination from '../hooks/usePagination';
 
 import { useSelector } from '../services/hooks';
-import { NAME_KEY, RES_ID_KEY, RES_KEY, SITE_URL } from '../utils/constants';
+import {
+  CAPTIONS,
+  NAME_KEY,
+  RES_ID_KEY,
+  RES_KEY,
+  SITE_URL,
+  PAGE_COUNTER
+} from '../utils/constants';
 
 import type { TResourceData } from '../types';
 
@@ -27,8 +36,35 @@ const ResList: FC = () => {
     currentPage,
     currentPageCounter,
     currentPageItems,
-    setCurrentPage
+    setCurrentPage,
+    handlePageItems
   } = usePagination();
+  const {
+    filterData,
+    parentsList,
+    templatesList,
+    filterResultList,
+    handleFilterData
+  } = useFilter();
+
+  useEffect(() => {
+    handlePageItems(filterResultList, currentPage);
+  }, [
+    filterResultList,
+    currentPage
+  ]);
+
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [
+    filterData
+  ]);
+
+  useEffect(() => {
+    //console.log(templatesList);
+  }, [
+    //templatesList
+  ]);
 
   return (
     <>
@@ -42,16 +78,31 @@ const ResList: FC = () => {
           color="text.primary"
           sx={{ display: 'flex', alignItems: 'center' }}
         >
-          Ресурсы
+          {currentPageCounter && currentPageCounter > PAGE_COUNTER ? `Страница: ${currentPage}` : 'Главная'}
         </Typography>
-        {currentPageCounter && <Typography
-          variant="subtitle2"
-          color="text.primary"
-          sx={{ display: 'flex', alignItems: 'center' }}
-        >
-          Страница: {currentPage}
-        </Typography>}
       </Breadcrumbs>
+
+      <Box
+        sx={{
+          mb: 3,
+          gap: '0 8px',
+          display: 'flex',
+          alignItems: 'center'
+        }}
+      >
+        <TextField
+          id={`${RES_KEY}_${NAME_KEY}`}
+          name={`${RES_KEY}_${NAME_KEY}`}
+          label=""
+          sx={{ mb: 1, backgroundColor: '#fff' }}
+          fullWidth
+          variant="outlined"
+          margin="dense"
+          type="text"
+          placeholder="Искать по названию"
+          onChange={({ target }) => handleFilterData(target.value.length ? { value: target.value } : null)}
+        />
+      </Box>
 
       {Boolean(currentPageItems.length) && <Grid container spacing={2} sx={{ mb: 3 }}>
         {currentPageItems.map(item => (<Grid item key={item[RES_ID_KEY].toString()} xs={4}>
@@ -76,7 +127,7 @@ const ResList: FC = () => {
           </Card>
         </Grid>))}
       </Grid>}
-      {currentPageCounter
+      {currentPageCounter && currentPageCounter > PAGE_COUNTER
         ? <Box sx={{ display: 'flex', justifyContent: 'center' }}>
             <Pagination
               size="large"

@@ -31,13 +31,13 @@ export type TResponseData = {
   data: TCustomData<TItemsArr>;
 };
 
-type TResParent = {
+export type TResParent = {
   parent_id: number,
   name: string,
   uri: string,
 };
 
-type TResTemplate = {
+export type TResTemplate = {
   template_id: number,
   name: string,
 };

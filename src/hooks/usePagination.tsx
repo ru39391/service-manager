@@ -11,6 +11,7 @@ interface IPagination {
   currentPageCounter: number;
   currentPageItems: TResourceData[];
   setCurrentPage: (counter: number) => void;
+  handlePageItems: (arr: TResourceData[], counter: number) => void;
 }
 
 const usePagination = (): IPagination => {
@@ -18,27 +19,21 @@ const usePagination = (): IPagination => {
   const [currentPageCounter, setCurrentPageCounter] = useState<number>(0);
   const [currentPageItems, setCurrentPageItems] = useState<TResourceData[]>([]);
 
-  const { res } = useSelector(state => state.pricelist);
+  // const { res } = useSelector(state => state.pricelist);
 
-  const handlePageItems = (counter: number): void => {
-    const currentItems = res.filter((_, index) => index >= PAGE_COUNTER * (counter - 1) && index < PAGE_COUNTER * counter);
+  const handlePageItems = (arr: TResourceData[], counter: number): void => {
+    const currentItems = arr.filter((_, index) => index >= PAGE_COUNTER * (counter - 1) && index < PAGE_COUNTER * counter);
 
     setCurrentPageItems(currentItems);
+    setCurrentPageCounter(Math.ceil(arr.length / PAGE_COUNTER));
   }
-
-  useEffect(() => {
-    handlePageItems(currentPage);
-    setCurrentPageCounter(Math.ceil(res.length / PAGE_COUNTER));
-  }, [
-    res,
-    currentPage
-  ]);
 
   return {
     currentPage,
     currentPageCounter,
     currentPageItems,
-    setCurrentPage
+    setCurrentPage,
+    handlePageItems
   };
 }
 
