@@ -45,6 +45,7 @@ const Nav: FC = () => {
           },
         }}
       >
+        {/* // TODO: добавить ссылку на парсер */}
         {depts.map(
           ({ item_id, name }) =>
             <NavItem

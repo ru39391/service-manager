@@ -55,6 +55,7 @@ const RES_KEY = 'res';
 const RES_ID_KEY = 'id';
 const PARENT_KEY = 'parent';
 const TEMPLATE_KEY = 'template';
+const IS_PARENT_KEY = 'isParent';
 
 const ADD_ACTION_KEY = 'add';
 const EDIT_ACTION_KEY = 'edit';
@@ -69,7 +70,9 @@ const TITLES = {
   [SUBDEPT_KEY]: 'Специализации',
   [GROUP_KEY]: 'Группы услуг',
   [ITEM_KEY]: 'Услуги',
-  [RES_KEY]: 'Ресурсы'
+  [PARENT_KEY]: 'Родительский ресурс',
+  [TEMPLATE_KEY]: 'Шаблон',
+  [IS_PARENT_KEY]: CATEGORY_TITLE
 };
 
 const SORT_CAPTION = 'Порядок сортировки';
@@ -141,6 +144,7 @@ export {
   RES_ID_KEY,
   PARENT_KEY,
   TEMPLATE_KEY,
+  IS_PARENT_KEY,
   INDEX_KEY,
   ITEM_KEY,
   ADD_ACTION_KEY,
