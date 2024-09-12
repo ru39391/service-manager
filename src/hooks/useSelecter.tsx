@@ -63,9 +63,11 @@ const useSelecter = (): ISelecter => {
     const arr = sortStrArray([...pricelist[TYPES[DEPT_KEY]]], NAME_KEY);
 
     setDeptsList(arr);
+    /*
     dispatch(
       setSelectedItems({ items: { [DEPT_KEY]: arr } })
     );
+    */
   }
 
   const handleSubeptsList = () => {
@@ -76,9 +78,11 @@ const useSelecter = (): ISelecter => {
     );
 
     setSubdeptsList(arr);
+    /*
     dispatch(
       setSelectedItems({ items: { [SUBDEPT_KEY]: arr } })
     );
+    */
     dispatch(
       setFormValues({
         values: {
@@ -97,9 +101,11 @@ const useSelecter = (): ISelecter => {
     );
 
     setGroupsList(arr);
+    /*
     dispatch(
       setSelectedItems({ items: { [GROUP_KEY]: arr } })
     );
+    */
     dispatch(
       setFormValues({
         values: {
