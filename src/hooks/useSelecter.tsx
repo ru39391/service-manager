@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { useSelector, useDispatch } from '../services/hooks';
-import { setFormValues } from '../services/slices/form-slice';
+import { setFormValues, setSelectedItems } from '../services/slices/form-slice';
 
 import type { TCustomData, TItemData, TItemsArr } from '../types';
 
@@ -39,12 +39,10 @@ const useSelecter = (): ISelecter => {
   const dispatch = useDispatch();
   const {
     pricelist,
-    formData,
-    formValues
+    form: { formData, formValues }
   } = useSelector(state => ({
     pricelist: state.pricelist,
-    formData: state.form.formData,
-    formValues: state.form.formValues
+    form: state.form,
   }));
 
   const handleSelectedItem = (
@@ -62,18 +60,24 @@ const useSelecter = (): ISelecter => {
     : null;
 
   const handleDeptsList = () => {
-    setDeptsList(
-      sortStrArray([...pricelist[TYPES[DEPT_KEY]]], NAME_KEY)
+    const arr = sortStrArray([...pricelist[TYPES[DEPT_KEY]]], NAME_KEY);
+
+    setDeptsList(arr);
+    dispatch(
+      setSelectedItems({ items: { [DEPT_KEY]: arr } })
     );
   }
 
   const handleSubeptsList = () => {
-    setSubdeptsList(
-      handleItemsList(
-        pricelist[TYPES[SUBDEPT_KEY]],
-        DEPT_KEY,
-        selectedDept && selectedDept[ID_KEY] as number
-      )
+    const arr = handleItemsList(
+      pricelist[TYPES[SUBDEPT_KEY]],
+      DEPT_KEY,
+      selectedDept && selectedDept[ID_KEY] as number
+    );
+
+    setSubdeptsList(arr);
+    dispatch(
+      setSelectedItems({ items: { [SUBDEPT_KEY]: arr } })
     );
     dispatch(
       setFormValues({
@@ -86,12 +90,15 @@ const useSelecter = (): ISelecter => {
   }
 
   const handleGroupsList = () => {
-    setGroupsList(
-      handleItemsList(
-        pricelist[TYPES[GROUP_KEY]],
-        SUBDEPT_KEY,
-        selectedSubdept && selectedSubdept[ID_KEY] as number
-      )
+    const arr = handleItemsList(
+      pricelist[TYPES[GROUP_KEY]],
+      SUBDEPT_KEY,
+      selectedSubdept && selectedSubdept[ID_KEY] as number
+    );
+
+    setGroupsList(arr);
+    dispatch(
+      setSelectedItems({ items: { [GROUP_KEY]: arr } })
     );
     dispatch(
       setFormValues({
@@ -135,7 +142,9 @@ const useSelecter = (): ISelecter => {
 
   useEffect(() => {
     handleDeptsList();
-  }, []);
+  }, [
+    pricelist
+  ]);
 
   useEffect(() => {
     setSelectedDept(

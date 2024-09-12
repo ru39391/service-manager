@@ -55,6 +55,7 @@ const Selecter: FC<ISelecter> = ({ keys }) => {
         name={keys[index]}
         value={selected[ID_KEY]}
         label={TITLES[keys[index]]}
+        sx={{ backgroundColor: '#fff' }}
         onChange={({ target }) => selectOption({
           type: keys[index],
           [ID_KEY]: target.value as number

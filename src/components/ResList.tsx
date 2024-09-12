@@ -215,7 +215,7 @@ const ResList: FC = () => {
       {Boolean(filterData) && <Typography sx={{ typography: 'body1', mb: 2 }}>{currentItemsMess}</Typography>}
 
       {/* // TODO: перенести шаблон карточки ресурса в отдельный компонент */}
-      {Boolean(currentPageItems.length) && <Grid container spacing={2} sx={{ mb: 3 }}>
+      {currentPageItems.length > 0 && <Grid container spacing={2} sx={{ mb: 3 }}>
         {currentPageItems.map(item => (<Grid item key={item[RES_ID_KEY].toString()} xs={4}>
           <Card variant="outlined">
             <CardContent>

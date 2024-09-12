@@ -182,6 +182,7 @@ const Parser: FC = () => {
     fileDataNav
   ]);
 
+  // TODO: разбить на компоненты
   return (
     <>
       <Layout>
