@@ -1,11 +1,17 @@
 import { FC, Fragment, useEffect } from 'react';
 import {
+  Autocomplete,
   Box,
   Card,
   CardContent,
   Checkbox,
   Chip,
   FormControlLabel,
+  GroupHeader,
+  GroupItems,
+  MenuItem,
+  Select,
+  TextField,
   Typography
 } from '@mui/material';
 
@@ -80,7 +86,24 @@ const ResItem: FC = () => {
           )}
         </Box>}
 
-        {linkedSubdeptItems.length > 0
+      {linkedSubdeptItems.length > 0
+        && <Autocomplete
+        multiple
+        id={SUBDEPT_KEY}
+        options={linkedSubdeptItems.map(item => ({ ...item, label: `${item.category} - ${item[NAME_KEY]}` }))}
+        getOptionLabel={(option) => option[NAME_KEY]}
+        groupBy={(option) => option.category}
+        filterSelectedOptions
+        renderInput={(params) => <TextField {...params} label="Специализация" />}
+        renderGroup={(params) => (
+          <li key={params.key}>
+            <GroupHeader>{params.group}</GroupHeader>
+            <GroupItems>{params.children}</GroupItems>
+          </li>
+        )}
+      />}
+
+        {linkedSubdeptItems.length > 100000
           && <Card variant="outlined"
             sx={{
               p: 2,
@@ -101,7 +124,7 @@ const ResItem: FC = () => {
           )}
         </Card>}
 
-        {currLinkedSubdepts.length > 0
+        {/*currLinkedSubdepts.length > 0
           && <Box
           sx={{
             mb: 2,
@@ -190,7 +213,7 @@ const ResItem: FC = () => {
                       />
                     )}
                   </Box></>}
-                  {/*item[TYPES[GROUP_KEY]].map(
+                  {/// item[TYPES[GROUP_KEY]].map(
                     (data) => <Fragment key={data[ID_KEY].toString()}>
                         <Typography component="div" sx={{ color: 'text.secondary', mt: 3, mb: 0 }} onClick={() => console.log(data)}>{data[NAME_KEY]}</Typography>
                         <FormControlLabel
@@ -223,7 +246,7 @@ const ResItem: FC = () => {
                         )}
                       </Box>}
                     </Fragment>
-                  )*/}
+                  ) ///}
               </CardContent>
             </Card>
           )}
@@ -276,9 +299,9 @@ const ResItem: FC = () => {
               </CardContent>
             </Card>
           )}
-        </Box>}
-{/*
-        {linkedSubdeptItems.length > 0
+        </Box>*/}
+
+        {currLinkedSubdepts.length > 0
           && <Box
             sx={{
               mb: 2,
@@ -287,7 +310,7 @@ const ResItem: FC = () => {
               flexDirection: 'column'
             }}
           >
-            {linkedSubdeptItems.map(
+            {currLinkedSubdepts.map(
               (item) => <Card key={item[ID_KEY].toString()} variant="outlined">
                 <CardContent sx={{ paddingBottom: '16px !important' }}>
                   <Typography variant="h6" component="div" sx={{ mb: 1 }}>{item[NAME_KEY]} - {item[ID_KEY].toString()}</Typography>
@@ -341,7 +364,6 @@ const ResItem: FC = () => {
               </Card>
             )}
           </Box>}
-          */}
     </>
   )
 };

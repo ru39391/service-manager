@@ -67,8 +67,14 @@ const useResLinks = (): IResLinks => {
       item => Boolean(item[IS_VISIBLE_KEY])
     );
     const currSubdepts = sortStrArray(
-      fetchArray(subdepts.filter(item => currItems.map(data => data[SUBDEPT_KEY]).includes(item[ID_KEY])), ID_KEY),
-      NAME_KEY
+      fetchArray(
+        subdepts.filter(item => currItems.map(data => data[SUBDEPT_KEY]).includes(item[ID_KEY])),
+        ID_KEY
+      ).map(item => ({
+        ...item,
+        category: arr.find(data => data[ID_KEY] === item[DEPT_KEY])[NAME_KEY]
+      })),
+      'category'
     );
     const currGroups = sortStrArray(
       fetchArray(groups.filter(item => currItems.map(data => data[GROUP_KEY]).includes(item[ID_KEY])), ID_KEY),
