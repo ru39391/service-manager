@@ -8,19 +8,13 @@ import {
   Chip,
   FormControlLabel,
   ListItem,
-  MenuItem,
-  Select,
   TextField,
   Typography,
 } from '@mui/material';
 import { styled, lighten, darken } from '@mui/system';
 import { Done } from '@mui/icons-material';
 
-
-import useForm from '../hooks/useForm';
 import useResLinks from '../hooks/useResLinks';
-
-import { useSelector } from '../services/hooks';
 
 import {
   ID_KEY,
@@ -29,12 +23,9 @@ import {
   SUBDEPT_KEY,
   GROUP_KEY,
   ITEM_KEY,
-  TYPES,
   TITLES,
-  CATEGORY_TITLE,
   CATEGORY_KEY,
 } from '../utils/constants';
-import { TItemData } from '../types';
 
 const GroupHeader = styled('div')(({ theme }) => ({
   zIndex: 1,
@@ -53,6 +44,7 @@ const ResItem: FC = () => {
     linkedDepts,
     linkedSubdepts,
     linkedGroups,
+    linkedItems,
 
     existableDepts,
     existableSubdepts,
@@ -64,14 +56,14 @@ const ResItem: FC = () => {
   } = useResLinks();
 
   useEffect(() => {
-    //console.log(linkedDepts);
+    //console.log(existableGroups);
   }, [
-    linkedDepts
+    existableGroups
   ]);
 
   return (
     <>
-    {existableDepts.length > 0
+    {/*existableDepts.length > 0
       && <Box
         sx={{
           mb: 2,
@@ -85,17 +77,31 @@ const ResItem: FC = () => {
             key={data[ID_KEY].toString()}
             label={data[NAME_KEY]}
             variant="outlined"
-            onClick={() => resLinkHandlers[TYPES[DEPT_KEY]]({ data })}
+            onClick={() => resLinkHandlers[DEPT_KEY]({ data })}
             {...( isLinkedItemActive(linkedDepts, data) && { color: 'primary', icon: <Done />, sx: { backgroundColor: '#fff' } } )}
           />
         )}
-      </Box>}
+      </Box>*/}
+
+      {existableDepts.length > 0 && <Autocomplete
+        multiple
+        filterSelectedOptions
+        id={`${DEPT_KEY}-selecter`}
+        sx={{ mb: 3, backgroundColor: '#fff' }}
+        value={linkedDepts}
+        options={existableDepts}
+        getOptionLabel={(option) => option[NAME_KEY] as string}
+        renderInput={(props) => <TextField {...props} label={[TITLES[DEPT_KEY]]} />}
+        renderOption={(props, option) => <ListItem {...props}>{option[NAME_KEY]}</ListItem>}
+        getOptionKey={(option) => option[ID_KEY]}
+        onChange={(event, value, reason ) => resLinkHandlers[DEPT_KEY]({ items: reason === 'clear' ? [] : value })}
+      />}
 
       {existableSubdepts.length > 0 && <Autocomplete
         multiple
         filterSelectedOptions
         id={`${SUBDEPT_KEY}-selecter`}
-        sx={{ backgroundColor: '#fff' }}
+        sx={{ mb: 3, backgroundColor: '#fff' }}
         value={linkedSubdepts}
         options={existableSubdepts}
         getOptionLabel={(option) => option[NAME_KEY] as string}
@@ -109,12 +115,73 @@ const ResItem: FC = () => {
           </li>
         )}
         getOptionKey={(option) => option[ID_KEY]}
-        onChange={(event, value, reason ) => resLinkHandlers[TYPES[SUBDEPT_KEY]]({ items: reason === 'clear' ? [] : value })}
+        onChange={(event, value, reason ) => resLinkHandlers[SUBDEPT_KEY]({ items: reason === 'clear' ? [] : value })}
       />}
 
-      {/*existableSubdepts.length > 0
+      {existableGroups.length > 0 && <Autocomplete
+        multiple
+        filterSelectedOptions
+        id={`${GROUP_KEY}-selecter`}
+        sx={{ mb: 3, backgroundColor: '#fff' }}
+        value={linkedGroups}
+        options={existableGroups}
+        getOptionLabel={(option) => option[NAME_KEY] as string}
+        groupBy={(option) => option[CATEGORY_KEY] as string}
+        renderInput={(props) => <TextField {...props} label={[TITLES[GROUP_KEY]]} />}
+        renderOption={(props, option) => <ListItem {...props}>{option[NAME_KEY]}</ListItem>}
+        renderGroup={(props) => (
+          <li key={props.key}>
+            <GroupHeader>{props.group}</GroupHeader>
+            <GroupList>{props.children}</GroupList>
+          </li>
+        )}
+        getOptionKey={(option) => option[ID_KEY]}
+        onChange={(event, value, reason ) => resLinkHandlers[GROUP_KEY]({ items: reason === 'clear' ? [] : value })}
+      />}
+
+      {existableGroups.length > 0 && <FormControlLabel
+        label={existableGroups.length === linkedGroups.length ? 'Отменить выбор групп' : 'Выбрать все группы'}
+        sx={{ mb: .25 }}
+        control={
+          <Checkbox
+            checked={existableGroups.length === linkedGroups.length}
+            onChange={() => resLinkHandlers[GROUP_KEY]({ items: existableGroups.length === linkedGroups.length ? [] : existableGroups })}
+          />
+        }
+      />}
+
+      {/*
+        // TODO:
+          -> для случая активного списка групп чекбокс "выбрать все группы"
+          -> "Комплексный выбор" - отображает услуги непосредственно вложенные в категорию специализации (для этого случая чекбокс "выбрать все услуги") и выпадающий список групп
 
 
+          -> чекбокс (остальные снимаются) "Игнорировать группы" - выпадающий список, входящих в специализацию услуг (для этого случая чекбокс "выбрать все услуги"), их category: "Название специализации"
+          -> "Сохранить группировку" - для выборочной отметки услуг как внутри групп, так и внутри специализаций: ещё один выпадающий список, услуги без группы под заголовком '-' (для этого случая чекбокс "выбрать все") - список услуг, их category: "Название группы"
+      */}
+
+      {existableItems.length > 0
+        ? <Box
+          sx={{
+            mb: 2,
+            gap: 1,
+            display: 'flex',
+            flexWrap: 'wrap',
+          }}
+        >
+          {existableItems.map(
+            (data) => <Chip
+              key={data[ID_KEY].toString()}
+              label={data[NAME_KEY]}
+              variant="outlined"
+              onClick={() => resLinkHandlers[ITEM_KEY]({ data })}
+              {...( isLinkedItemActive(linkedItems, data) && { color: 'primary', icon: <Done />, sx: { backgroundColor: '#fff' } } )}
+            />
+          )}
+        </Box> :  (linkedSubdepts.length > 0 && 'нет записей') }
+
+      {/* // TODO: сделать предпросмотр */}
+      {/*
         renderTags={
           (value, getTagProps) => (value.map(
             (item, index) => <Chip
@@ -124,27 +191,7 @@ const ResItem: FC = () => {
               onDelete={() => resLinkHandlers[TYPES[SUBDEPT_KEY]](item)}
             />
           ))
-        }
-
-      <Chip {...getTagProps(index)} label={value[NAME_KEY]} data-item={JSON.stringify(item)} onDelete={() => console.log(getTagProps(index))} />
-        && <Box
-          sx={{
-            mb: 2,
-            gap: 1,
-            display: 'flex',
-            flexWrap: 'wrap',
-          }}
-        >
-          {existableSubdepts.map(
-            (item) => <Chip
-              key={item[ID_KEY].toString()}
-              label={item[NAME_KEY]}
-              variant="outlined"
-              onClick={() => {resLinkHandlers[TYPES[SUBDEPT_KEY]](item); console.log(item);}}
-              {...( isLinkedItemActive(linkedSubdepts, item) && { color: 'primary', icon: <Done /> } )}
-            />
-          )}
-        </Box>*/}
+        }*/}
     </>
   )
 };

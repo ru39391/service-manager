@@ -55,15 +55,14 @@ const useResLinks = (): IResLinks => {
   const [linkedGroups, setLinkedGroups] = useState<TItemsArr>([]);
   const [linkedItems, setLinkedItems] = useState<TItemsArr>([]);
 
-  const pricelist: TCustomData<TItemsArr>  = useSelector(({ pricelist }) => ({
-    [TYPES[DEPT_KEY]]: pricelist[TYPES[DEPT_KEY]],
-    [TYPES[SUBDEPT_KEY]]: pricelist[TYPES[SUBDEPT_KEY]],
-    [TYPES[GROUP_KEY]]: pricelist[TYPES[GROUP_KEY]],
-    [TYPES[ITEM_KEY]]: pricelist[TYPES[ITEM_KEY]]
-  }));
+  const pricelist: TCustomData<TItemsArr>  = useSelector(
+    ({ pricelist }) => Object.values(TYPES).reduce((acc, key) => ({ ...acc, [key]: pricelist[key] }), {}
+  ));
 
+  /**/
   const isLinkedItemActive = (arr: TItemsArr, data: TItemData): boolean => arr.indexOf(data) >= 0;
 
+  /**/
   const handleLinkedItems = (arr: TItemsArr, { data, items }: TLinkedResData): TItemsArr => {
     if(!data) {
       return items && Array.isArray(items) ? [...items] : [];
@@ -78,7 +77,6 @@ const useResLinks = (): IResLinks => {
   const filterItems = (
     { arr, items, type }: { arr: TItemsArr; items: TItemsArr; type: string; }
   ): TItemsArr => sortStrArray(items.filter(item => arr.map(data => data[ID_KEY]).includes(item[type])), NAME_KEY);
-  */
   const filterItemsTest = (
     { arr, type }: { arr: TItemsArr; type: string; }
   ): TItemsArr => {
@@ -122,22 +120,44 @@ const useResLinks = (): IResLinks => {
     setLinkedSubdepts(subdeptsList);
     // return subdeptsList;
   };
+  */
 
-  const resLinkHandlers = {
-    [TYPES[DEPT_KEY]]: (payload: TLinkedResData) => setLinkedDepts(handleLinkedItems(linkedDepts, payload)),
-    [TYPES[SUBDEPT_KEY]]: (payload: TLinkedResData) => setLinkedSubdepts(handleLinkedItems(linkedSubdepts, payload)),
-    [TYPES[GROUP_KEY]]: (payload: TLinkedResData) => setLinkedGroups(handleLinkedItems(linkedGroups, payload)),
-    [TYPES[ITEM_KEY]]: (payload: TLinkedResData) => setLinkedItems(handleLinkedItems(linkedItems, payload)),
-  };
+  const resLinkData = [
+    linkedDepts,
+    linkedSubdepts,
+    linkedGroups,
+    linkedItems
+  ].reduce((acc, state, index) => ({ ...acc, [Object.keys(TYPES)[index]]: state }), {});
 
+  const resLinkHandlers = [
+    (payload: TLinkedResData) => setLinkedDepts(handleLinkedItems(resLinkData[DEPT_KEY], payload)),
+    (payload: TLinkedResData) => setLinkedSubdepts(handleLinkedItems(resLinkData[SUBDEPT_KEY], payload)),
+    (payload: TLinkedResData) => setLinkedGroups(handleLinkedItems(resLinkData[GROUP_KEY], payload)),
+    (payload: TLinkedResData) => setLinkedItems(handleLinkedItems(resLinkData[ITEM_KEY], payload)),
+  ].reduce((acc, handler, index) => ({ ...acc, [Object.keys(TYPES)[index]]: handler }), {});
+
+  /**/
+  const getMatchedItems = (
+    categoryArr: TItemsArr,
+    currentArr: TItemsArr,
+    key: string
+  ): TItemsArr => currentArr.filter(item => categoryArr.map(data => data[ID_KEY]).includes(item[key]));
+
+  /**/
   const filterItems = (
     arr: TItemsArr,
     categoryKey: string,
     currentKey: string,
     extendedKey: string = ''
   ): TItemsArr => {
+    if(!arr.length) {
+      resLinkHandlers[currentKey]({ items: [] });
+
+      return [];
+    }
+
     const subCategoryItems: TItemsArr = sortStrArray(
-      pricelist[TYPES[currentKey]].filter(item => arr.map(data => data[ID_KEY]).includes(item[categoryKey])),
+      getMatchedItems(arr, pricelist[TYPES[currentKey]], categoryKey),
       NAME_KEY
     ).map(
       (item) => {
@@ -151,8 +171,13 @@ const useResLinks = (): IResLinks => {
       }
     );
 
-    //const items =
+    resLinkHandlers[currentKey]({
+      items: getMatchedItems(arr, resLinkData[currentKey], categoryKey)
+    });
 
+    // TODO: настроить исключение из subCategoryItems выбранных позиций
+    // subCategoryItems.filter(item => !resLinkData[currentKey].map(data => data[ID_KEY]).includes(item[ID_KEY]))
+    // при такой конструкции есть баг при удалении специализации - она возвращается в список
     return sortStrArray(
       extendedKey
         ? subCategoryItems.filter(item => item[extendedKey] === 0)
@@ -164,14 +189,20 @@ const useResLinks = (): IResLinks => {
   // filterItems(groups, GROUP_KEY, ITEM_KEY);
 
   useEffect(() => {
-    setExistableSubdepts(
-      filterItems(linkedDepts, DEPT_KEY, SUBDEPT_KEY)
-    );
     setExistableGroups(
-      filterItems(linkedDepts, SUBDEPT_KEY, GROUP_KEY)
+      filterItems(linkedSubdepts, SUBDEPT_KEY, GROUP_KEY)
     );
     setExistableItems(
-      filterItems(linkedDepts, SUBDEPT_KEY, ITEM_KEY, GROUP_KEY)
+      filterItems(linkedSubdepts, SUBDEPT_KEY, ITEM_KEY, GROUP_KEY)
+    );
+  }, [
+    linkedSubdepts
+  ]);
+
+  useEffect(() => {
+    //console.log('filterItems', filterItems(linkedDepts, SUBDEPT_KEY, GROUP_KEY));
+    setExistableSubdepts(
+      filterItems(linkedDepts, DEPT_KEY, SUBDEPT_KEY)
     );
   }, [
     linkedDepts
