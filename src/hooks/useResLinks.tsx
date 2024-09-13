@@ -4,6 +4,8 @@ import {
   ID_KEY,
   NAME_KEY,
   IS_VISIBLE_KEY,
+  CATEGORY_KEY,
+  LABEL_KEY,
   DEPT_KEY,
   SUBDEPT_KEY,
   GROUP_KEY,
@@ -13,20 +15,24 @@ import {
 
 import { useSelector } from '../services/hooks';
 
-import type { TCustomData, TItemsArr, TItemData } from '../types';
+import type {
+  TCustomData,
+  TItemsArr,
+  TItemData
+} from '../types';
 
 import { sortStrArray, fetchArray } from '../utils';
 
 interface IResLinks {
-  linkedDeptItems: TItemsArr,
-  linkedSubdeptItems: TItemsArr,
-  linkedGroupItems: TItemsArr,
-  linkedPricelistItems: TItemsArr,
+  existableDepts: TItemsArr,
+  existableSubdepts: TItemsArr,
+  existableGroups: TItemsArr,
+  existableItems: TItemsArr,
 
-  currLinkedDepts: TItemsArr,
-  currLinkedSubdepts: TItemsArr,
-  currLinkedGroups: TItemsArr,
-  currLinkedPricelist: TItemsArr,
+  linkedDepts: TItemsArr,
+  linkedSubdepts: TItemsArr,
+  linkedGroups: TItemsArr,
+  linkedItems: TItemsArr,
 
   resLinkHandlers: TCustomData<(data: TItemData) => void>,
   isLinkedItemActive: (arr: TItemsArr, data: TItemData) => boolean,
@@ -34,17 +40,22 @@ interface IResLinks {
 
 // TODO: не использовать ли useCallback
 const useResLinks = (): IResLinks => {
-  const [linkedDeptItems, setLinkedDeptItems] = useState<TItemsArr>([]);
-  const [linkedSubdeptItems, setLinkedSubdeptItems] = useState<TItemsArr>([]);
-  const [linkedGroupItems, setLinkedGroupItems] = useState<TItemsArr>([]);
-  const [linkedPricelistItems, setLinkedPricelistItems] = useState<TItemsArr>([]);
+  const [existableDepts, setExistableDepts] = useState<TItemsArr>([]);
+  const [existableSubdepts, setExistableSubdepts] = useState<TItemsArr>([]);
+  const [existableGroups, setExistableGroups] = useState<TItemsArr>([]);
+  const [existableItems, setExistableItems] = useState<TItemsArr>([]);
 
-  const [currLinkedDepts, setCurrLinkedDepts] = useState<TItemsArr>([]);
-  const [currLinkedSubdepts, setCurrLinkedSubdepts] = useState<TItemsArr>([]);
-  const [currLinkedGroups, setCurrLinkedGroups] = useState<TItemsArr>([]);
-  const [currLinkedPricelist, setCurrLinkedPricelist] = useState<TItemsArr>([]);
+  const [linkedDepts, setLinkedDepts] = useState<TItemsArr>([]);
+  const [linkedSubdepts, setLinkedSubdepts] = useState<TItemsArr>([]);
+  const [linkedGroups, setLinkedGroups] = useState<TItemsArr>([]);
+  const [linkedItems, setLinkedItems] = useState<TItemsArr>([]);
 
-  const { depts, subdepts, groups, pricelist } = useSelector(state => state.pricelist);
+  const pricelist: TCustomData<TItemsArr>  = useSelector(({ pricelist }) => ({
+    [TYPES[DEPT_KEY]]: pricelist[TYPES[DEPT_KEY]],
+    [TYPES[SUBDEPT_KEY]]: pricelist[TYPES[SUBDEPT_KEY]],
+    [TYPES[GROUP_KEY]]: pricelist[TYPES[GROUP_KEY]],
+    [TYPES[ITEM_KEY]]: pricelist[TYPES[ITEM_KEY]]
+  }));
 
   const isLinkedItemActive = (arr: TItemsArr, data: TItemData): boolean => arr.indexOf(data) >= 0;
 
@@ -57,7 +68,7 @@ const useResLinks = (): IResLinks => {
     { arr, items, type }: { arr: TItemsArr; items: TItemsArr; type: string; }
   ): TItemsArr => sortStrArray(items.filter(item => arr.map(data => data[ID_KEY]).includes(item[type])), NAME_KEY);
   */
-  const filterItems = (
+  const filterItemsTest = (
     { arr, type }: { arr: TItemsArr; type: string; }
   ): TItemsArr => {
     const currItems = sortStrArray(
@@ -95,75 +106,90 @@ const useResLinks = (): IResLinks => {
       }
     ));
 
-    setLinkedPricelistItems(currItems);
-    setLinkedGroupItems(groupsList);
-    setLinkedSubdeptItems(subdeptsList);
+    setLinkedItems(currItems);
+    setLinkedGroups(groupsList);
+    setLinkedSubdepts(subdeptsList);
     // return subdeptsList;
   };
 
-  const resLinkHandlers= {
-    [TYPES[DEPT_KEY]]: (data: TItemData) => setCurrLinkedDepts(handleLinkedItems(currLinkedDepts, data)),
-    [TYPES[SUBDEPT_KEY]]: (data: TItemData) => setCurrLinkedSubdepts(handleLinkedItems(currLinkedSubdepts, data)),
-    [TYPES[GROUP_KEY]]: (data: TItemData) => setCurrLinkedGroups(handleLinkedItems(currLinkedGroups, data)),
-    [TYPES[ITEM_KEY]]: (data: TItemData) => setCurrLinkedPricelist(handleLinkedItems(currLinkedPricelist, data)),
+  const resLinkHandlers = {
+    [TYPES[DEPT_KEY]]: (data: TItemData) => setLinkedDepts(handleLinkedItems(linkedDepts, data)),
+    [TYPES[SUBDEPT_KEY]]: (data: TItemData) => setLinkedSubdepts(handleLinkedItems(linkedSubdepts, data)),
+    [TYPES[GROUP_KEY]]: (data: TItemData) => setLinkedGroups(handleLinkedItems(linkedGroups, data)),
+    [TYPES[ITEM_KEY]]: (data: TItemData) => setLinkedItems(handleLinkedItems(linkedItems, data)),
   };
 
-  /*
-  useEffect(() => {
-    setLinkedGroupItems(
-      filterItems({
-        arr: linkedSubdeptItems,
-        items: groups,
-        type: SUBDEPT_KEY
-      })
+  const filterItems = (
+    arr: TItemsArr,
+    categoryKey: string,
+    currentKey: string,
+    extendedKey: string = ''
+  ): TItemsArr => {
+    const subCategoryItems: TItemsArr = sortStrArray(
+      pricelist[TYPES[currentKey]].filter(item => arr.map(data => data[ID_KEY]).includes(item[categoryKey])),
+      NAME_KEY
+    ).map(
+      (item) => {
+        const category = arr.find(data => item[categoryKey] === data[ID_KEY]);
+
+        return {
+          ...item,
+          [LABEL_KEY]: item[NAME_KEY],
+          [CATEGORY_KEY]: category ? category[NAME_KEY] : ''
+        };
+      }
     );
-    setLinkedPricelistItems(
-      filterItems({
-        arr: linkedSubdeptItems,
-        items: pricelist,
-        type: SUBDEPT_KEY
-      })
+
+    //const items =
+
+    return sortStrArray(
+      extendedKey
+        ? subCategoryItems.filter(item => item[extendedKey] === 0)
+        : subCategoryItems,
+      CATEGORY_KEY
     );
-  }, [
-    linkedSubdeptItems
-  ]);
-  */
+  }
+
+  // init(depts, DEPT_KEY, SUBDEPT_KEY);
+  // init(subdepts, SUBDEPT_KEY, GROUP_KEY);
+  // init(subdepts, SUBDEPT_KEY, ITEM_KEY, GROUP_KEY);
+  // init(groups, GROUP_KEY, ITEM_KEY);
 
   useEffect(() => {
-    /*
-    setLinkedSubdeptItems(
-      filterItems({
-        arr: currLinkedDepts,
-        //items: subdepts,
-        type: DEPT_KEY
-      })
+    setExistableGroups(
+      filterItems(linkedDepts, SUBDEPT_KEY, GROUP_KEY)
     );
-    */
-    filterItems({
-      arr: currLinkedDepts,
-      //items: subdepts,
-      type: DEPT_KEY
-    });
+    setExistableItems(
+      filterItems(linkedDepts, SUBDEPT_KEY, ITEM_KEY, GROUP_KEY)
+    );
   }, [
-    currLinkedDepts
+    linkedDepts
   ]);
 
   useEffect(() => {
-    setLinkedDeptItems(depts);
+    setExistableSubdepts(
+      filterItems(linkedDepts, DEPT_KEY, SUBDEPT_KEY)
+    );
   }, [
-    depts
+    linkedDepts
+  ]);
+
+  useEffect(() => {
+    setExistableDepts(pricelist[TYPES[DEPT_KEY]]);
+  }, [
+    pricelist[TYPES[DEPT_KEY]]
   ]);
 
   return {
-    linkedDeptItems,
-    linkedSubdeptItems,
-    linkedGroupItems,
-    linkedPricelistItems,
+    existableDepts,
+    existableSubdepts,
+    existableGroups,
+    existableItems,
 
-    currLinkedDepts,
-    currLinkedSubdepts,
-    currLinkedGroups,
-    currLinkedPricelist,
+    linkedDepts,
+    linkedSubdepts,
+    linkedGroups,
+    linkedItems,
 
     resLinkHandlers,
     isLinkedItemActive

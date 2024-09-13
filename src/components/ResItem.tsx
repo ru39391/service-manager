@@ -7,15 +7,15 @@ import {
   Checkbox,
   Chip,
   FormControlLabel,
-  GroupHeader,
-  GroupItems,
+  ListItem,
   MenuItem,
   Select,
   TextField,
-  Typography
+  Typography,
 } from '@mui/material';
-
+import { styled, lighten, darken } from '@mui/system';
 import { Done } from '@mui/icons-material';
+
 
 import useForm from '../hooks/useForm';
 import useResLinks from '../hooks/useResLinks';
@@ -23,50 +23,102 @@ import useResLinks from '../hooks/useResLinks';
 import { useSelector } from '../services/hooks';
 
 import {
+  ID_KEY,
+  NAME_KEY,
   DEPT_KEY,
   SUBDEPT_KEY,
   GROUP_KEY,
   ITEM_KEY,
-  ID_KEY,
-  NAME_KEY,
   TYPES,
+  TITLES,
+  CATEGORY_TITLE,
+  CATEGORY_KEY,
 } from '../utils/constants';
+
+const GroupHeader = styled('div')(({ theme }) => ({
+  position: 'sticky',
+  top: '-8px',
+  padding: '4px 10px',
+  color: theme.palette.primary.main,
+  backgroundColor: lighten(theme.palette.primary.light, 0.85),
+  ...theme.applyStyles('dark', { backgroundColor: darken(theme.palette.primary.main, 0.8) }),
+}));
+
+const GroupList = styled('ul')({ padding: 0 });
 
 const ResItem: FC = () => {
   const {
-    form: { formValues, currSubdeptsList, currGroupsList },
-    pricelist: { depts, subdepts, groups, pricelist }
-  } = useSelector(state => ({
-    form: state.form,
-    pricelist: state.pricelist
-  }));
+    linkedDepts,
+    linkedSubdepts,
+    linkedGroups,
 
-  const { selecterFields } = useForm();
-  const {
-    linkedDeptItems,
-    linkedSubdeptItems,
-    linkedGroupItems,
-
-    currLinkedDepts,
-    currLinkedSubdepts,
-    currLinkedGroups,
-    currLinkedPricelist,
+    existableDepts,
+    existableSubdepts,
+    existableGroups,
+    existableItems,
 
     resLinkHandlers,
     isLinkedItemActive
   } = useResLinks();
 
-  /*
   useEffect(() => {
-    console.log(currLinkedDepts);
+    //console.log(existableDepts);
   }, [
-    currLinkedDepts
+    existableDepts
   ]);
-  */
 
   return (
     <>
-      {linkedDeptItems.length > 0
+    {existableDepts.length > 0
+      && <Box
+        sx={{
+          mb: 2,
+          gap: 1,
+          display: 'flex',
+          flexWrap: 'wrap',
+        }}
+      >
+        {existableDepts.map(
+          (item) => <Chip
+            key={item[ID_KEY].toString()}
+            label={item[NAME_KEY]}
+            variant="outlined"
+            onClick={() => resLinkHandlers[TYPES[DEPT_KEY]](item)}
+            {...( isLinkedItemActive(linkedDepts, item) && { color: 'primary', icon: <Done />, sx: { backgroundColor: '#fff' } } )}
+          />
+        )}
+      </Box>}
+
+      {existableSubdepts.length > 0 && <Autocomplete
+        multiple
+        filterSelectedOptions
+        id={`${SUBDEPT_KEY}-selecter`}
+        sx={{ backgroundColor: '#fff' }}
+        value={linkedSubdepts}
+        options={existableSubdepts}
+        getOptionLabel={(option) => option[NAME_KEY] as string}
+        groupBy={(option) => option[CATEGORY_KEY] as string}
+        renderInput={(props) => <TextField {...props} label={[TITLES[SUBDEPT_KEY]]} />}
+        renderOption={(props, option) => <ListItem {...props} data-item={JSON.stringify(option)}>{option[NAME_KEY]}</ListItem>}
+        renderGroup={(props) => (
+          <li key={props.key}>
+            <GroupHeader>{props.group}</GroupHeader>
+            <GroupList>{props.children}</GroupList>
+          </li>
+        )}
+        getOptionKey={(option) => option[ID_KEY]}
+        onChange={({ target }) => {
+          console.log(target);
+          if(target.dataset) {
+            resLinkHandlers[TYPES[SUBDEPT_KEY]](JSON.parse(target.dataset.item))
+          } else {
+            console.log(target);
+          }
+        }}
+      />}
+
+      {/*existableSubdepts.length > 0
+      //console.log(JSON.parse(target.dataset.item))
         && <Box
           sx={{
             mb: 2,
@@ -75,340 +127,18 @@ const ResItem: FC = () => {
             flexWrap: 'wrap',
           }}
         >
-          {linkedDeptItems.map(
+          {existableSubdepts.map(
             (item) => <Chip
               key={item[ID_KEY].toString()}
               label={item[NAME_KEY]}
               variant="outlined"
-              onClick={() => resLinkHandlers[TYPES[DEPT_KEY]](item)}
-              {...( isLinkedItemActive(currLinkedDepts, item) && { color: 'primary', icon: <Done /> } )}
+              onClick={() => {resLinkHandlers[TYPES[SUBDEPT_KEY]](item); console.log(item);}}
+              {...( isLinkedItemActive(linkedSubdepts, item) && { color: 'primary', icon: <Done /> } )}
             />
-          )}
-        </Box>}
-
-      {linkedSubdeptItems.length > 0
-        && <Autocomplete
-        multiple
-        id={SUBDEPT_KEY}
-        options={linkedSubdeptItems.map(item => ({ ...item, label: `${item.category} - ${item[NAME_KEY]}` }))}
-        getOptionLabel={(option) => option[NAME_KEY]}
-        groupBy={(option) => option.category}
-        filterSelectedOptions
-        renderInput={(params) => <TextField {...params} label="Специализация" />}
-        renderGroup={(params) => (
-          <li key={params.key}>
-            <GroupHeader>{params.group}</GroupHeader>
-            <GroupItems>{params.children}</GroupItems>
-          </li>
-        )}
-      />}
-
-        {linkedSubdeptItems.length > 100000
-          && <Card variant="outlined"
-            sx={{
-              p: 2,
-              mb: 2,
-              gap: 1,
-              display: 'flex',
-              flexWrap: 'wrap',
-            }}
-        >
-          {linkedSubdeptItems.map(
-            (item) => <Chip
-              key={item[ID_KEY].toString()}
-              label={item[NAME_KEY]}
-              variant="outlined"
-              onClick={() => resLinkHandlers[TYPES[SUBDEPT_KEY]](item)}
-              {...( isLinkedItemActive(currLinkedSubdepts, item) && { color: 'primary', icon: <Done /> } )}
-            />
-          )}
-        </Card>}
-
-        {/*currLinkedSubdepts.length > 0
-          && <Box
-          sx={{
-            mb: 2,
-            gap: 1,
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          {currLinkedSubdepts.map(
-            (item) => <Card key={item[ID_KEY].toString()} variant="outlined">
-              <CardContent>
-                <Typography variant="h6" component="div" sx={{ mb: .25 }}>{item[NAME_KEY]} - {item[ID_KEY].toString()}</Typography>
-                  <FormControlLabel
-                    label="Выбрать все услуги"
-                    sx={{ mb: .25 }}
-                    control={
-                      <Checkbox
-                        checked={false}
-                        onChange={({ target }) => console.log({ value: target.checked })}
-                      />
-                    }
-                  />
-                  {item[TYPES[GROUP_KEY]].length > 0 && <>
-                    <FormControlLabel
-                      label="Выбрать услуги вне групп"
-                      sx={{ mb: .25 }}
-                      control={
-                        <Checkbox
-                          checked={false}
-                          onChange={({ target }) => console.log({ value: target.checked })}
-                        />
-                      }
-                    />
-                    <FormControlLabel
-                      label="Выбрать услуги в группах"
-                      sx={{ mb: .25 }}
-                      control={
-                        <Checkbox
-                          checked={false}
-                          onChange={({ target }) => console.log({ value: target.checked })}
-                        />
-                      }
-                    />
-                  </>}
-                  {item[TYPES[ITEM_KEY]].length > 0
-                    && <Box
-                      sx={{
-                        mb: 0,
-                        gap: 1,
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                      }}
-                    >
-                    {item[TYPES[ITEM_KEY]].map(
-                      (data) => <Chip
-                        key={data[ID_KEY].toString()}
-                        label={data[NAME_KEY]}
-                        variant="outlined"
-                        onClick={() => {
-                          //console.log(data);
-                          resLinkHandlers[TYPES[ITEM_KEY]](data);
-                        }}
-                        {...( isLinkedItemActive(currLinkedPricelist, data) && { color: 'primary', icon: <Done /> } )}
-                      />
-                    )}
-                  </Box>}
-                  {item[TYPES[GROUP_KEY]].length > 0
-                    && <><Typography component="div" sx={{ color: 'text.secondary', mt: 3, mb: 1 }}>Группы</Typography><Box
-                      sx={{
-                        mb: 0,
-                        gap: 1,
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                      }}
-                    >
-                    {item[TYPES[GROUP_KEY]].map(
-                      (data) => <Chip
-                        key={data[ID_KEY].toString()}
-                        label={data[NAME_KEY]}
-                        variant="outlined"
-                        onClick={() => {
-                          //console.log(data);
-                          resLinkHandlers[TYPES[GROUP_KEY]](data);
-                        }}
-                        {...( isLinkedItemActive(currLinkedGroups, data) && { color: 'primary', icon: <Done /> } )}
-                      />
-                    )}
-                  </Box></>}
-                  {/// item[TYPES[GROUP_KEY]].map(
-                    (data) => <Fragment key={data[ID_KEY].toString()}>
-                        <Typography component="div" sx={{ color: 'text.secondary', mt: 3, mb: 0 }} onClick={() => console.log(data)}>{data[NAME_KEY]}</Typography>
-                        <FormControlLabel
-                          label="Выбрать все услуги группы"
-                          sx={{ mb: .5 }}
-                          control={
-                            <Checkbox
-                              checked={false}
-                              onChange={({ target }) => console.log({ value: target.checked })}
-                            />
-                          }
-                        />
-                      {data[TYPES[ITEM_KEY]].length > 0
-                        && <Box
-                          sx={{
-                            mb: 0,
-                            gap: 1,
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                          }}
-                        >
-                        {data[TYPES[ITEM_KEY]].map(
-                          (itemData) => <Chip
-                            key={itemData[ID_KEY].toString()}
-                            label={itemData[NAME_KEY]}
-                            variant="outlined"
-                            onClick={() => resLinkHandlers[TYPES[ITEM_KEY]](itemData)}
-                            {...( isLinkedItemActive(currLinkedPricelist, itemData) && { color: 'primary', icon: <Done /> } )}
-                          />
-                        )}
-                      </Box>}
-                    </Fragment>
-                  ) ///}
-              </CardContent>
-            </Card>
-          )}
-        </Box>}
-        {currLinkedGroups.length > 0
-          && <Box
-          sx={{
-            mb: 2,
-            gap: 1,
-            display: 'flex',
-            flexDirection: 'column'
-          }}
-        >
-          {currLinkedGroups.map(
-            (item) => <Card key={item[ID_KEY].toString()} variant="outlined">
-              <CardContent>
-                <Typography variant="h6" component="div" sx={{ color: 'text.secondary', mb: .25 }}>{item[NAME_KEY]} - {item[ID_KEY].toString()}</Typography>
-                  <FormControlLabel
-                    label="Выбрать все услуги"
-                    sx={{ mb: .25 }}
-                    control={
-                      <Checkbox
-                        checked={false}
-                        onChange={({ target }) => console.log({ value: target.checked })}
-                      />
-                    }
-                  />
-                  {item[TYPES[ITEM_KEY]].length > 0
-                    && <Box
-                      sx={{
-                        mb: 0,
-                        gap: 1,
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                      }}
-                    >
-                    {item[TYPES[ITEM_KEY]].map(
-                      (data) => <Chip
-                        key={data[ID_KEY].toString()}
-                        label={data[NAME_KEY]}
-                        variant="outlined"
-                        onClick={() => {
-                          //console.log(data);
-                          resLinkHandlers[TYPES[ITEM_KEY]](data);
-                        }}
-                        {...( isLinkedItemActive(currLinkedPricelist, data) && { color: 'primary', icon: <Done /> } )}
-                      />
-                    )}
-                  </Box>}
-              </CardContent>
-            </Card>
           )}
         </Box>*/}
-
-        {currLinkedSubdepts.length > 0
-          && <Box
-            sx={{
-              mb: 2,
-              gap: 1,
-              display: 'flex',
-              flexDirection: 'column'
-            }}
-          >
-            {currLinkedSubdepts.map(
-              (item) => <Card key={item[ID_KEY].toString()} variant="outlined">
-                <CardContent sx={{ paddingBottom: '16px !important' }}>
-                  <Typography variant="h6" component="div" sx={{ mb: 1 }}>{item[NAME_KEY]} - {item[ID_KEY].toString()}</Typography>
-                  {item[TYPES[ITEM_KEY]].length > 0
-                    && <Box
-                      sx={{
-                        mb: 2,
-                        gap: 1,
-                        display: 'flex',
-                        flexWrap: 'wrap',
-                      }}
-                    >
-                    {item[TYPES[ITEM_KEY]].map(
-                      (data) => <Chip
-                        key={data[ID_KEY].toString()}
-                        label={data[NAME_KEY]}
-                        variant="outlined"
-                        onClick={() => {
-                          console.log(data);
-                          resLinkHandlers[TYPES[ITEM_KEY]](data);
-                        }}
-                        {...( isLinkedItemActive(currLinkedPricelist, data) && { color: 'primary', icon: <Done /> } )}
-                      />
-                    )}
-                  </Box>}
-                  {item[TYPES[GROUP_KEY]].map(
-                    (data) => <Fragment key={data[ID_KEY].toString()}>
-                      <Typography sx={{ color: 'text.secondary', mb: 1.5 }} onClick={() => console.log(data)}>{data[NAME_KEY]}</Typography>
-                      {data[TYPES[ITEM_KEY]].length > 0
-                        && <Box
-                          sx={{
-                            mb: 2,
-                            gap: 1,
-                            display: 'flex',
-                            flexWrap: 'wrap',
-                          }}
-                        >
-                        {data[TYPES[ITEM_KEY]].map(
-                          (itemData) => <Chip
-                            key={itemData[ID_KEY].toString()}
-                            label={itemData[NAME_KEY]}
-                            variant="outlined"
-                            onClick={() => resLinkHandlers[TYPES[ITEM_KEY]](itemData)}
-                            {...( isLinkedItemActive(currLinkedPricelist, itemData) && { color: 'primary', icon: <Done /> } )}
-                          />
-                        )}
-                      </Box>}
-                    </Fragment>
-                  )}
-                </CardContent>
-              </Card>
-            )}
-          </Box>}
     </>
   )
 };
 
 export default ResItem;
-
-/*
-  Чекбоксы:
-    - игнорировать отделения;
-    - игнорировать специализации;
-    - игнорировать группы;
-
-  Радио:
-    - выбрать услуги;
-    - выбрать группы;
-    - выбрать специализации;
-
-  Сортировка по INDEX_KEY
-
-  {
-    res_id: 7,
-    data: [{
-      item_id: 7917,
-      name: 'Лазерное удаление  невусов СО2 лазером',
-      index: 0,
-      parent: {
-        dept: {
-          item_id: 4,
-          name: 'Медицина',
-          index: 0,
-          isVisible: 0,
-        },
-        subdept: {
-          item_id: 41,
-          name: 'Cпециализация',
-          index: 0,
-          isVisible: 1,
-        },
-        group: {
-          item_id: 100,
-          name: 'Группа',
-          index: 0,
-          isVisible: 0,
-        }
-      }
-    }]
-  }
-*/
