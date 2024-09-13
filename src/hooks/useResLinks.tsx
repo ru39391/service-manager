@@ -23,6 +23,11 @@ import type {
 
 import { sortStrArray, fetchArray } from '../utils';
 
+type TLinkedResData = {
+  data?: TItemData;
+  items?: TItemsArr;
+};
+
 interface IResLinks {
   existableDepts: TItemsArr,
   existableSubdepts: TItemsArr,
@@ -34,7 +39,7 @@ interface IResLinks {
   linkedGroups: TItemsArr,
   linkedItems: TItemsArr,
 
-  resLinkHandlers: TCustomData<(data: TItemData) => void>,
+  resLinkHandlers: TCustomData<(payload: TLinkedResData) => void>,
   isLinkedItemActive: (arr: TItemsArr, data: TItemData) => boolean,
 }
 
@@ -59,9 +64,15 @@ const useResLinks = (): IResLinks => {
 
   const isLinkedItemActive = (arr: TItemsArr, data: TItemData): boolean => arr.indexOf(data) >= 0;
 
-  const handleLinkedItems = (arr: TItemsArr, data: TItemData): TItemsArr => isLinkedItemActive(arr, data)
-    ? [...arr].filter(item => item !== data)
-    : [...arr, data];
+  const handleLinkedItems = (arr: TItemsArr, { data, items }: TLinkedResData): TItemsArr => {
+    if(!data) {
+      return items && Array.isArray(items) ? [...items] : [];
+    }
+
+    return isLinkedItemActive(arr, data)
+      ? [...arr].filter(item => item !== data)
+      : [...arr, data];
+  };
 
   /*
   const filterItems = (
@@ -113,10 +124,10 @@ const useResLinks = (): IResLinks => {
   };
 
   const resLinkHandlers = {
-    [TYPES[DEPT_KEY]]: (data: TItemData) => setLinkedDepts(handleLinkedItems(linkedDepts, data)),
-    [TYPES[SUBDEPT_KEY]]: (data: TItemData) => setLinkedSubdepts(handleLinkedItems(linkedSubdepts, data)),
-    [TYPES[GROUP_KEY]]: (data: TItemData) => setLinkedGroups(handleLinkedItems(linkedGroups, data)),
-    [TYPES[ITEM_KEY]]: (data: TItemData) => setLinkedItems(handleLinkedItems(linkedItems, data)),
+    [TYPES[DEPT_KEY]]: (payload: TLinkedResData) => setLinkedDepts(handleLinkedItems(linkedDepts, payload)),
+    [TYPES[SUBDEPT_KEY]]: (payload: TLinkedResData) => setLinkedSubdepts(handleLinkedItems(linkedSubdepts, payload)),
+    [TYPES[GROUP_KEY]]: (payload: TLinkedResData) => setLinkedGroups(handleLinkedItems(linkedGroups, payload)),
+    [TYPES[ITEM_KEY]]: (payload: TLinkedResData) => setLinkedItems(handleLinkedItems(linkedItems, payload)),
   };
 
   const filterItems = (
@@ -150,25 +161,17 @@ const useResLinks = (): IResLinks => {
     );
   }
 
-  // init(depts, DEPT_KEY, SUBDEPT_KEY);
-  // init(subdepts, SUBDEPT_KEY, GROUP_KEY);
-  // init(subdepts, SUBDEPT_KEY, ITEM_KEY, GROUP_KEY);
-  // init(groups, GROUP_KEY, ITEM_KEY);
+  // filterItems(groups, GROUP_KEY, ITEM_KEY);
 
   useEffect(() => {
+    setExistableSubdepts(
+      filterItems(linkedDepts, DEPT_KEY, SUBDEPT_KEY)
+    );
     setExistableGroups(
       filterItems(linkedDepts, SUBDEPT_KEY, GROUP_KEY)
     );
     setExistableItems(
       filterItems(linkedDepts, SUBDEPT_KEY, ITEM_KEY, GROUP_KEY)
-    );
-  }, [
-    linkedDepts
-  ]);
-
-  useEffect(() => {
-    setExistableSubdepts(
-      filterItems(linkedDepts, DEPT_KEY, SUBDEPT_KEY)
     );
   }, [
     linkedDepts

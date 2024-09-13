@@ -34,8 +34,10 @@ import {
   CATEGORY_TITLE,
   CATEGORY_KEY,
 } from '../utils/constants';
+import { TItemData } from '../types';
 
 const GroupHeader = styled('div')(({ theme }) => ({
+  zIndex: 1,
   position: 'sticky',
   top: '-8px',
   padding: '4px 10px',
@@ -44,7 +46,7 @@ const GroupHeader = styled('div')(({ theme }) => ({
   ...theme.applyStyles('dark', { backgroundColor: darken(theme.palette.primary.main, 0.8) }),
 }));
 
-const GroupList = styled('ul')({ padding: 0 });
+const GroupList = styled('ul')({ padding: 0, zIndex: 1 });
 
 const ResItem: FC = () => {
   const {
@@ -62,9 +64,9 @@ const ResItem: FC = () => {
   } = useResLinks();
 
   useEffect(() => {
-    //console.log(existableDepts);
+    //console.log(linkedDepts);
   }, [
-    existableDepts
+    linkedDepts
   ]);
 
   return (
@@ -79,12 +81,12 @@ const ResItem: FC = () => {
         }}
       >
         {existableDepts.map(
-          (item) => <Chip
-            key={item[ID_KEY].toString()}
-            label={item[NAME_KEY]}
+          (data) => <Chip
+            key={data[ID_KEY].toString()}
+            label={data[NAME_KEY]}
             variant="outlined"
-            onClick={() => resLinkHandlers[TYPES[DEPT_KEY]](item)}
-            {...( isLinkedItemActive(linkedDepts, item) && { color: 'primary', icon: <Done />, sx: { backgroundColor: '#fff' } } )}
+            onClick={() => resLinkHandlers[TYPES[DEPT_KEY]]({ data })}
+            {...( isLinkedItemActive(linkedDepts, data) && { color: 'primary', icon: <Done />, sx: { backgroundColor: '#fff' } } )}
           />
         )}
       </Box>}
@@ -99,7 +101,7 @@ const ResItem: FC = () => {
         getOptionLabel={(option) => option[NAME_KEY] as string}
         groupBy={(option) => option[CATEGORY_KEY] as string}
         renderInput={(props) => <TextField {...props} label={[TITLES[SUBDEPT_KEY]]} />}
-        renderOption={(props, option) => <ListItem {...props} data-item={JSON.stringify(option)}>{option[NAME_KEY]}</ListItem>}
+        renderOption={(props, option) => <ListItem {...props}>{option[NAME_KEY]}</ListItem>}
         renderGroup={(props) => (
           <li key={props.key}>
             <GroupHeader>{props.group}</GroupHeader>
@@ -107,18 +109,24 @@ const ResItem: FC = () => {
           </li>
         )}
         getOptionKey={(option) => option[ID_KEY]}
-        onChange={({ target }) => {
-          console.log(target);
-          if(target.dataset) {
-            resLinkHandlers[TYPES[SUBDEPT_KEY]](JSON.parse(target.dataset.item))
-          } else {
-            console.log(target);
-          }
-        }}
+        onChange={(event, value, reason ) => resLinkHandlers[TYPES[SUBDEPT_KEY]]({ items: reason === 'clear' ? [] : value })}
       />}
 
       {/*existableSubdepts.length > 0
-      //console.log(JSON.parse(target.dataset.item))
+
+
+        renderTags={
+          (value, getTagProps) => (value.map(
+            (item, index) => <Chip
+              {...getTagProps({ index })}
+              key={item[ID_KEY].toString()}
+              label={item[NAME_KEY]}
+              onDelete={() => resLinkHandlers[TYPES[SUBDEPT_KEY]](item)}
+            />
+          ))
+        }
+
+      <Chip {...getTagProps(index)} label={value[NAME_KEY]} data-item={JSON.stringify(item)} onDelete={() => console.log(getTagProps(index))} />
         && <Box
           sx={{
             mb: 2,
