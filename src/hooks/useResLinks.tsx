@@ -65,14 +65,9 @@ const useResLinks = (): IResLinks => {
     (acc, item, index) => ({ ...acc, [Object.keys(TYPES)[index]]: item }), {}
   );
 
-  const resLinkData: TCustomData<TItemsArr> = setResData([linkedDepts, linkedSubdepts, linkedGroups, linkedItems]);
-  //.reduce((acc, state, index) => ({ ...acc, [Object.keys(TYPES)[index]]: state }), {});
-
   const existableData: TCustomData<TItemsArr> = setResData([existableDepts, existableSubdepts, existableGroups, existableItems]);
-  // .reduce((acc, state, index) => ({ ...acc, [Object.keys(TYPES)[index]]: state }), {});
 
-  /**/
-  const isLinkedItemActive = (arr: TItemsArr, data: TItemData): boolean => arr.indexOf(data) >= 0;
+  const resLinkData: TCustomData<TItemsArr> = setResData([linkedDepts, linkedSubdepts, linkedGroups, linkedItems]);
 
   const existableDataHandlers = [
     setExistableDepts,
@@ -84,53 +79,6 @@ const useResLinks = (): IResLinks => {
     [Object.keys(TYPES)[index]]: (arr: TItemsArr) => handler(sortStrArray(arr, CATEGORY_KEY))
   }), {});
 
-  /**/
-  const handleExistableItems = (
-    { arr, items }: TCustomData<TItemsArr>,
-    { key, action }: TCustomData<string>
-  ) => {
-    const isOptionRemoved = [
-      key,
-      key !== DEPT_KEY,
-      action === 'removeOption'
-    ].reduce((acc, item) => acc && Boolean(item), true);
-
-    if(!isOptionRemoved) {
-      return;
-    }
-
-    existableDataHandlers[key](
-      sortStrArray(
-        fetchArray(
-          [
-            ...existableData[key],
-            ...arr.filter(item => !items.map(data => data[ID_KEY]).includes(item[ID_KEY]))
-          ],
-          ID_KEY
-        ),
-        NAME_KEY
-      )
-    );
-  }
-
-  /**/
-  const handleLinkedItems = (arr: TItemsArr, { action, data, items, key }: TLinkedResData): TItemsArr => {
-    // TODO: вынести в отдельный метод handleExistableItems
-    handleExistableItems(
-      { arr, items: items || [] },
-      { key: key || '', action: action || '' }
-    );
-
-    if(!data) {
-      return items && Array.isArray(items) ? [...items] : [];
-    }
-
-    return isLinkedItemActive(arr, data)
-      ? [...arr].filter(item => item !== data)
-      : [...arr, data];
-  };
-
-  // TODO: привести к компактному виду
   const resLinkHandlers = [
     setLinkedDepts,
     setLinkedSubdepts,
@@ -157,8 +105,73 @@ const useResLinks = (): IResLinks => {
   */
 
   /**
-   * Выборка дочерних элементов установленных категорий
-   * @returns {object[]} массив объектов подходящих элементов
+   * Проверка наличия объекта в массиве привязанных к ресурсу элементов
+   * @returns {boolean}
+   */
+  const isLinkedItemActive = (arr: TItemsArr, data: TItemData): boolean => arr.indexOf(data) >= 0;
+
+  /**
+   * Обновляет массив подкатегории при удалении прикреплённого к ресурсу элемента
+   * @property {object[]} arr - массив текущих элементов, прикреплённых к ресурсу
+   * @property {object[]} items - массив передаваемых элементов
+   * @property {string} key - ключ подкатегории
+   * @property {string} action - тип действия
+   */
+  const handleExistableItems = (
+    { arr, items }: TCustomData<TItemsArr>,
+    { key, action }: TCustomData<string>
+  ) => {
+    const isOptionRemoved = [
+      key,
+      key !== DEPT_KEY,
+      action === 'removeOption'
+    ].reduce((acc, item) => acc && Boolean(item), true);
+
+    if(!isOptionRemoved) {
+      return;
+    }
+
+    existableDataHandlers[key](
+      sortStrArray(
+        fetchArray(
+          [
+            ...existableData[key],
+            ...arr.filter(item => !items.map(data => data[ID_KEY]).includes(item[ID_KEY]))
+          ],
+          ID_KEY
+        ),
+        NAME_KEY
+      )
+    );
+  };
+
+  /**
+   * Возвращает массив элементов для установки нового состояния
+   * @returns {object[]} массив подходящих элементов
+   * @property {object[]} arr - массив текущих элементов, прикреплённых к ресурсу
+   * @property {object[]} items - массив передаваемых элементов
+   * @property {object} data
+   * @property {string} key - ключ подкатегории
+   * @property {string} action - тип действия
+   */
+  const handleLinkedItems = (arr: TItemsArr, { action, data, items, key }: TLinkedResData): TItemsArr => {
+    handleExistableItems(
+      { arr, items: items || [] },
+      { key: key || '', action: action || '' }
+    );
+
+    if(!data) {
+      return items && Array.isArray(items) ? [...items] : [];
+    }
+
+    return isLinkedItemActive(arr, data)
+      ? [...arr].filter(item => item !== data)
+      : [...arr, data];
+  };
+
+  /**
+   * Возвращает выборку дочерних элементов установленных категорий
+   * @returns {object[]} массив подходящих элементов
    * @property {object[]} categoryArr - массив объектов родительских категорий
    * @property {object[]} currentArr - массив объектов дочерних элементов
    * @property {string} key - ключ категории для поиска среди параметров объекта дочернего элемента
@@ -171,8 +184,8 @@ const useResLinks = (): IResLinks => {
 
 
   /**
-   * Формирование массива дочерних элементов выбранных категорий
-   * @returns {object[]} массив объектов подходящих элементов
+   * Формирует массив дочерних элементов выбранных категорий
+   * @returns {object[]} массив подходящих элементов
    * @property {object[]} arr - массив объектов родительской категории
    * @property {string} categoryKey - ключ параметра категории, напр. DEPT_KEY
    * @property {string} currentKey - ключ параметра дочернего элемента, напр. SUBDEPT_KEY
@@ -221,7 +234,7 @@ const useResLinks = (): IResLinks => {
         : subCategoryItems,
       CATEGORY_KEY
     );
-  }
+  };
 
   // filterItems(groups, GROUP_KEY, ITEM_KEY);
   useEffect(() => {
