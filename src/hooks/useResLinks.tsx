@@ -75,37 +75,36 @@ const useResLinks = (): IResLinks => {
     existableItems
   ].reduce((acc, state, index) => ({ ...acc, [Object.keys(TYPES)[index]]: state }), {});
 
-  const existableDataSetters = [
+  const existableDataHandlers = [
     setExistableDepts,
     setExistableSubdepts,
     setExistableGroups,
     setExistableItems
-  ].reduce((acc, handler, index) => ({ ...acc, [Object.keys(TYPES)[index]]: handler }), {});
+  ].reduce((acc, handler, index) => ({
+    ...acc,
+    [Object.keys(TYPES)[index]]: (arr: TItemsArr) => handler(
+      fetchArray(
+        sortStrArray(arr, CATEGORY_KEY),
+        ID_KEY
+      )
+    )
+  }), {});
 
   /**/
   const isLinkedItemActive = (arr: TItemsArr, data: TItemData): boolean => arr.indexOf(data) >= 0;
 
   /**/
   const handleLinkedItems = (arr: TItemsArr, { action, data, items, key }: TLinkedResData): TItemsArr => {
-    if(key) {
-      //console.log({ arr });
-      //console.log({ payload: { data, items } });
-      //console.log(items && Array.isArray(items) ? [...items] : []);
-    }
-
-    if(key && action === 'removeOption') {
-      console.log({
-        //arr: arr.filter(item => !items?.map(data => data[ID_KEY]).includes(item[ID_KEY])),
-        action,
-        key,
-        items
-      });
-      //console.log(existableData);
-      //console.log(existableDataSetters);
-      existableDataSetters[key]([
-        ...existableData[key],
-        ...arr.filter(item => !items?.map(data => data[ID_KEY]).includes(item[ID_KEY]))
-      ])
+    if(key && key !== DEPT_KEY && action === 'removeOption') {
+      existableDataHandlers[key](
+        sortStrArray(
+          [
+            ...existableData[key],
+            ...arr.filter(item => !items?.map(data => data[ID_KEY]).includes(item[ID_KEY]))
+          ],
+          NAME_KEY
+        )
+      )
     }
 
     if(!data) {
@@ -183,9 +182,6 @@ const useResLinks = (): IResLinks => {
       items: getMatchedItems(arr, resLinkData[currentKey], categoryKey)
     });
 
-    // TODO: настроить исключение из subCategoryItems выбранных позиций
-    // subCategoryItems.filter(item => !resLinkData[currentKey].map(data => data[ID_KEY]).includes(item[ID_KEY]))
-    // при такой конструкции есть баг при удалении специализации - она возвращается в список
     return sortStrArray(
       extendedKey
         ? subCategoryItems.filter(item => item[extendedKey] === 0)

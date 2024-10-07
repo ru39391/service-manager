@@ -56,13 +56,13 @@ const ResItem: FC = () => {
   } = useResLinks();
 
   useEffect(() => {
-    console.log({ existableSubdepts });
+    //console.log({ existableSubdepts });
   }, [
     existableSubdepts
   ]);
 
   useEffect(() => {
-    console.log({ linkedSubdepts });
+    //console.log({ linkedSubdepts });
   }, [
     linkedSubdepts
   ]);
