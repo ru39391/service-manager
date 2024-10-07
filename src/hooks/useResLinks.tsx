@@ -24,8 +24,10 @@ import type {
 import { sortStrArray, fetchArray } from '../utils';
 
 type TLinkedResData = {
+  action?: string;
   data?: TItemData;
   items?: TItemsArr;
+  key?: string;
 };
 
 interface IResLinks {
@@ -59,11 +61,53 @@ const useResLinks = (): IResLinks => {
     ({ pricelist }) => Object.values(TYPES).reduce((acc, key) => ({ ...acc, [key]: pricelist[key] }), {}
   ));
 
+  const resLinkData: TCustomData<TItemsArr> = [
+    linkedDepts,
+    linkedSubdepts,
+    linkedGroups,
+    linkedItems
+  ].reduce((acc, state, index) => ({ ...acc, [Object.keys(TYPES)[index]]: state }), {});
+
+  const existableData: TCustomData<TItemsArr> = [
+    existableDepts,
+    existableSubdepts,
+    existableGroups,
+    existableItems
+  ].reduce((acc, state, index) => ({ ...acc, [Object.keys(TYPES)[index]]: state }), {});
+
+  const existableDataSetters = [
+    setExistableDepts,
+    setExistableSubdepts,
+    setExistableGroups,
+    setExistableItems
+  ].reduce((acc, handler, index) => ({ ...acc, [Object.keys(TYPES)[index]]: handler }), {});
+
   /**/
   const isLinkedItemActive = (arr: TItemsArr, data: TItemData): boolean => arr.indexOf(data) >= 0;
 
   /**/
-  const handleLinkedItems = (arr: TItemsArr, { data, items }: TLinkedResData): TItemsArr => {
+  const handleLinkedItems = (arr: TItemsArr, { action, data, items, key }: TLinkedResData): TItemsArr => {
+    if(key) {
+      //console.log({ arr });
+      //console.log({ payload: { data, items } });
+      //console.log(items && Array.isArray(items) ? [...items] : []);
+    }
+
+    if(key && action === 'removeOption') {
+      console.log({
+        //arr: arr.filter(item => !items?.map(data => data[ID_KEY]).includes(item[ID_KEY])),
+        action,
+        key,
+        items
+      });
+      //console.log(existableData);
+      //console.log(existableDataSetters);
+      existableDataSetters[key]([
+        ...existableData[key],
+        ...arr.filter(item => !items?.map(data => data[ID_KEY]).includes(item[ID_KEY]))
+      ])
+    }
+
     if(!data) {
       return items && Array.isArray(items) ? [...items] : [];
     }
@@ -73,77 +117,35 @@ const useResLinks = (): IResLinks => {
       : [...arr, data];
   };
 
-  /*
-  const filterItems = (
-    { arr, items, type }: { arr: TItemsArr; items: TItemsArr; type: string; }
-  ): TItemsArr => sortStrArray(items.filter(item => arr.map(data => data[ID_KEY]).includes(item[type])), NAME_KEY);
-  const filterItemsTest = (
-    { arr, type }: { arr: TItemsArr; type: string; }
-  ): TItemsArr => {
-    const currItems = sortStrArray(
-      pricelist.filter(item => arr.map(data => data[ID_KEY]).includes(item[DEPT_KEY])),
-      NAME_KEY
-    ).filter(
-      item => Boolean(item[IS_VISIBLE_KEY])
-    );
-    const currSubdepts = sortStrArray(
-      fetchArray(
-        subdepts.filter(item => currItems.map(data => data[SUBDEPT_KEY]).includes(item[ID_KEY])),
-        ID_KEY
-      ).map(item => ({
-        ...item,
-        category: arr.find(data => data[ID_KEY] === item[DEPT_KEY])[NAME_KEY]
-      })),
-      'category'
-    );
-    const currGroups = sortStrArray(
-      fetchArray(groups.filter(item => currItems.map(data => data[GROUP_KEY]).includes(item[ID_KEY])), ID_KEY),
-      NAME_KEY
-    );
-
-    const groupsList = currGroups.map(data => (
-      {
-        ...data,
-        [TYPES[ITEM_KEY]]: currItems.filter(item => item[GROUP_KEY] === data[ID_KEY])
-      }
-    ));
-    const subdeptsList = currSubdepts.map(data => (
-      {
-        ...data,
-        [TYPES[GROUP_KEY]]: groupsList.filter(item => item[SUBDEPT_KEY] === data[ID_KEY]),
-        [TYPES[ITEM_KEY]]: currItems.filter(item => item[GROUP_KEY] === 0 && item[SUBDEPT_KEY] === data[ID_KEY])
-      }
-    ));
-
-    setLinkedItems(currItems);
-    setLinkedGroups(groupsList);
-    setLinkedSubdepts(subdeptsList);
-    // return subdeptsList;
-  };
-  */
-
-  const resLinkData = [
-    linkedDepts,
-    linkedSubdepts,
-    linkedGroups,
-    linkedItems
-  ].reduce((acc, state, index) => ({ ...acc, [Object.keys(TYPES)[index]]: state }), {});
-
   const resLinkHandlers = [
-    (payload: TLinkedResData) => setLinkedDepts(handleLinkedItems(resLinkData[DEPT_KEY], payload)),
-    (payload: TLinkedResData) => setLinkedSubdepts(handleLinkedItems(resLinkData[SUBDEPT_KEY], payload)),
-    (payload: TLinkedResData) => setLinkedGroups(handleLinkedItems(resLinkData[GROUP_KEY], payload)),
-    (payload: TLinkedResData) => setLinkedItems(handleLinkedItems(resLinkData[ITEM_KEY], payload)),
+    (payload: TLinkedResData) => setLinkedDepts(handleLinkedItems(resLinkData[DEPT_KEY], { ...payload, key: DEPT_KEY })),
+    (payload: TLinkedResData) => setLinkedSubdepts(handleLinkedItems(resLinkData[SUBDEPT_KEY], { ...payload, key: SUBDEPT_KEY })),
+    (payload: TLinkedResData) => setLinkedGroups(handleLinkedItems(resLinkData[GROUP_KEY], { ...payload, key: GROUP_KEY })),
+    (payload: TLinkedResData) => setLinkedItems(handleLinkedItems(resLinkData[ITEM_KEY], { ...payload, key: ITEM_KEY })),
   ].reduce((acc, handler, index) => ({ ...acc, [Object.keys(TYPES)[index]]: handler }), {});
 
-  /**/
+  /**
+   * Выборка дочерних элементов установленных категорий
+   * @returns {object[]} массив объектов подходящих элементов
+   * @property {object[]} categoryArr - массив объектов родительских категорий
+   * @property {object[]} currentArr - массив объектов дочерних элементов
+   * @property {string} key - ключ категории для поиска среди параметров объекта дочернего элемента
+   */
   const getMatchedItems = (
     categoryArr: TItemsArr,
     currentArr: TItemsArr,
     key: string
   ): TItemsArr => currentArr.filter(item => categoryArr.map(data => data[ID_KEY]).includes(item[key]));
 
-  /**/
+
+  /**
+   * Формирование массива дочерних элементов выбранных категорий
+   * @returns {object[]} массив объектов подходящих элементов
+   * @property {object[]} arr - массив объектов родительской категории
+   * @property {string} categoryKey - ключ параметра категории, напр. DEPT_KEY
+   * @property {string} currentKey - ключ параметра дочернего элемента, напр. SUBDEPT_KEY
+   * @property {string} extendedKey - ключ для выборки услуг, вложенных напрямую в специализацию, напр. GROUP_KEY
+   */
   const filterItems = (
     arr: TItemsArr,
     categoryKey: string,
@@ -157,7 +159,13 @@ const useResLinks = (): IResLinks => {
     }
 
     const subCategoryItems: TItemsArr = sortStrArray(
-      getMatchedItems(arr, pricelist[TYPES[currentKey]], categoryKey),
+      getMatchedItems(
+        arr,
+        pricelist[TYPES[currentKey]].filter(
+          item => !resLinkData[currentKey].map(data => data[ID_KEY]).includes(item[ID_KEY])
+        ),
+        categoryKey
+      ),
       NAME_KEY
     ).map(
       (item) => {

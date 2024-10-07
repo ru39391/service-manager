@@ -56,9 +56,15 @@ const ResItem: FC = () => {
   } = useResLinks();
 
   useEffect(() => {
-    //console.log(existableGroups);
+    console.log({ existableSubdepts });
   }, [
-    existableGroups
+    existableSubdepts
+  ]);
+
+  useEffect(() => {
+    console.log({ linkedSubdepts });
+  }, [
+    linkedSubdepts
   ]);
 
   return (
@@ -94,7 +100,10 @@ const ResItem: FC = () => {
         renderInput={(props) => <TextField {...props} label={[TITLES[DEPT_KEY]]} />}
         renderOption={(props, option) => <ListItem {...props}>{option[NAME_KEY]}</ListItem>}
         getOptionKey={(option) => option[ID_KEY]}
-        onChange={(event, value, reason ) => resLinkHandlers[DEPT_KEY]({ items: reason === 'clear' ? [] : value })}
+        onChange={(event, value, reason ) => resLinkHandlers[DEPT_KEY]({
+          action: reason,
+          items: reason === 'clear' ? [] : value
+        })}
       />}
 
       {existableSubdepts.length > 0 && <Autocomplete
@@ -115,7 +124,13 @@ const ResItem: FC = () => {
           </li>
         )}
         getOptionKey={(option) => option[ID_KEY]}
-        onChange={(event, value, reason ) => resLinkHandlers[SUBDEPT_KEY]({ items: reason === 'clear' ? [] : value })}
+        onChange={(event, value, reason ) => {
+          console.log({value});
+          resLinkHandlers[SUBDEPT_KEY]({
+            action: reason,
+            items: reason === 'clear' ? [] : value
+          })
+        }}
       />}
 
       {existableGroups.length > 0 && <Autocomplete
@@ -136,7 +151,10 @@ const ResItem: FC = () => {
           </li>
         )}
         getOptionKey={(option) => option[ID_KEY]}
-        onChange={(event, value, reason ) => resLinkHandlers[GROUP_KEY]({ items: reason === 'clear' ? [] : value })}
+        onChange={(event, value, reason ) => resLinkHandlers[GROUP_KEY]({
+          action: reason,
+          items: reason === 'clear' ? [] : value
+        })}
       />}
 
       {existableGroups.length > 0 && <FormControlLabel
