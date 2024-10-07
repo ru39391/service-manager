@@ -61,19 +61,18 @@ const useResLinks = (): IResLinks => {
     ({ pricelist }) => Object.values(TYPES).reduce((acc, key) => ({ ...acc, [key]: pricelist[key] }), {}
   ));
 
-  const resLinkData: TCustomData<TItemsArr> = [
-    linkedDepts,
-    linkedSubdepts,
-    linkedGroups,
-    linkedItems
-  ].reduce((acc, state, index) => ({ ...acc, [Object.keys(TYPES)[index]]: state }), {});
+  const setResData = (arr: TItemsArr[]): TCustomData<TItemsArr> => arr.reduce(
+    (acc, item, index) => ({ ...acc, [Object.keys(TYPES)[index]]: item }), {}
+  );
 
-  const existableData: TCustomData<TItemsArr> = [
-    existableDepts,
-    existableSubdepts,
-    existableGroups,
-    existableItems
-  ].reduce((acc, state, index) => ({ ...acc, [Object.keys(TYPES)[index]]: state }), {});
+  const resLinkData: TCustomData<TItemsArr> = setResData([linkedDepts, linkedSubdepts, linkedGroups, linkedItems]);
+  //.reduce((acc, state, index) => ({ ...acc, [Object.keys(TYPES)[index]]: state }), {});
+
+  const existableData: TCustomData<TItemsArr> = setResData([existableDepts, existableSubdepts, existableGroups, existableItems]);
+  // .reduce((acc, state, index) => ({ ...acc, [Object.keys(TYPES)[index]]: state }), {});
+
+  /**/
+  const isLinkedItemActive = (arr: TItemsArr, data: TItemData): boolean => arr.indexOf(data) >= 0;
 
   const existableDataHandlers = [
     setExistableDepts,
@@ -82,30 +81,45 @@ const useResLinks = (): IResLinks => {
     setExistableItems
   ].reduce((acc, handler, index) => ({
     ...acc,
-    [Object.keys(TYPES)[index]]: (arr: TItemsArr) => handler(
-      fetchArray(
-        sortStrArray(arr, CATEGORY_KEY),
-        ID_KEY
-      )
-    )
+    [Object.keys(TYPES)[index]]: (arr: TItemsArr) => handler(sortStrArray(arr, CATEGORY_KEY))
   }), {});
 
   /**/
-  const isLinkedItemActive = (arr: TItemsArr, data: TItemData): boolean => arr.indexOf(data) >= 0;
+  const handleExistableItems = (
+    { arr, items }: TCustomData<TItemsArr>,
+    { key, action }: TCustomData<string>
+  ) => {
+    const isOptionRemoved = [
+      key,
+      key !== DEPT_KEY,
+      action === 'removeOption'
+    ].reduce((acc, item) => acc && Boolean(item), true);
+
+    if(!isOptionRemoved) {
+      return;
+    }
+
+    existableDataHandlers[key](
+      sortStrArray(
+        fetchArray(
+          [
+            ...existableData[key],
+            ...arr.filter(item => !items.map(data => data[ID_KEY]).includes(item[ID_KEY]))
+          ],
+          ID_KEY
+        ),
+        NAME_KEY
+      )
+    );
+  }
 
   /**/
   const handleLinkedItems = (arr: TItemsArr, { action, data, items, key }: TLinkedResData): TItemsArr => {
-    if(key && key !== DEPT_KEY && action === 'removeOption') {
-      existableDataHandlers[key](
-        sortStrArray(
-          [
-            ...existableData[key],
-            ...arr.filter(item => !items?.map(data => data[ID_KEY]).includes(item[ID_KEY]))
-          ],
-          NAME_KEY
-        )
-      )
-    }
+    // TODO: вынести в отдельный метод handleExistableItems
+    handleExistableItems(
+      { arr, items: items || [] },
+      { key: key || '', action: action || '' }
+    );
 
     if(!data) {
       return items && Array.isArray(items) ? [...items] : [];
@@ -116,12 +130,31 @@ const useResLinks = (): IResLinks => {
       : [...arr, data];
   };
 
+  // TODO: привести к компактному виду
   const resLinkHandlers = [
+    setLinkedDepts,
+    setLinkedSubdepts,
+    setLinkedGroups,
+    setLinkedItems
+  ].reduce((acc, handler, index) => ({
+    ...acc,
+    [Object.keys(TYPES)[index]]: (payload: TLinkedResData) => handler(
+      handleLinkedItems(
+        resLinkData[Object.keys(TYPES)[index]],
+        {
+          ...payload,
+          key: Object.keys(TYPES)[index]
+        }
+      )
+    )
+  }), {});
+  /*
     (payload: TLinkedResData) => setLinkedDepts(handleLinkedItems(resLinkData[DEPT_KEY], { ...payload, key: DEPT_KEY })),
     (payload: TLinkedResData) => setLinkedSubdepts(handleLinkedItems(resLinkData[SUBDEPT_KEY], { ...payload, key: SUBDEPT_KEY })),
     (payload: TLinkedResData) => setLinkedGroups(handleLinkedItems(resLinkData[GROUP_KEY], { ...payload, key: GROUP_KEY })),
     (payload: TLinkedResData) => setLinkedItems(handleLinkedItems(resLinkData[ITEM_KEY], { ...payload, key: ITEM_KEY })),
   ].reduce((acc, handler, index) => ({ ...acc, [Object.keys(TYPES)[index]]: handler }), {});
+  */
 
   /**
    * Выборка дочерних элементов установленных категорий
@@ -191,7 +224,6 @@ const useResLinks = (): IResLinks => {
   }
 
   // filterItems(groups, GROUP_KEY, ITEM_KEY);
-
   useEffect(() => {
     setExistableGroups(
       filterItems(linkedSubdepts, SUBDEPT_KEY, GROUP_KEY)
@@ -204,7 +236,6 @@ const useResLinks = (): IResLinks => {
   ]);
 
   useEffect(() => {
-    //console.log('filterItems', filterItems(linkedDepts, SUBDEPT_KEY, GROUP_KEY));
     setExistableSubdepts(
       filterItems(linkedDepts, DEPT_KEY, SUBDEPT_KEY)
     );
