@@ -25,9 +25,12 @@ import {
   ITEM_KEY,
   TITLES,
   CATEGORY_KEY,
-  IS_COMPLEX_DATA,
-  IS_GROUPS_IGNORED,
-  IS_GROUPS_USED
+  ADD_ACTION_KEY,
+  REMOVE_ACTION_KEY,
+  IS_COMPLEX_DATA_KEY,
+  IS_GROUPS_IGNORED_KEY,
+  IS_GROUPS_USED_KEY,
+  LINKED_RES_PARAMS
 } from '../utils/constants';
 
 const GroupHeader = styled('div')(({ theme }) => ({
@@ -98,7 +101,7 @@ const ResItem: FC = () => {
         multiple
         filterSelectedOptions
         id={`${SUBDEPT_KEY}-selecter`}
-        sx={{ mb: 3, backgroundColor: '#fff' }}
+        sx={{ mb: 2.5, backgroundColor: '#fff' }}
         value={linkedSubdepts}
         options={existableSubdepts}
         getOptionLabel={(option) => option[NAME_KEY] as string}
@@ -121,6 +124,91 @@ const ResItem: FC = () => {
         }}
       />}
 
+      {/*
+        // TODO: https://skrinshoter.ru/vSCvsUkNAXu
+      */}
+      {existableGroups.length > 0
+        ? (<Box
+          sx={{
+            mb: .5,
+            gap: 1,
+            display: 'flex',
+            flexWrap: 'wrap',
+          }}>
+            <FormControlLabel
+              label={existableGroups.length === linkedGroups.length ? LINKED_RES_PARAMS[REMOVE_ACTION_KEY] : LINKED_RES_PARAMS[ADD_ACTION_KEY]}
+              sx={{ mb: .25 }}
+              control={
+                <Checkbox
+                  checked={existableGroups.length === linkedGroups.length}
+                  disabled={isLinkedDataExist(IS_GROUPS_IGNORED_KEY)}
+                  onChange={() => resLinkHandlers[GROUP_KEY]({ items: existableGroups.length === linkedGroups.length ? [] : existableGroups })}
+                />
+              }
+            />
+            <FormControlLabel
+              label={LINKED_RES_PARAMS[IS_COMPLEX_DATA_KEY]}
+              sx={{ mb: .25 }}
+              control={
+                <Checkbox
+                  id={IS_COMPLEX_DATA_KEY}
+                  checked={isLinkedDataExist(IS_COMPLEX_DATA_KEY)}
+                  disabled={isLinkedDataExist(IS_GROUPS_IGNORED_KEY)}
+                  onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_COMPLEX_DATA_KEY) })}
+                />
+              }
+            />
+            <FormControlLabel
+              label={LINKED_RES_PARAMS[IS_GROUPS_IGNORED_KEY]}
+              sx={{ mb: .25 }}
+              control={
+                <Checkbox
+                  id={IS_GROUPS_IGNORED_KEY}
+                  checked={isLinkedDataExist(IS_GROUPS_IGNORED_KEY)}
+                  disabled={linkedGroups.length !== 0 || isLinkedDataExist(IS_COMPLEX_DATA_KEY)}
+                  onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_GROUPS_IGNORED_KEY) })}
+                />
+              }
+            />
+            {isLinkedDataExist(IS_GROUPS_IGNORED_KEY)
+              && <FormControlLabel
+                label={LINKED_RES_PARAMS[IS_GROUPS_USED_KEY]}
+                sx={{ mb: .25 }}
+                control={
+                  <Checkbox
+                    id={IS_GROUPS_USED_KEY}
+                    checked={isLinkedDataExist(IS_GROUPS_USED_KEY)}
+                    disabled={!isLinkedDataExist(IS_GROUPS_IGNORED_KEY)}
+                    onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_GROUPS_USED_KEY) })}
+                  />
+                }
+              />
+            }
+          </Box>)
+        : (existableItems.length > 0
+            && <Box
+              sx={{
+                mb: .5,
+                gap: 1,
+                display: 'flex',
+                flexWrap: 'wrap',
+              }}>
+              <FormControlLabel
+                label={LINKED_RES_PARAMS[IS_GROUPS_IGNORED_KEY]}
+                sx={{ mb: .25 }}
+                control={
+                  <Checkbox
+                    id={IS_GROUPS_IGNORED_KEY}
+                    checked={isLinkedDataExist(IS_GROUPS_IGNORED_KEY)}
+                    disabled={linkedGroups.length !== 0 || isLinkedDataExist(IS_COMPLEX_DATA_KEY)}
+                    onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_GROUPS_IGNORED_KEY) })}
+                  />
+                }
+              />
+            </Box>
+          )
+      }
+
       {linkedSubdepts.map(
         (subdept) => <Box
           key={subdept[ID_KEY].toString()}
@@ -133,12 +221,12 @@ const ResItem: FC = () => {
         >
           <Card variant="outlined">
             <CardContent>
-              <Typography variant="h6" component="div" sx={{ mb: .25 }}>{subdept[NAME_KEY]}</Typography>
-              {isLinkedDataExist(IS_GROUPS_IGNORED)
+              <Typography variant="h6" component="div" sx={{ mb: 1.5 }}>{subdept[NAME_KEY]}</Typography>
+              {isLinkedDataExist(IS_GROUPS_IGNORED_KEY)
                 ? (existableGroups.filter((group) => group[SUBDEPT_KEY] === subdept[ID_KEY])
                     && existableGroups.filter((group) => group[SUBDEPT_KEY] === subdept[ID_KEY]).map(
                     (options) => <Fragment key={options[ID_KEY].toString()}>
-                      <Typography variant="subtitle1" color="textPrimary" component="div" sx={{ mb: 1 }}>{options[NAME_KEY]}</Typography>
+                      <Typography variant="subtitle1" color="textPrimary" component="div" sx={{ mb: .5 }}>{options[NAME_KEY]}</Typography>
                       {existableItems.filter((item) => item[GROUP_KEY] === options[ID_KEY]).length > 0
                         ? <Box
                           sx={{
@@ -184,14 +272,14 @@ const ResItem: FC = () => {
                   )
               }
 
-              {(isLinkedDataExist(IS_COMPLEX_DATA) || isLinkedDataExist(IS_GROUPS_IGNORED))
+              {(isLinkedDataExist(IS_COMPLEX_DATA_KEY) || isLinkedDataExist(IS_GROUPS_IGNORED_KEY))
                 && existableItems.filter((item) => item[SUBDEPT_KEY] === subdept[ID_KEY] && item[GROUP_KEY] === 0).length > 0
                 && <>
-                  {isLinkedDataExist(IS_GROUPS_IGNORED)
-                    && <Typography variant="subtitle1" color="textPrimary" component="div" sx={{ mb: 1 }}>Без группы</Typography>}
+                  {isLinkedDataExist(IS_GROUPS_IGNORED_KEY)
+                    && <Typography variant="subtitle1" color="textPrimary" component="div" sx={{ mb: .5 }}>Без группы</Typography>}
                   <Box
                     sx={{
-                      ...( !isLinkedDataExist(IS_GROUPS_IGNORED) && { mt: 2 } ),
+                      ...( !isLinkedDataExist(IS_GROUPS_IGNORED_KEY) && { mt: 2 } ),
                       mb: 0,
                       gap: 1,
                       display: 'flex',
@@ -213,84 +301,6 @@ const ResItem: FC = () => {
           </Card>
         </Box>
       )}
-
-      {/*
-        // TODO: https://skrinshoter.ru/vSCvsUkNAXu
-        // TODO: перенести label в переменные
-      */}
-      {existableGroups.length > 0
-        ? (<Box
-          sx={{
-            mb: 2,
-            gap: 1,
-            display: 'flex',
-            flexWrap: 'wrap',
-          }}>
-            <FormControlLabel
-              label={existableGroups.length === linkedGroups.length ? 'Отменить выбор групп' : 'Выбрать все группы'}
-              sx={{ mb: .25 }}
-              control={
-                <Checkbox
-                  checked={existableGroups.length === linkedGroups.length}
-                  disabled={isLinkedDataExist(IS_GROUPS_IGNORED)}
-                  onChange={() => resLinkHandlers[GROUP_KEY]({ items: existableGroups.length === linkedGroups.length ? [] : existableGroups })}
-                />
-              }
-            />
-            <FormControlLabel
-              label="Комплексный выбор"
-              sx={{ mb: .25 }}
-              control={
-                <Checkbox
-                  id={IS_COMPLEX_DATA}
-                  checked={isLinkedDataExist(IS_COMPLEX_DATA)}
-                  disabled={isLinkedDataExist(IS_GROUPS_IGNORED)}
-                  onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_COMPLEX_DATA) })}
-                />
-              }
-            />
-            <FormControlLabel
-              label="Игнорировать группы"
-              sx={{ mb: .25 }}
-              control={
-                <Checkbox
-                  id={IS_GROUPS_IGNORED}
-                  checked={isLinkedDataExist(IS_GROUPS_IGNORED)}
-                  disabled={linkedGroups.length !== 0 || isLinkedDataExist(IS_COMPLEX_DATA)}
-                  onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_GROUPS_IGNORED) })}
-                />
-              }
-            />
-            {isLinkedDataExist(IS_GROUPS_IGNORED)
-              && <FormControlLabel
-                label="Сохранить группировку"
-                sx={{ mb: .25 }}
-                control={
-                  <Checkbox
-                    id={IS_GROUPS_USED}
-                    checked={isLinkedDataExist(IS_GROUPS_USED)}
-                    disabled={!isLinkedDataExist(IS_GROUPS_IGNORED)}
-                    onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_GROUPS_USED) })}
-                  />
-                }
-              />
-            }
-          </Box>)
-        : (existableItems.length > 0
-            && <FormControlLabel
-              label="Игнорировать группы"
-              sx={{ mb: .25 }}
-              control={
-                <Checkbox
-                  id={IS_GROUPS_IGNORED}
-                  checked={isLinkedDataExist(IS_GROUPS_IGNORED)}
-                  disabled={linkedGroups.length !== 0 || isLinkedDataExist(IS_COMPLEX_DATA)}
-                  onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_GROUPS_IGNORED) })}
-                />
-              }
-            />
-          )
-      }
 
       {/* // TODO: сделать предпросмотр */}
     </>

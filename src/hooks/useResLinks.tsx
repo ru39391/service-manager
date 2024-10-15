@@ -11,8 +11,8 @@ import {
   GROUP_KEY,
   ITEM_KEY,
   TYPES,
-  IS_COMPLEX_DATA,
-  IS_GROUPS_IGNORED
+  IS_COMPLEX_DATA_KEY,
+  IS_GROUPS_IGNORED_KEY
 } from '../utils/constants';
 
 import { useSelector } from '../services/hooks';
@@ -242,11 +242,11 @@ const useResLinks = (): IResLinks => {
   };
 
   const updateLinkedDataConfig = () => {
-    if(linkedDataConfig !== null && linkedDataConfig[IS_COMPLEX_DATA] !== undefined) {
+    if(linkedDataConfig !== null && linkedDataConfig[IS_COMPLEX_DATA_KEY] !== undefined) {
       setLinkedItems([]);
     }
 
-    if(linkedDataConfig !== null && linkedDataConfig[IS_GROUPS_IGNORED]) {
+    if(linkedDataConfig !== null && linkedDataConfig[IS_GROUPS_IGNORED_KEY]) {
       setExistableItems(
         filterItems(linkedSubdepts, SUBDEPT_KEY, ITEM_KEY)
       );

@@ -67,9 +67,9 @@ const CREATED_KEY = 'created';
 const UPDATED_KEY = 'updated';
 const REMOVED_KEY = 'removed';
 
-const IS_COMPLEX_DATA = 'isComplexData';
-const IS_GROUPS_IGNORED = 'isGroupsIgnored';
-const IS_GROUPS_USED = 'isGroupsUsed';
+const IS_COMPLEX_DATA_KEY = 'isComplexData';
+const IS_GROUPS_IGNORED_KEY = 'isGroupsIgnored';
+const IS_GROUPS_USED_KEY = 'isGroupsUsed';
 
 const TITLES = {
   [DEPT_KEY]: 'Отделения',
@@ -112,6 +112,14 @@ const TYPES = {
   [GROUP_KEY]: `${GROUP_KEY}s`,
   [ITEM_KEY]: 'pricelist'
 };
+
+const LINKED_RES_PARAMS = {
+  [IS_COMPLEX_DATA_KEY]: 'Комплексный выбор',
+  [IS_GROUPS_IGNORED_KEY]: 'Игнорировать группы',
+  [IS_GROUPS_USED_KEY]: 'Сохранить группировку',
+  [ADD_ACTION_KEY]: 'Выбрать все группы',
+  [REMOVE_ACTION_KEY]: 'Отменить выбор групп'
+}
 
 const SITE_URL = `http://localhost/`;
 const API_URL = `${SITE_URL}api/`;//'http://stomistok.local/api/';
@@ -182,7 +190,8 @@ export {
   API_URL,
   SITE_URL,
   PAGE_COUNTER,
-  IS_COMPLEX_DATA,
-  IS_GROUPS_IGNORED,
-  IS_GROUPS_USED
+  IS_COMPLEX_DATA_KEY,
+  IS_GROUPS_IGNORED_KEY,
+  IS_GROUPS_USED_KEY,
+  LINKED_RES_PARAMS
 };
