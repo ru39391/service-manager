@@ -2,6 +2,7 @@ import { FC, Fragment, useEffect } from 'react';
 import {
   Autocomplete,
   Box,
+  Button,
   Card,
   CardContent,
   Checkbox,
@@ -33,7 +34,8 @@ import {
   IS_GROUPS_IGNORED_KEY,
   IS_GROUPS_USED_KEY,
   LINKED_RES_PARAMS,
-  SAVE_TITLE
+  SAVE_TITLE,
+  PRICE_KEY
 } from '../utils/constants';
 
 const GroupHeader = styled('div')(({ theme }) => ({
@@ -65,7 +67,10 @@ const ResItem: FC = () => {
     resLinkHandlers,
     isLinkedItemActive,
     handleDataConfig,
-    updateLinkedItems
+    updateLinkedItems,
+    renderLinkedItems,
+
+    list
   } = useResLinks();
 
   const isLinkedDataExist = (param: string): boolean => Boolean(linkedDataConfig && linkedDataConfig[param]);
@@ -325,10 +330,87 @@ const ResItem: FC = () => {
           >
             {SAVE_TITLE}
           </LoadingButton>
+          <Button
+            variant="outlined"
+            onClick={() => renderLinkedItems({
+              [TYPES[DEPT_KEY]]: linkedDepts,
+              [TYPES[SUBDEPT_KEY]]: linkedSubdepts,
+              [TYPES[GROUP_KEY]]: linkedGroups,
+              [TYPES[ITEM_KEY]]: linkedItems,
+              // config: linkedDataConfig
+            })}
+          >
+            Предпросмотр
+          </Button>
         </Box>
       }
+
+      {list.map(
+        (dept) => <Fragment key={dept[ID_KEY]}>
+          <Typography variant="h6" color="textPrimary" component="div" sx={{ mb: .5 }}>{dept[NAME_KEY]}</Typography>
+          {dept[TYPES[SUBDEPT_KEY]].map(
+            (subdept) => <Fragment key={subdept[ID_KEY]}>
+              <Typography variant="subtitle1" color="textPrimary" component="div" sx={{ mb: .5 }}>{subdept[NAME_KEY]}</Typography>
+              {subdept[TYPES[ITEM_KEY]].length > 0 && <ul>{subdept[TYPES[ITEM_KEY]].map(
+                (item) => <li key={item[ID_KEY]}>{item[NAME_KEY]} - {item[PRICE_KEY]} руб.</li>
+              )}</ul>}
+              {subdept[TYPES[GROUP_KEY]].length > 0 && subdept[TYPES[GROUP_KEY]].map(
+                (group) => <Fragment key={group[ID_KEY]}>
+                  <Typography variant="body2" color="textPrimary" component="div" sx={{ mb: .5 }}>{group[NAME_KEY]}</Typography>
+                  {group[TYPES[ITEM_KEY]].length > 0 && <ul>{group[TYPES[ITEM_KEY]].map(
+                    (item) => <li key={item[ID_KEY]}>{item[NAME_KEY]} - {item[PRICE_KEY]} руб.</li>
+                  )}</ul>}
+                </Fragment>
+              )}
+            </Fragment>
+          )}
+        </Fragment>
+      )}
     </>
   )
 };
 
 export default ResItem;
+
+/*
+  Чекбоксы:
+    - игнорировать отделения;
+    - игнорировать специализации;
+    - игнорировать группы;
+
+  Радио:
+    - выбрать услуги;
+    - выбрать группы;
+    - выбрать специализации;
+
+  Сортировка по INDEX_KEY
+
+  {
+    res_id: 7,
+    data: [{
+      item_id: 7917,
+      name: 'Лазерное удаление  невусов СО2 лазером',
+      index: 0,
+      parent: {
+        dept: {
+          item_id: 4,
+          name: 'Медицина',
+          index: 0,
+          isVisible: 0,
+        },
+        subdept: {
+          item_id: 41,
+          name: 'Cпециализация',
+          index: 0,
+          isVisible: 1,
+        },
+        group: {
+          item_id: 100,
+          name: 'Группа',
+          index: 0,
+          isVisible: 0,
+        }
+      }
+    }]
+  }
+*/

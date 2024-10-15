@@ -58,6 +58,7 @@ const TEMPLATE_KEY = 'template';
 const IS_PARENT_KEY = 'isParent';
 const CATEGORY_KEY = 'category';
 const LABEL_KEY = 'label';
+const CHILDREN_KEY = 'children';
 
 const ADD_ACTION_KEY = 'add';
 const EDIT_ACTION_KEY = 'edit';
@@ -161,6 +162,7 @@ export {
   IS_PARENT_KEY,
   CATEGORY_KEY,
   LABEL_KEY,
+  CHILDREN_KEY,
   INDEX_KEY,
   ITEM_KEY,
   ADD_ACTION_KEY,
