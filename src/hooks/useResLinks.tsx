@@ -20,7 +20,8 @@ import { useSelector } from '../services/hooks';
 import type {
   TCustomData,
   TItemsArr,
-  TItemData
+  TItemData,
+  TPricelistData
 } from '../types';
 
 import { sortStrArray, fetchArray } from '../utils';
@@ -47,7 +48,8 @@ interface IResLinks {
 
   resLinkHandlers: TCustomData<(payload: TLinkedResData) => void>,
   isLinkedItemActive: (arr: TItemsArr, data: TItemData) => boolean,
-  handleDataConfig: (data: TCustomData<boolean>) => void
+  handleDataConfig: (data: TCustomData<boolean>) => void,
+  updateLinkedItems: (data: TPricelistData) => void
 }
 
 // TODO: не использовать ли useCallback
@@ -112,7 +114,7 @@ const useResLinks = (): IResLinks => {
    * Проверка наличия объекта в массиве привязанных к ресурсу элементов
    * @returns {boolean}
    */
-  const isLinkedItemActive = (arr: TItemsArr, data: TItemData): boolean => arr.indexOf(data) >= 0;
+  const isLinkedItemActive = (arr: TItemsArr, data: TItemData): boolean => arr.map(item => item[ID_KEY]).includes(data[ID_KEY]);
 
   /**
    * Обновляет массив подкатегории при удалении прикреплённого к ресурсу элемента
@@ -125,7 +127,6 @@ const useResLinks = (): IResLinks => {
     { arr, items }: TCustomData<TItemsArr>,
     { key, action }: TCustomData<string>
   ) => {
-    // return;
     const isOptionRemoved = [
       key,
       key !== DEPT_KEY,
@@ -211,9 +212,11 @@ const useResLinks = (): IResLinks => {
     const subCategoryItems: TItemsArr = sortStrArray(
       getMatchedItems(
         arr,
-        pricelist[TYPES[currentKey]].filter(
-          item => !resLinkData[currentKey].map(data => data[ID_KEY]).includes(item[ID_KEY])
-        ),
+        [ITEM_KEY, GROUP_KEY].includes(currentKey)
+          ? pricelist[TYPES[currentKey]]
+          : pricelist[TYPES[currentKey]].filter(
+              item => !resLinkData[currentKey].map(data => data[ID_KEY]).includes(item[ID_KEY])
+            ),
         categoryKey
       ),
       NAME_KEY
@@ -255,6 +258,10 @@ const useResLinks = (): IResLinks => {
         filterItems(linkedSubdepts, SUBDEPT_KEY, ITEM_KEY, GROUP_KEY)
       );
     }
+  }
+
+  const updateLinkedItems = (data: TPricelistData): void => {
+    console.log(data);
   }
 
   useEffect(() => {
@@ -305,7 +312,8 @@ const useResLinks = (): IResLinks => {
 
     resLinkHandlers,
     isLinkedItemActive,
-    handleDataConfig
+    handleDataConfig,
+    updateLinkedItems
   }
 }
 

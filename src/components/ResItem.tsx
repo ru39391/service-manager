@@ -11,8 +11,9 @@ import {
   TextField,
   Typography,
 } from '@mui/material';
+import { LoadingButton } from '@mui/lab';
 import { styled, lighten, darken, display } from '@mui/system';
-import { Done } from '@mui/icons-material';
+import { Check, Done } from '@mui/icons-material';
 
 import useResLinks from '../hooks/useResLinks';
 
@@ -23,6 +24,7 @@ import {
   SUBDEPT_KEY,
   GROUP_KEY,
   ITEM_KEY,
+  TYPES,
   TITLES,
   CATEGORY_KEY,
   ADD_ACTION_KEY,
@@ -30,7 +32,8 @@ import {
   IS_COMPLEX_DATA_KEY,
   IS_GROUPS_IGNORED_KEY,
   IS_GROUPS_USED_KEY,
-  LINKED_RES_PARAMS
+  LINKED_RES_PARAMS,
+  SAVE_TITLE
 } from '../utils/constants';
 
 const GroupHeader = styled('div')(({ theme }) => ({
@@ -61,21 +64,22 @@ const ResItem: FC = () => {
 
     resLinkHandlers,
     isLinkedItemActive,
-    handleDataConfig
+    handleDataConfig,
+    updateLinkedItems
   } = useResLinks();
 
   const isLinkedDataExist = (param: string): boolean => Boolean(linkedDataConfig && linkedDataConfig[param]);
 
   useEffect(() => {
-    //console.log({ existableSubdepts });
+    // console.log({ linkedGroups });
   }, [
-    existableSubdepts
+    linkedGroups
   ]);
 
   useEffect(() => {
-    //console.log({ linkedGroups });
+    // console.log({ linkedItems });
   }, [
-    linkedGroups
+    linkedItems
   ]);
 
   return (
@@ -302,7 +306,27 @@ const ResItem: FC = () => {
         </Box>
       )}
 
-      {/* // TODO: сделать предпросмотр */}
+      {/* // TODO: сделать предпросмотр {color || 'success'} */}
+      {[...linkedGroups, ...linkedItems].length > 0
+        && <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+          <LoadingButton
+            color='success'
+            variant="outlined"
+            loadingPosition="start"
+            startIcon={<Check />}
+            loading={false}
+            disabled={false}
+            onClick={() => updateLinkedItems({
+              [TYPES[DEPT_KEY]]: linkedDepts,
+              [TYPES[SUBDEPT_KEY]]: linkedSubdepts,
+              [TYPES[GROUP_KEY]]: linkedGroups,
+              [TYPES[ITEM_KEY]]: linkedItems
+            })}
+          >
+            {SAVE_TITLE}
+          </LoadingButton>
+        </Box>
+      }
     </>
   )
 };
