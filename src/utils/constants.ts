@@ -67,6 +67,10 @@ const CREATED_KEY = 'created';
 const UPDATED_KEY = 'updated';
 const REMOVED_KEY = 'removed';
 
+const IS_COMPLEX_DATA = 'isComplexData';
+const IS_GROUPS_IGNORED = 'isGroupsIgnored';
+const IS_GROUPS_USED = 'isGroupsUsed';
+
 const TITLES = {
   [DEPT_KEY]: 'Отделения',
   [SUBDEPT_KEY]: 'Специализации',
@@ -177,5 +181,8 @@ export {
   TYPES,
   API_URL,
   SITE_URL,
-  PAGE_COUNTER
+  PAGE_COUNTER,
+  IS_COMPLEX_DATA,
+  IS_GROUPS_IGNORED,
+  IS_GROUPS_USED
 };

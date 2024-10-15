@@ -11,6 +11,8 @@ import {
   GROUP_KEY,
   ITEM_KEY,
   TYPES,
+  IS_COMPLEX_DATA,
+  IS_GROUPS_IGNORED
 } from '../utils/constants';
 
 import { useSelector } from '../services/hooks';
@@ -41,8 +43,11 @@ interface IResLinks {
   linkedGroups: TItemsArr,
   linkedItems: TItemsArr,
 
+  linkedDataConfig: TCustomData<boolean> | null,
+
   resLinkHandlers: TCustomData<(payload: TLinkedResData) => void>,
   isLinkedItemActive: (arr: TItemsArr, data: TItemData) => boolean,
+  handleDataConfig: (data: TCustomData<boolean>) => void
 }
 
 // TODO: не использовать ли useCallback
@@ -56,6 +61,8 @@ const useResLinks = (): IResLinks => {
   const [linkedSubdepts, setLinkedSubdepts] = useState<TItemsArr>([]);
   const [linkedGroups, setLinkedGroups] = useState<TItemsArr>([]);
   const [linkedItems, setLinkedItems] = useState<TItemsArr>([]);
+
+  const [linkedDataConfig, setLinkedDataConfig] = useState<TCustomData<boolean> | null>(null);
 
   const pricelist: TCustomData<TItemsArr>  = useSelector(
     ({ pricelist }) => Object.values(TYPES).reduce((acc, key) => ({ ...acc, [key]: pricelist[key] }), {}
@@ -96,13 +103,10 @@ const useResLinks = (): IResLinks => {
       )
     )
   }), {});
-  /*
-    (payload: TLinkedResData) => setLinkedDepts(handleLinkedItems(resLinkData[DEPT_KEY], { ...payload, key: DEPT_KEY })),
-    (payload: TLinkedResData) => setLinkedSubdepts(handleLinkedItems(resLinkData[SUBDEPT_KEY], { ...payload, key: SUBDEPT_KEY })),
-    (payload: TLinkedResData) => setLinkedGroups(handleLinkedItems(resLinkData[GROUP_KEY], { ...payload, key: GROUP_KEY })),
-    (payload: TLinkedResData) => setLinkedItems(handleLinkedItems(resLinkData[ITEM_KEY], { ...payload, key: ITEM_KEY })),
-  ].reduce((acc, handler, index) => ({ ...acc, [Object.keys(TYPES)[index]]: handler }), {});
-  */
+
+  const handleDataConfig = (data: TCustomData<boolean>) => {
+    setLinkedDataConfig(linkedDataConfig ? { ...linkedDataConfig, ...data } : { ...data });
+  }
 
   /**
    * Проверка наличия объекта в массиве привязанных к ресурсу элементов
@@ -121,6 +125,7 @@ const useResLinks = (): IResLinks => {
     { arr, items }: TCustomData<TItemsArr>,
     { key, action }: TCustomData<string>
   ) => {
+    // return;
     const isOptionRemoved = [
       key,
       key !== DEPT_KEY,
@@ -236,7 +241,28 @@ const useResLinks = (): IResLinks => {
     );
   };
 
-  // filterItems(groups, GROUP_KEY, ITEM_KEY);
+  const updateLinkedDataConfig = () => {
+    if(linkedDataConfig !== null && linkedDataConfig[IS_COMPLEX_DATA] !== undefined) {
+      setLinkedItems([]);
+    }
+
+    if(linkedDataConfig !== null && linkedDataConfig[IS_GROUPS_IGNORED]) {
+      setExistableItems(
+        filterItems(linkedSubdepts, SUBDEPT_KEY, ITEM_KEY)
+      );
+    } else {
+      setExistableItems(
+        filterItems(linkedSubdepts, SUBDEPT_KEY, ITEM_KEY, GROUP_KEY)
+      );
+    }
+  }
+
+  useEffect(() => {
+    updateLinkedDataConfig();
+  }, [
+    linkedDataConfig
+  ]);
+
   useEffect(() => {
     setExistableGroups(
       filterItems(linkedSubdepts, SUBDEPT_KEY, GROUP_KEY)
@@ -244,6 +270,7 @@ const useResLinks = (): IResLinks => {
     setExistableItems(
       filterItems(linkedSubdepts, SUBDEPT_KEY, ITEM_KEY, GROUP_KEY)
     );
+    setLinkedDataConfig(null);
   }, [
     linkedSubdepts
   ]);
@@ -252,6 +279,7 @@ const useResLinks = (): IResLinks => {
     setExistableSubdepts(
       filterItems(linkedDepts, DEPT_KEY, SUBDEPT_KEY)
     );
+    setLinkedDataConfig(null);
   }, [
     linkedDepts
   ]);
@@ -273,8 +301,11 @@ const useResLinks = (): IResLinks => {
     linkedGroups,
     linkedItems,
 
+    linkedDataConfig,
+
     resLinkHandlers,
-    isLinkedItemActive
+    isLinkedItemActive,
+    handleDataConfig
   }
 }
 
