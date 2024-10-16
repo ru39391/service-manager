@@ -62,10 +62,24 @@ const setRespMessage = (
 
 const fetchItemsArr = (arr: TItemsArr | undefined): TItemsArr => arr?.map(data => ({ ...data, ...( data[NAME_KEY] && typeof data[NAME_KEY] === 'string' && { [NAME_KEY]: data[NAME_KEY].trim() } ) })) || [];
 
+/**
+ * Возвращает выборку дочерних элементов установленных категорий
+ * @returns {object[]} массив подходящих элементов
+ * @property {object[]} categoryArr - массив объектов родительских категорий
+ * @property {object[]} currentArr - массив объектов дочерних элементов
+ * @property {string} key - ключ категории для поиска среди параметров объекта дочернего элемента
+ */
+const getMatchedItems = (
+  categoryArr: TItemsArr,
+  currentArr: TItemsArr,
+  key: string
+): TItemsArr => currentArr.filter(item => categoryArr.map(data => data[ID_KEY]).includes(item[key]));
+
 export {
   fetchArray,
   sortStrArray,
   handleRespData,
   setRespMessage,
-  fetchItemsArr
+  fetchItemsArr,
+  getMatchedItems
 };

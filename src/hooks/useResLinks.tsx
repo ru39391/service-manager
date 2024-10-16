@@ -25,7 +25,7 @@ import type {
   TPricelistData
 } from '../types';
 
-import { sortStrArray, fetchArray } from '../utils';
+import { sortStrArray, fetchArray, getMatchedItems } from '../utils';
 
 type TLinkedResData = {
   action?: string;
@@ -50,10 +50,7 @@ interface IResLinks {
   resLinkHandlers: TCustomData<(payload: TLinkedResData) => void>,
   isLinkedItemActive: (arr: TItemsArr, data: TItemData) => boolean,
   handleDataConfig: (data: TCustomData<boolean>) => void,
-  updateLinkedItems: (data: TPricelistData) => void,
-  renderLinkedItems: (data: TPricelistData) => void,
-
-  list: TItemsArr
+  updateLinkedItems: (data: TPricelistData) => void
 }
 
 // TODO: не использовать ли useCallback
@@ -69,8 +66,6 @@ const useResLinks = (): IResLinks => {
   const [linkedItems, setLinkedItems] = useState<TItemsArr>([]);
 
   const [linkedDataConfig, setLinkedDataConfig] = useState<TCustomData<boolean> | null>(null);
-
-  const [list, setList] = useState<TItemsArr>([]);
 
   const pricelist: TCustomData<TItemsArr>  = useSelector(
     ({ pricelist }) => Object.values(TYPES).reduce((acc, key) => ({ ...acc, [key]: pricelist[key] }), {}
@@ -182,20 +177,6 @@ const useResLinks = (): IResLinks => {
   };
 
   /**
-   * Возвращает выборку дочерних элементов установленных категорий
-   * @returns {object[]} массив подходящих элементов
-   * @property {object[]} categoryArr - массив объектов родительских категорий
-   * @property {object[]} currentArr - массив объектов дочерних элементов
-   * @property {string} key - ключ категории для поиска среди параметров объекта дочернего элемента
-   */
-  const getMatchedItems = (
-    categoryArr: TItemsArr,
-    currentArr: TItemsArr,
-    key: string
-  ): TItemsArr => currentArr.filter(item => categoryArr.map(data => data[ID_KEY]).includes(item[key]));
-
-
-  /**
    * Формирует массив дочерних элементов выбранных категорий
    * @returns {object[]} массив подходящих элементов
    * @property {object[]} arr - массив объектов родительской категории
@@ -266,55 +247,8 @@ const useResLinks = (): IResLinks => {
     }
   };
 
-  const setChildrenData = (
-    payload: TPricelistData,
-    categoryKey: string,
-    childrenKey: string
-  ) => payload[TYPES[categoryKey]].map(item => ({
-    ...item,
-    [CHILDREN_KEY]: payload[TYPES[childrenKey]].filter(data => data[categoryKey] === item[ID_KEY])
-  }));
-
-  const setChildrenItems = (payload: TPricelistData) => {
-    // TODO: настроить выборку, если группы проигнорированы
-    const items = getMatchedItems(
-      payload[TYPES[GROUP_KEY]],
-      pricelist[TYPES[ITEM_KEY]],
-      GROUP_KEY
-    );
-
-    const subdeptItems = getMatchedItems(
-      payload[TYPES[SUBDEPT_KEY]],
-      payload[TYPES[ITEM_KEY]],
-      SUBDEPT_KEY
-    );
-
-    const groups = payload[TYPES[GROUP_KEY]].map(item => ({
-      ...item,
-      [TYPES[ITEM_KEY]]: items.filter(data => data[GROUP_KEY] === item[ID_KEY])
-    }));
-
-    const subdepts = payload[TYPES[SUBDEPT_KEY]].map(item => ({
-      ...item,
-      [TYPES[GROUP_KEY]]: groups.filter(data => data[SUBDEPT_KEY] === item[ID_KEY]),
-      [TYPES[ITEM_KEY]]: subdeptItems.filter(data => data[SUBDEPT_KEY] === item[ID_KEY] && data[GROUP_KEY] === 0)
-    }));
-
-    const depts = payload[TYPES[DEPT_KEY]].map(item => ({
-      ...item,
-      [TYPES[SUBDEPT_KEY]]: subdepts.filter(data => data[DEPT_KEY] === item[ID_KEY])
-    }));
-
-    return depts;
-  };
-
   const updateLinkedItems = (data: TPricelistData) => {
     console.log(data);
-  };
-
-  const renderLinkedItems = (data: TPricelistData) => {
-    setList(setChildrenItems(data));
-    //console.log(data);
   };
 
   useEffect(() => {
@@ -366,10 +300,7 @@ const useResLinks = (): IResLinks => {
     resLinkHandlers,
     isLinkedItemActive,
     handleDataConfig,
-    updateLinkedItems,
-    renderLinkedItems,
-
-    list
+    updateLinkedItems
   }
 }
 

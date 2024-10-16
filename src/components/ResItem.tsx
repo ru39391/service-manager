@@ -13,10 +13,11 @@ import {
   Typography,
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
-import { styled, lighten, darken, display } from '@mui/system';
+import { styled, lighten, darken } from '@mui/system';
 import { Check, Done } from '@mui/icons-material';
 
 import useResLinks from '../hooks/useResLinks';
+import useResLinkedItems from '../hooks/useResLinkedItems';
 
 import {
   ID_KEY,
@@ -67,11 +68,9 @@ const ResItem: FC = () => {
     resLinkHandlers,
     isLinkedItemActive,
     handleDataConfig,
-    updateLinkedItems,
-    renderLinkedItems,
-
-    list
+    updateLinkedItems
   } = useResLinks();
+  const { resLinkedItems, renderLinkedItems } = useResLinkedItems();
 
   const isLinkedDataExist = (param: string): boolean => Boolean(linkedDataConfig && linkedDataConfig[param]);
 
@@ -332,20 +331,23 @@ const ResItem: FC = () => {
           </LoadingButton>
           <Button
             variant="outlined"
-            onClick={() => renderLinkedItems({
-              [TYPES[DEPT_KEY]]: linkedDepts,
-              [TYPES[SUBDEPT_KEY]]: linkedSubdepts,
-              [TYPES[GROUP_KEY]]: linkedGroups,
-              [TYPES[ITEM_KEY]]: linkedItems,
-              // config: linkedDataConfig
-            })}
+            onClick={() => renderLinkedItems(
+              {
+                [TYPES[DEPT_KEY]]: linkedDepts,
+                [TYPES[SUBDEPT_KEY]]: linkedSubdepts,
+                [TYPES[GROUP_KEY]]: linkedGroups,
+                [TYPES[ITEM_KEY]]: linkedItems,
+              },
+              linkedDataConfig
+          )}
           >
             Предпросмотр
           </Button>
         </Box>
       }
 
-      {list.map(
+      {/* TODO: вынести в отдельный компонент */}
+      {resLinkedItems.map(
         (dept) => <Fragment key={dept[ID_KEY]}>
           <Typography variant="h6" color="textPrimary" component="div" sx={{ mb: .5 }}>{dept[NAME_KEY]}</Typography>
           {dept[TYPES[SUBDEPT_KEY]].map(
