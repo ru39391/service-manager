@@ -65,6 +65,7 @@ const Header: FC = () => {
   }
 
   // TODO: отследить баг удаления категории
+  // TODO: вынести иконки в навигацию
   const removeCategory = () => {
     toggleModal({
       title: `${REMOVE_TITLE} ${pageTitle && (`«${pageTitle}»`)}`,

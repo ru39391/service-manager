@@ -1,3 +1,12 @@
+import {
+  ID_KEY,
+  NAME_KEY,
+  PRICE_KEY,
+  DEPT_KEY,
+  SUBDEPT_KEY,
+  GROUP_KEY
+} from '../utils/constants';
+
 export type TCustomData<T> = {
   [key: string]: T;
 };
@@ -56,4 +65,33 @@ export type TResourceData = {
   template: TResTemplate,
   publishedon: TResDate,
   editedon: TResDate,
+};
+
+export type TLinkedData = {
+  [ID_KEY]: number;
+  [NAME_KEY]: string;
+};
+
+export type TLinkedItemData = {
+  [DEPT_KEY]: number;
+  [SUBDEPT_KEY]: number;
+};
+
+export type TLinkedItem = TLinkedData & TLinkedItemData & {
+  [PRICE_KEY]: number;
+  [GROUP_KEY]: number;
+};
+
+export type TLinkedGroup = TLinkedData & TLinkedItemData & {
+  pricelist: TLinkedItem[];
+};
+
+export type TLinkedSubdept = TLinkedData & {
+  [DEPT_KEY]: number;
+  groups: TLinkedGroup[];
+  pricelist: TLinkedItem[];
+};
+
+export type TLinkedDept = TLinkedData & {
+  subdepts: TLinkedSubdept[];
 };

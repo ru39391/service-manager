@@ -63,7 +63,8 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId }) => {
     });
   };
 
-  return <>
+  return (
+    <>
     {currComplexItems.map((complexItem, index, arr) =>
       <Grid key={complexItem[ID_KEY] && complexItem[ID_KEY].toString()} container spacing={2}>
         <Grid item xs={8}>
@@ -144,7 +145,8 @@ const ComplexItemsList: FC<IComplexItemsList> = ({ itemId }) => {
     >
       {ADD_TITLE}
     </Button>
-  </>
+    </>
+  )
 };
 
 export default ComplexItemsList;

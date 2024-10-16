@@ -17,43 +17,19 @@ import type {
   TCustomData,
   TItemData,
   TItemsArr,
-  TPricelistData
+  TPricelistData,
+  TLinkedDept,
+  TLinkedSubdept,
+  TLinkedGroup,
+  TLinkedItem
 } from '../types';
 
 import { getMatchedItems } from '../utils';
 
-type TLinkedData = {
-  [ID_KEY]: number;
-  [NAME_KEY]: string;
-};
-
-type TLinkedItemData = {
-  [DEPT_KEY]: number;
-  [SUBDEPT_KEY]: number;
-};
-
-type TLinkedItem = TLinkedData & TLinkedItemData & {
-  [PRICE_KEY]: number;
-  [GROUP_KEY]: number;
-};
-
-type TLinkedGroup = TLinkedData & TLinkedItemData & {
-  pricelist: TLinkedItem[];
-};
-
-type TLinkedSubdept = TLinkedData & {
-  [DEPT_KEY]: number;
-  groups: TLinkedGroup[];
-  pricelist: TLinkedItem[];
-};
-
-type TLinkedDept = TLinkedData & {
-  subdepts: TLinkedSubdept[];
-};
-
 interface IResLinkedItems {
   resLinkedItems: TLinkedDept[];
   renderLinkedItems: (payload: TPricelistData, config: TCustomData<boolean> | null) => void;
+  resetLinkedItems: () => void;
 }
 
 const useResLinkedItems = (): IResLinkedItems => {
@@ -77,6 +53,13 @@ const useResLinkedItems = (): IResLinkedItems => {
     }));
 
     // TODO: настроить выборку, если группы проигнорированы
+    /*
+    "config": {
+      "isComplexData": false,
+      "isGroupsIgnored": true,
+      "isGroupsUsed": true
+    }
+    */
     const groupedItems = updatItemsArr(
       getMatchedItems(
         payload[TYPES[GROUP_KEY]],
@@ -115,14 +98,18 @@ const useResLinkedItems = (): IResLinkedItems => {
       subdepts: subdepts.filter(data => data[DEPT_KEY] === item[ID_KEY])
     }));
 
-    console.log(depts);
-    console.log({ config });
+    console.log({ config, depts });
     setResLinkedItems(depts);
+  };
+
+  const resetLinkedItems = () => {
+    setResLinkedItems([]);
   };
 
   return {
     resLinkedItems,
-    renderLinkedItems
+    renderLinkedItems,
+    resetLinkedItems
   }
 }
 

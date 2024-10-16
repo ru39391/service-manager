@@ -112,7 +112,9 @@ const Modal: FC<IModal> = ({ fc, payload }) => {
         >
           <span>
             {formTitle}
-            {/* // TODO: изменить условие для отображения иконки */}
+            {/*
+              // TODO: изменить условие для отображения иконки
+            */}
             {formData && formData.action === EDIT_ACTION_KEY
               ? <IconButton
                   sx={{ p: 1, color: 'red' }}

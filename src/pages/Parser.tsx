@@ -325,7 +325,7 @@ const Parser: FC = () => {
               }}
               columns={tableData ? tableData.cols : []}
               rows={tableData ? tableData.rows : []}
-              // TODO: возможность удалять лишние записи
+              // TODO: возможность удалять лишние записи - реализовано?
               onRowClick={({ row }: { row: TItemData }) => handleItemData({ values: row, currCategory, currSubCategory })}
             />
             : ''

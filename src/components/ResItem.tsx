@@ -14,7 +14,9 @@ import {
 } from '@mui/material';
 import { LoadingButton } from '@mui/lab';
 import { styled, lighten, darken } from '@mui/system';
-import { Check, Done } from '@mui/icons-material';
+import { ArrowBack, Check, Done, RemoveRedEye } from '@mui/icons-material';
+
+import ResLinkedItems from './ResLinkedItems';
 
 import useResLinks from '../hooks/useResLinks';
 import useResLinkedItems from '../hooks/useResLinkedItems';
@@ -35,8 +37,7 @@ import {
   IS_GROUPS_IGNORED_KEY,
   IS_GROUPS_USED_KEY,
   LINKED_RES_PARAMS,
-  SAVE_TITLE,
-  PRICE_KEY
+  SAVE_TITLE
 } from '../utils/constants';
 
 const GroupHeader = styled('div')(({ theme }) => ({
@@ -70,7 +71,11 @@ const ResItem: FC = () => {
     handleDataConfig,
     updateLinkedItems
   } = useResLinks();
-  const { resLinkedItems, renderLinkedItems } = useResLinkedItems();
+  const {
+    resLinkedItems,
+    renderLinkedItems,
+    resetLinkedItems
+  } = useResLinkedItems();
 
   const isLinkedDataExist = (param: string): boolean => Boolean(linkedDataConfig && linkedDataConfig[param]);
 
@@ -80,11 +85,22 @@ const ResItem: FC = () => {
     linkedGroups
   ]);
 
-  useEffect(() => {
-    // console.log({ linkedItems });
-  }, [
-    linkedItems
-  ]);
+  if(resLinkedItems.length > 0) {
+    return (
+      <>
+        <ResLinkedItems linkedItems={resLinkedItems} />
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
+          <Button
+            variant="outlined"
+            startIcon={<ArrowBack />}
+            onClick={resetLinkedItems}
+          >
+            Назад
+          </Button>
+        </Box>
+      </>
+    );
+  }
 
   return (
     <>
@@ -132,9 +148,6 @@ const ResItem: FC = () => {
         }}
       />}
 
-      {/*
-        // TODO: https://skrinshoter.ru/vSCvsUkNAXu
-      */}
       {existableGroups.length > 0
         ? (<Box
           sx={{
@@ -244,6 +257,7 @@ const ResItem: FC = () => {
                             flexWrap: 'wrap',
                           }}
                         >
+                          {/* TODO: https://skrinshoter.ru/vSESzEhTYzC - баг выбора услуг после удаления группы из списка */}
                           {existableItems.filter((item) => item[GROUP_KEY] === options[ID_KEY]).map(
                             (data) => <Chip
                               key={data[ID_KEY].toString()}
@@ -310,16 +324,16 @@ const ResItem: FC = () => {
         </Box>
       )}
 
-      {/* // TODO: сделать предпросмотр {color || 'success'} */}
+      {/* // TODO: настроить сохранение {color || 'success'} */}
       {[...linkedGroups, ...linkedItems].length > 0
-        && <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 2 }}>
+        && <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
           <LoadingButton
             color='success'
             variant="outlined"
             loadingPosition="start"
-            startIcon={<Check />}
             loading={false}
             disabled={false}
+            startIcon={<Check />}
             onClick={() => updateLinkedItems({
               [TYPES[DEPT_KEY]]: linkedDepts,
               [TYPES[SUBDEPT_KEY]]: linkedSubdepts,
@@ -331,6 +345,7 @@ const ResItem: FC = () => {
           </LoadingButton>
           <Button
             variant="outlined"
+            startIcon={<RemoveRedEye />}
             onClick={() => renderLinkedItems(
               {
                 [TYPES[DEPT_KEY]]: linkedDepts,
@@ -345,29 +360,6 @@ const ResItem: FC = () => {
           </Button>
         </Box>
       }
-
-      {/* TODO: вынести в отдельный компонент */}
-      {resLinkedItems.map(
-        (dept) => <Fragment key={dept[ID_KEY]}>
-          <Typography variant="h6" color="textPrimary" component="div" sx={{ mb: .5 }}>{dept[NAME_KEY]}</Typography>
-          {dept[TYPES[SUBDEPT_KEY]].map(
-            (subdept) => <Fragment key={subdept[ID_KEY]}>
-              <Typography variant="subtitle1" color="textPrimary" component="div" sx={{ mb: .5 }}>{subdept[NAME_KEY]}</Typography>
-              {subdept[TYPES[ITEM_KEY]].length > 0 && <ul>{subdept[TYPES[ITEM_KEY]].map(
-                (item) => <li key={item[ID_KEY]}>{item[NAME_KEY]} - {item[PRICE_KEY]} руб.</li>
-              )}</ul>}
-              {subdept[TYPES[GROUP_KEY]].length > 0 && subdept[TYPES[GROUP_KEY]].map(
-                (group) => <Fragment key={group[ID_KEY]}>
-                  <Typography variant="body2" color="textPrimary" component="div" sx={{ mb: .5 }}>{group[NAME_KEY]}</Typography>
-                  {group[TYPES[ITEM_KEY]].length > 0 && <ul>{group[TYPES[ITEM_KEY]].map(
-                    (item) => <li key={item[ID_KEY]}>{item[NAME_KEY]} - {item[PRICE_KEY]} руб.</li>
-                  )}</ul>}
-                </Fragment>
-              )}
-            </Fragment>
-          )}
-        </Fragment>
-      )}
     </>
   )
 };

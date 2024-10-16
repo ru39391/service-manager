@@ -90,7 +90,7 @@ const useDataComparer = (): IDataComparer => {
 
       const isEqual = currItem
         ? Object.keys(item).every(key => {
-          // TODO: вычислять все изменённые параметры
+          // TODO: вычислять все изменённые параметры - реализовано?
           /*
           if(item[key] !== currItem[key]) {
             console.log({
