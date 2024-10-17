@@ -29,12 +29,14 @@ import { getMatchedItems } from '../utils';
 
 interface IResLinkedItems {
   resLinkedItems: TLinkedDept[];
+  isLinkedListExist: boolean,
   renderLinkedItems: (payload: TPricelistData, config: TCustomData<boolean> | null) => void;
   resetLinkedItems: () => void;
 }
 
 const useResLinkedItems = (): IResLinkedItems => {
   const [resLinkedItems, setResLinkedItems] = useState<TLinkedDept[]>([]);
+  const [isLinkedListExist, setisLinkedListExist] = useState<boolean>(false);
 
   const pricelist: TCustomData<TItemsArr>  = useSelector(
     ({ pricelist }) => Object.values(TYPES).reduce((acc, key) => ({ ...acc, [key]: pricelist[key] }), {}
@@ -111,6 +113,7 @@ const useResLinkedItems = (): IResLinkedItems => {
 
     console.log({ config, depts });
     setResLinkedItems(depts);
+    setisLinkedListExist([...groupedItems, ...items].length > 0);
   };
 
   const resetLinkedItems = () => {
@@ -119,6 +122,7 @@ const useResLinkedItems = (): IResLinkedItems => {
 
   return {
     resLinkedItems,
+    isLinkedListExist,
     renderLinkedItems,
     resetLinkedItems
   }

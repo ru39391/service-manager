@@ -73,6 +73,7 @@ const ResItem: FC = () => {
   } = useResLinks();
   const {
     resLinkedItems,
+    isLinkedListExist,
     renderLinkedItems,
     resetLinkedItems
   } = useResLinkedItems();
@@ -103,7 +104,7 @@ const ResItem: FC = () => {
   if(resLinkedItems.length > 0) {
     return (
       <>
-        <ResLinkedItems linkedItems={resLinkedItems} />
+        <ResLinkedItems isLinkedListExist={isLinkedListExist} linkedItems={resLinkedItems} />
         <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 3 }}>
           <Button
             variant="outlined"
@@ -112,6 +113,22 @@ const ResItem: FC = () => {
           >
             Назад
           </Button>
+          <LoadingButton
+            color='success'
+            variant="outlined"
+            loadingPosition="start"
+            loading={false}
+            disabled={!isLinkedListExist}
+            startIcon={<Check />}
+            onClick={() => updateLinkedItems({
+              [TYPES[DEPT_KEY]]: linkedDepts,
+              [TYPES[SUBDEPT_KEY]]: linkedSubdepts,
+              [TYPES[GROUP_KEY]]: linkedGroups,
+              [TYPES[ITEM_KEY]]: linkedItems
+            })}
+          >
+            {SAVE_TITLE}
+          </LoadingButton>
         </Box>
       </>
     );
@@ -351,41 +368,24 @@ const ResItem: FC = () => {
       )}
 
       {/* // TODO: настроить сохранение {color || 'success'} */}
-      {[...linkedGroups, ...linkedItems].length > 0
-        && <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
-          <LoadingButton
-            color='success'
-            variant="outlined"
-            loadingPosition="start"
-            loading={false}
-            disabled={false}
-            startIcon={<Check />}
-            onClick={() => updateLinkedItems({
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
+        <Button
+          variant="outlined"
+          disabled={[...linkedGroups, ...linkedItems].length === 0}
+          startIcon={<RemoveRedEye />}
+          onClick={() => renderLinkedItems(
+            {
               [TYPES[DEPT_KEY]]: linkedDepts,
               [TYPES[SUBDEPT_KEY]]: linkedSubdepts,
               [TYPES[GROUP_KEY]]: linkedGroups,
-              [TYPES[ITEM_KEY]]: linkedItems
-            })}
-          >
-            {SAVE_TITLE}
-          </LoadingButton>
-          <Button
-            variant="outlined"
-            startIcon={<RemoveRedEye />}
-            onClick={() => renderLinkedItems(
-              {
-                [TYPES[DEPT_KEY]]: linkedDepts,
-                [TYPES[SUBDEPT_KEY]]: linkedSubdepts,
-                [TYPES[GROUP_KEY]]: linkedGroups,
-                [TYPES[ITEM_KEY]]: linkedItems,
-              },
-              linkedDataConfig
-          )}
-          >
-            Предпросмотр
-          </Button>
-        </Box>
-      }
+              [TYPES[ITEM_KEY]]: linkedItems,
+            },
+            linkedDataConfig
+        )}
+        >
+          Предпросмотр
+        </Button>
+      </Box>
     </>
   )
 };
