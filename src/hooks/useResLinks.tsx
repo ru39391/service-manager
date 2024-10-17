@@ -231,6 +231,14 @@ const useResLinks = (): IResLinks => {
     );
   };
 
+  const updateComplexDataConfig = () => {
+    if(linkedDataConfig !== null && linkedDataConfig[IS_COMPLEX_DATA_KEY]) {
+      setLinkedDataConfig({ [IS_COMPLEX_DATA_KEY]: true });
+    } else {
+      setLinkedDataConfig(null);
+    }
+  }
+
   const updateLinkedDataConfig = () => {
     if(linkedDataConfig !== null && linkedDataConfig[IS_COMPLEX_DATA_KEY] !== undefined) {
       setLinkedItems([]);
@@ -264,7 +272,7 @@ const useResLinks = (): IResLinks => {
     setExistableItems(
       filterItems(linkedSubdepts, SUBDEPT_KEY, ITEM_KEY, GROUP_KEY)
     );
-    setLinkedDataConfig(null);
+    updateComplexDataConfig();
   }, [
     linkedSubdepts
   ]);

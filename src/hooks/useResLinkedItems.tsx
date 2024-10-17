@@ -9,6 +9,7 @@ import {
   TYPES,
   NAME_KEY,
   PRICE_KEY,
+  IS_GROUPS_IGNORED_KEY
 } from '../utils/constants';
 
 import { useSelector } from '../services/hooks';
@@ -60,6 +61,14 @@ const useResLinkedItems = (): IResLinkedItems => {
       "isGroupsUsed": true
     }
     */
+    const params = config
+      ? {
+        [IS_GROUPS_IGNORED_KEY]: Boolean(config[IS_GROUPS_IGNORED_KEY])
+      }
+      : {
+        [IS_GROUPS_IGNORED_KEY]: false
+      };
+    console.log(payload);
     const groupedItems = updatItemsArr(
       getMatchedItems(
         payload[TYPES[GROUP_KEY]],
@@ -89,7 +98,9 @@ const useResLinkedItems = (): IResLinkedItems => {
       [NAME_KEY]: item[NAME_KEY] as string,
       [DEPT_KEY]: item[DEPT_KEY] as number,
       groups: groups.filter(data => data[SUBDEPT_KEY] === item[ID_KEY]),
-      pricelist: items.filter(data => data[SUBDEPT_KEY] === item[ID_KEY] && data[GROUP_KEY] === 0)
+      pricelist: items.filter(
+        data => params[IS_GROUPS_IGNORED_KEY] ? data[SUBDEPT_KEY] === item[ID_KEY] : data[SUBDEPT_KEY] === item[ID_KEY] && data[GROUP_KEY] === 0
+      )
     }));
 
     const depts: TLinkedDept[] = payload[TYPES[DEPT_KEY]].map(item => ({
