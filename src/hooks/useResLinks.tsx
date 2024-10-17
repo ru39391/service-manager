@@ -35,22 +35,18 @@ type TLinkedResData = {
 };
 
 interface IResLinks {
-  existableDepts: TItemsArr,
-  existableSubdepts: TItemsArr,
-  existableGroups: TItemsArr,
-  existableItems: TItemsArr,
-
-  linkedDepts: TItemsArr,
-  linkedSubdepts: TItemsArr,
-  linkedGroups: TItemsArr,
-  linkedItems: TItemsArr,
-
-  linkedDataConfig: TCustomData<boolean> | null,
-
-  resLinkHandlers: TCustomData<(payload: TLinkedResData) => void>,
-  isLinkedItemActive: (arr: TItemsArr, data: TItemData) => boolean,
-  handleDataConfig: (data: TCustomData<boolean>) => void,
-  updateLinkedItems: (data: TPricelistData) => void
+  existableDepts: TItemsArr;
+  existableSubdepts: TItemsArr;
+  existableGroups: TItemsArr;
+  existableItems: TItemsArr;
+  linkedDepts: TItemsArr;
+  linkedSubdepts: TItemsArr;
+  linkedGroups: TItemsArr;
+  linkedItems: TItemsArr;
+  linkedDataConfig: TCustomData<boolean> | null;
+  resLinkHandlers: TCustomData<(payload: TLinkedResData) => void>;
+  isLinkedItemActive: (arr: TItemsArr, data: TItemData) => boolean;
+  handleDataConfig: (data: TCustomData<boolean>) => void;
 }
 
 // TODO: не использовать ли useCallback
@@ -255,10 +251,6 @@ const useResLinks = (): IResLinks => {
     }
   };
 
-  const updateLinkedItems = (data: TPricelistData) => {
-    console.log(data);
-  };
-
   useEffect(() => {
     updateLinkedDataConfig();
   }, [
@@ -297,18 +289,14 @@ const useResLinks = (): IResLinks => {
     existableSubdepts,
     existableGroups,
     existableItems,
-
     linkedDepts,
     linkedSubdepts,
     linkedGroups,
     linkedItems,
-
     linkedDataConfig,
-
     resLinkHandlers,
     isLinkedItemActive,
-    handleDataConfig,
-    updateLinkedItems
+    handleDataConfig
   }
 }
 

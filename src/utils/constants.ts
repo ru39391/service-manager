@@ -5,6 +5,7 @@ const NO_ITEMS_TITLE = 'Подходящих записей не найдено'
 const NO_FILE_ITEMS_TITLE = 'Обновлённых записей не найдено';
 const FILE_ITEMS_TITLE = 'Найдены обновлённые записи: ';
 const NOT_EMPTY_CATEGORY = 'Категория содержит следующие элементы: ';
+const EMPTY_CATEGORY = 'Выбранные категории не содержат услуг';
 
 const ADD_TITLE = 'Добавить';
 const EDIT_TITLE = 'Редактировать';
@@ -155,6 +156,7 @@ export {
   NO_FILE_ITEMS_TITLE,
   FILE_ITEMS_TITLE,
   NOT_EMPTY_CATEGORY,
+  EMPTY_CATEGORY,
   RES_KEY,
   RES_ID_KEY,
   PARENT_KEY,

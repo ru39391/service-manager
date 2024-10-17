@@ -9,8 +9,10 @@ import {
   TYPES,
   NAME_KEY,
   PRICE_KEY,
+  RES_KEY,
   IS_GROUP_IGNORED_KEY,
-  IS_GROUP_USED_KEY
+  IS_GROUP_USED_KEY,
+  IS_COMPLEX_DATA_KEY
 } from '../utils/constants';
 
 import { useSelector } from '../services/hooks';
@@ -28,10 +30,17 @@ import type {
 
 import { fetchArray, getMatchedItems } from '../utils';
 
+type TResLinkedData = {
+  [RES_KEY]: number;
+  arr: TLinkedSubdept[];
+  config: TCustomData<boolean> | null;
+}
+
 interface IResLinkedItems {
   resLinkedItems: TLinkedDept[];
-  isLinkedListExist: boolean,
+  isLinkedListExist: boolean;
   renderLinkedItems: (payload: TPricelistData, config: TCustomData<boolean> | null) => void;
+  updateLinkedItems: (data: TResLinkedData) => void;
   resetLinkedItems: () => void;
 }
 
@@ -118,9 +127,54 @@ const useResLinkedItems = (): IResLinkedItems => {
       subdepts: subdepts.filter(data => data[DEPT_KEY] === item[ID_KEY])
     }));
 
-    console.log({ config, depts });
+    // console.log({ config, depts });
     setResLinkedItems(depts);
     setisLinkedListExist([...groupedItems, ...items].length > 0);
+  };
+
+  const updateLinkedItems = (payload: TResLinkedData) => {
+    const { arr, config } = payload;
+    const data = {
+      [TYPES[GROUP_KEY]]: arr.reduce(
+        (acc: TLinkedGroup[], item) => [
+          ...acc,
+          ...item[TYPES[GROUP_KEY]].filter((group: TLinkedGroup) => group[TYPES[ITEM_KEY]].length > 0)
+        ], []
+      ),
+      [TYPES[ITEM_KEY]]: arr.reduce((acc: TLinkedItem[], item) => [...acc, ...item[TYPES[ITEM_KEY]]], [])
+    };
+    const params = config === null
+      ? {
+        [IS_COMPLEX_DATA_KEY]: false,
+        [IS_GROUP_IGNORED_KEY]: false,
+        [IS_GROUP_USED_KEY]: false,
+      }
+      : {
+        [IS_COMPLEX_DATA_KEY]: Boolean(config[IS_COMPLEX_DATA_KEY]),
+        [IS_GROUP_IGNORED_KEY]: Boolean(config[IS_GROUP_IGNORED_KEY]),
+        [IS_GROUP_USED_KEY]: Boolean(config[IS_GROUP_USED_KEY]),
+      };
+
+    const handleLinkedItems = (arr: TLinkedItem[] | TLinkedGroup[] | TLinkedSubdept[] | TItemsArr) => JSON.stringify(arr.map(item => item[ID_KEY]));
+
+    console.log({
+      [RES_KEY]: payload[RES_KEY],
+      [TYPES[DEPT_KEY]]: handleLinkedItems(
+        fetchArray(
+          arr.map(item => ({ [ID_KEY]: item[DEPT_KEY] })),
+          ID_KEY
+        )
+      ),
+      [TYPES[SUBDEPT_KEY]]: handleLinkedItems(arr),
+      [TYPES[GROUP_KEY]]: handleLinkedItems(data[TYPES[GROUP_KEY]]),
+      [TYPES[ITEM_KEY]]: handleLinkedItems(
+        [
+          ...data[TYPES[ITEM_KEY]],
+          ...data[TYPES[GROUP_KEY]].reduce((acc: TLinkedItem[], item) => [...acc, ...item[TYPES[ITEM_KEY]]], [])
+        ]
+      ),
+      config: JSON.stringify(params)
+    });
   };
 
   const resetLinkedItems = () => {
@@ -131,6 +185,7 @@ const useResLinkedItems = (): IResLinkedItems => {
     resLinkedItems,
     isLinkedListExist,
     renderLinkedItems,
+    updateLinkedItems,
     resetLinkedItems
   }
 }

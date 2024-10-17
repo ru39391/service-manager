@@ -1,4 +1,5 @@
 import { FC, Fragment, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 import {
   Autocomplete,
   Box,
@@ -28,6 +29,7 @@ import {
   SUBDEPT_KEY,
   GROUP_KEY,
   ITEM_KEY,
+  RES_KEY,
   TYPES,
   TITLES,
   CATEGORY_KEY,
@@ -39,6 +41,8 @@ import {
   LINKED_RES_PARAMS,
   SAVE_TITLE
 } from '../utils/constants';
+
+import type { TLinkedSubdept } from '../types';
 
 const GroupHeader = styled('div')(({ theme }) => ({
   zIndex: 1,
@@ -53,28 +57,26 @@ const GroupHeader = styled('div')(({ theme }) => ({
 const GroupList = styled('ul')({ padding: 0, zIndex: 1 });
 
 const ResItem: FC = () => {
+  const { id: resId } = useParams();
   const {
     linkedDepts,
     linkedSubdepts,
     linkedGroups,
     linkedItems,
-
     existableDepts,
     existableSubdepts,
     existableGroups,
     existableItems,
-
     linkedDataConfig,
-
     resLinkHandlers,
     isLinkedItemActive,
-    handleDataConfig,
-    updateLinkedItems
+    handleDataConfig
   } = useResLinks();
   const {
     resLinkedItems,
     isLinkedListExist,
     renderLinkedItems,
+    updateLinkedItems,
     resetLinkedItems
   } = useResLinkedItems();
 
@@ -121,10 +123,9 @@ const ResItem: FC = () => {
             disabled={!isLinkedListExist}
             startIcon={<Check />}
             onClick={() => updateLinkedItems({
-              [TYPES[DEPT_KEY]]: linkedDepts,
-              [TYPES[SUBDEPT_KEY]]: linkedSubdepts,
-              [TYPES[GROUP_KEY]]: linkedGroups,
-              [TYPES[ITEM_KEY]]: linkedItems
+              [RES_KEY]: Number(resId),
+              arr: resLinkedItems.reduce((acc: TLinkedSubdept[], item) => [...acc, ...item[TYPES[SUBDEPT_KEY]]], []),
+              config: linkedDataConfig
             })}
           >
             {SAVE_TITLE}
