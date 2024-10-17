@@ -34,8 +34,8 @@ import {
   ADD_ACTION_KEY,
   REMOVE_ACTION_KEY,
   IS_COMPLEX_DATA_KEY,
-  IS_GROUPS_IGNORED_KEY,
-  IS_GROUPS_USED_KEY,
+  IS_GROUP_IGNORED_KEY,
+  IS_GROUP_USED_KEY,
   LINKED_RES_PARAMS,
   SAVE_TITLE
 } from '../utils/constants';
@@ -81,14 +81,14 @@ const ResItem: FC = () => {
   const isLinkedDataExist = (param: string): boolean => Boolean(linkedDataConfig && linkedDataConfig[param]);
 
   const setLinkedData = () => {
-    if(isLinkedDataExist(IS_COMPLEX_DATA_KEY) && isLinkedDataExist(IS_GROUPS_IGNORED_KEY)) {
+    if(isLinkedDataExist(IS_COMPLEX_DATA_KEY) && isLinkedDataExist(IS_GROUP_IGNORED_KEY)) {
       return;
     }
 
     if(existableGroups.length === 0 && existableItems.length > 0) {
       handleDataConfig({
         [IS_COMPLEX_DATA_KEY]: true,
-        [IS_GROUPS_IGNORED_KEY]: true,
+        [IS_GROUP_IGNORED_KEY]: true,
       });
     }
   };
@@ -194,7 +194,7 @@ const ResItem: FC = () => {
               control={
                 <Checkbox
                   checked={existableGroups.length === linkedGroups.length}
-                  disabled={isLinkedDataExist(IS_GROUPS_IGNORED_KEY)}
+                  disabled={isLinkedDataExist(IS_GROUP_IGNORED_KEY)}
                   onChange={() => resLinkHandlers[GROUP_KEY]({ items: existableGroups.length === linkedGroups.length ? [] : existableGroups })}
                 />
               }
@@ -205,33 +205,34 @@ const ResItem: FC = () => {
               control={
                 <Checkbox
                   id={IS_COMPLEX_DATA_KEY}
-                  checked={isLinkedDataExist(IS_COMPLEX_DATA_KEY)}
+                  checked={isLinkedDataExist(IS_COMPLEX_DATA_KEY) || isLinkedDataExist(IS_GROUP_IGNORED_KEY)}
+                  disabled={isLinkedDataExist(IS_GROUP_IGNORED_KEY)}
                   onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_COMPLEX_DATA_KEY) })}
                 />
               }
             />
             <FormControlLabel
-              label={LINKED_RES_PARAMS[IS_GROUPS_IGNORED_KEY]}
+              label={LINKED_RES_PARAMS[IS_GROUP_IGNORED_KEY]}
               sx={{ mb: .25 }}
               control={
                 <Checkbox
-                  id={IS_GROUPS_IGNORED_KEY}
-                  checked={isLinkedDataExist(IS_GROUPS_IGNORED_KEY)}
+                  id={IS_GROUP_IGNORED_KEY}
+                  checked={isLinkedDataExist(IS_GROUP_IGNORED_KEY)}
                   disabled={linkedGroups.length !== 0}
-                  onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_GROUPS_IGNORED_KEY) })}
+                  onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_GROUP_IGNORED_KEY) })}
                 />
               }
             />
-            {isLinkedDataExist(IS_GROUPS_IGNORED_KEY)
+            {isLinkedDataExist(IS_GROUP_IGNORED_KEY)
               && <FormControlLabel
-                label={LINKED_RES_PARAMS[IS_GROUPS_USED_KEY]}
+                label={LINKED_RES_PARAMS[IS_GROUP_USED_KEY]}
                 sx={{ mb: .25 }}
                 control={
                   <Checkbox
-                    id={IS_GROUPS_USED_KEY}
-                    checked={isLinkedDataExist(IS_GROUPS_USED_KEY)}
-                    disabled={!isLinkedDataExist(IS_GROUPS_IGNORED_KEY)}
-                    onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_GROUPS_USED_KEY) })}
+                    id={IS_GROUP_USED_KEY}
+                    checked={isLinkedDataExist(IS_GROUP_USED_KEY)}
+                    disabled={!isLinkedDataExist(IS_GROUP_IGNORED_KEY)}
+                    onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_GROUP_USED_KEY) })}
                   />
                 }
               />
@@ -258,14 +259,14 @@ const ResItem: FC = () => {
                 }
               />
               <FormControlLabel
-                label={LINKED_RES_PARAMS[IS_GROUPS_IGNORED_KEY]}
+                label={LINKED_RES_PARAMS[IS_GROUP_IGNORED_KEY]}
                 sx={{ mb: .25 }}
                 control={
                   <Checkbox
-                    id={IS_GROUPS_IGNORED_KEY}
-                    checked={isLinkedDataExist(IS_GROUPS_IGNORED_KEY)}
+                    id={IS_GROUP_IGNORED_KEY}
+                    checked={isLinkedDataExist(IS_GROUP_IGNORED_KEY)}
                     disabled={linkedGroups.length !== 0 || (existableGroups.length === 0 && existableItems.length > 0)}
-                    onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_GROUPS_IGNORED_KEY) })}
+                    onChange={({ target }) => handleDataConfig({ [target.id]: !isLinkedDataExist(IS_GROUP_IGNORED_KEY) })}
                   />
                 }
               />
@@ -286,7 +287,7 @@ const ResItem: FC = () => {
           <Card variant="outlined">
             <CardContent>
               <Typography variant="h6" component="div" sx={{ mb: 1.5 }}>{subdept[NAME_KEY]}</Typography>
-              {isLinkedDataExist(IS_GROUPS_IGNORED_KEY)
+              {isLinkedDataExist(IS_GROUP_IGNORED_KEY)
                 ? (existableGroups.filter((group) => group[SUBDEPT_KEY] === subdept[ID_KEY])
                     && existableGroups.filter((group) => group[SUBDEPT_KEY] === subdept[ID_KEY]).map(
                     (options) => <Fragment key={options[ID_KEY].toString()}>
@@ -337,14 +338,14 @@ const ResItem: FC = () => {
                   )
               }
 
-              {(isLinkedDataExist(IS_COMPLEX_DATA_KEY) || isLinkedDataExist(IS_GROUPS_IGNORED_KEY))
+              {(isLinkedDataExist(IS_COMPLEX_DATA_KEY) || isLinkedDataExist(IS_GROUP_IGNORED_KEY))
                 && existableItems.filter((item) => item[SUBDEPT_KEY] === subdept[ID_KEY] && item[GROUP_KEY] === 0).length > 0
                 && <>
-                  {isLinkedDataExist(IS_GROUPS_IGNORED_KEY)
+                  {isLinkedDataExist(IS_GROUP_IGNORED_KEY)
                     && <Typography variant="subtitle1" color="textPrimary" component="div" sx={{ mb: .5 }}>Без группы</Typography>}
                   <Box
                     sx={{
-                      ...( !isLinkedDataExist(IS_GROUPS_IGNORED_KEY) && { mt: 2 } ),
+                      ...( !isLinkedDataExist(IS_GROUP_IGNORED_KEY) && { mt: 2 } ),
                       mb: 0,
                       gap: 1,
                       display: 'flex',

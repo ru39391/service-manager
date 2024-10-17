@@ -9,7 +9,8 @@ import {
   TYPES,
   NAME_KEY,
   PRICE_KEY,
-  IS_GROUPS_IGNORED_KEY
+  IS_GROUP_IGNORED_KEY,
+  IS_GROUP_USED_KEY
 } from '../utils/constants';
 
 import { useSelector } from '../services/hooks';
@@ -25,7 +26,7 @@ import type {
   TLinkedItem
 } from '../types';
 
-import { getMatchedItems } from '../utils';
+import { fetchArray, getMatchedItems } from '../utils';
 
 interface IResLinkedItems {
   resLinkedItems: TLinkedDept[];
@@ -46,6 +47,7 @@ const useResLinkedItems = (): IResLinkedItems => {
     payload: TPricelistData,
     config: TCustomData<boolean> | null
   ) => {
+    // console.log(payload);
     const updatItemsArr = (arr: TItemsArr): TLinkedItem[] => arr.map((item: TItemData) => ({
       [ID_KEY]: item[ID_KEY] as number,
       [NAME_KEY]: item[NAME_KEY] as string,
@@ -55,22 +57,24 @@ const useResLinkedItems = (): IResLinkedItems => {
       [GROUP_KEY]: item[GROUP_KEY] as number
     }));
 
-    // TODO: настроить выборку, если группы проигнорированы
-    /*
-    "config": {
-      "isComplexData": false,
-      "isGroupsIgnored": true,
-      "isGroupsUsed": true
-    }
-    */
+    const updatGroupsArr = (arr: TItemsArr, items: TLinkedItem[]): TLinkedGroup[] => arr.map((item: TItemData) => ({
+      [ID_KEY]: item[ID_KEY] as number,
+      [NAME_KEY]: item[NAME_KEY] as string,
+      [DEPT_KEY]: item[DEPT_KEY] as number,
+      [SUBDEPT_KEY]: item[SUBDEPT_KEY] as number,
+      pricelist: items.filter(data => data[GROUP_KEY] === item[ID_KEY])
+    }));
+
     const params = config
       ? {
-        [IS_GROUPS_IGNORED_KEY]: Boolean(config[IS_GROUPS_IGNORED_KEY])
+        [IS_GROUP_IGNORED_KEY]: Boolean(config[IS_GROUP_IGNORED_KEY]),
+        [IS_GROUP_USED_KEY]: Boolean(config[IS_GROUP_USED_KEY])
       }
       : {
-        [IS_GROUPS_IGNORED_KEY]: false
+        [IS_GROUP_IGNORED_KEY]: false,
+        [IS_GROUP_USED_KEY]: false
       };
-    console.log(payload);
+
     const groupedItems = updatItemsArr(
       getMatchedItems(
         payload[TYPES[GROUP_KEY]],
@@ -87,22 +91,25 @@ const useResLinkedItems = (): IResLinkedItems => {
       )
     );
 
-    const groups: TLinkedGroup[] = payload[TYPES[GROUP_KEY]].map(item => ({
-      [ID_KEY]: item[ID_KEY] as number,
-      [NAME_KEY]: item[NAME_KEY] as string,
-      [DEPT_KEY]: item[DEPT_KEY] as number,
-      [SUBDEPT_KEY]: item[SUBDEPT_KEY] as number,
-      pricelist: groupedItems.filter(data => data[GROUP_KEY] === item[ID_KEY])
-    }));
+    const groups: TLinkedGroup[] = params[IS_GROUP_USED_KEY]
+      ? updatGroupsArr(
+          pricelist[TYPES[GROUP_KEY]].filter(
+            item => fetchArray(payload[TYPES[ITEM_KEY]], GROUP_KEY).map(data => data[GROUP_KEY]).includes(item[ID_KEY])
+          ),
+          items
+        )
+      : updatGroupsArr(payload[TYPES[GROUP_KEY]], groupedItems)
 
     const subdepts: TLinkedSubdept[] = payload[TYPES[SUBDEPT_KEY]].map(item => ({
       [ID_KEY]: item[ID_KEY] as number,
       [NAME_KEY]: item[NAME_KEY] as string,
       [DEPT_KEY]: item[DEPT_KEY] as number,
       groups: groups.filter(data => data[SUBDEPT_KEY] === item[ID_KEY]),
-      pricelist: items.filter(
-        data => params[IS_GROUPS_IGNORED_KEY] ? data[SUBDEPT_KEY] === item[ID_KEY] : data[SUBDEPT_KEY] === item[ID_KEY] && data[GROUP_KEY] === 0
-      )
+      pricelist: params[IS_GROUP_USED_KEY]
+        ? items.filter(data => data[SUBDEPT_KEY] === item[ID_KEY] && data[GROUP_KEY] === 0)
+        : items.filter(
+            data => params[IS_GROUP_IGNORED_KEY] ? data[SUBDEPT_KEY] === item[ID_KEY] : data[SUBDEPT_KEY] === item[ID_KEY] && data[GROUP_KEY] === 0
+          )
     }));
 
     const depts: TLinkedDept[] = payload[TYPES[DEPT_KEY]].map(item => ({

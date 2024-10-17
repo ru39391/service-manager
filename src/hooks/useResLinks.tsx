@@ -13,7 +13,7 @@ import {
   ITEM_KEY,
   TYPES,
   IS_COMPLEX_DATA_KEY,
-  IS_GROUPS_IGNORED_KEY
+  IS_GROUP_IGNORED_KEY
 } from '../utils/constants';
 
 import { useSelector } from '../services/hooks';
@@ -244,7 +244,7 @@ const useResLinks = (): IResLinks => {
       setLinkedItems([]);
     }
 
-    if(linkedDataConfig !== null && linkedDataConfig[IS_GROUPS_IGNORED_KEY]) {
+    if(linkedDataConfig !== null && linkedDataConfig[IS_GROUP_IGNORED_KEY]) {
       setExistableItems(
         filterItems(linkedSubdepts, SUBDEPT_KEY, ITEM_KEY)
       );

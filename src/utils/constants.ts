@@ -69,8 +69,8 @@ const UPDATED_KEY = 'updated';
 const REMOVED_KEY = 'removed';
 
 const IS_COMPLEX_DATA_KEY = 'isComplexData';
-const IS_GROUPS_IGNORED_KEY = 'isGroupsIgnored';
-const IS_GROUPS_USED_KEY = 'isGroupsUsed';
+const IS_GROUP_IGNORED_KEY = 'isGroupIgnored';
+const IS_GROUP_USED_KEY = 'isGroupUsed';
 
 const TITLES = {
   [DEPT_KEY]: 'Отделения',
@@ -116,8 +116,8 @@ const TYPES = {
 
 const LINKED_RES_PARAMS = {
   [IS_COMPLEX_DATA_KEY]: 'Комплексный выбор',
-  [IS_GROUPS_IGNORED_KEY]: 'Игнорировать группы',
-  [IS_GROUPS_USED_KEY]: 'Сохранить группировку',
+  [IS_GROUP_IGNORED_KEY]: 'Игнорировать группы',
+  [IS_GROUP_USED_KEY]: 'Сохранить группировку',
   [ADD_ACTION_KEY]: 'Выбрать все группы',
   [REMOVE_ACTION_KEY]: 'Отменить выбор групп'
 }
@@ -193,7 +193,7 @@ export {
   SITE_URL,
   PAGE_COUNTER,
   IS_COMPLEX_DATA_KEY,
-  IS_GROUPS_IGNORED_KEY,
-  IS_GROUPS_USED_KEY,
+  IS_GROUP_IGNORED_KEY,
+  IS_GROUP_USED_KEY,
   LINKED_RES_PARAMS
 };
