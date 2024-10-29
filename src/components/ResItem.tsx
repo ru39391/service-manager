@@ -97,10 +97,18 @@ const ResItem: FC = () => {
 
   useEffect(() => {
     setLinkedData();
+    console.log({linkedSubdepts});
   }, [
     linkedSubdepts,
     existableGroups,
     existableItems
+  ]);
+
+  useEffect(() => {
+    // TODO: устранить баг с установкой существующих категорий - пример "Косметологии": существует три и все выбраны
+    // console.log({existableSubdepts});
+  }, [
+    existableSubdepts
   ]);
 
   if(resLinkedItems.length > 0) {
@@ -154,6 +162,7 @@ const ResItem: FC = () => {
         })}
       />}
 
+      {/* // TODO: устранить баг с установкой существующих категорий, возможное решение: убрать existableSubdepts.length > 0 или изменить условие с учётом привязанных элементов */}
       {existableSubdepts.length > 0 && <Autocomplete
         multiple
         filterSelectedOptions

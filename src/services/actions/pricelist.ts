@@ -28,6 +28,7 @@ import type { TPricelistAction } from '../slices/pricelist-slice';
 
 import {
   RES_KEY,
+  RESLINKS_KEY,
   ADD_ACTION_KEY,
   EDIT_ACTION_KEY,
   REMOVE_ACTION_KEY,
@@ -51,7 +52,7 @@ import { fetchData } from '../../mocks';
 const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
-  const keys = [...Object.values(TYPES), RES_KEY];
+  const keys = [...Object.values(TYPES), RES_KEY, RESLINKS_KEY];
 
   try {
     const response = await Promise.all(keys.map(type => axios.get(`${API_URL}${type}`)));

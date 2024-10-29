@@ -53,6 +53,7 @@ const QUANTITY_KEY = 'quantity';
 
 const ITEM_KEY = 'items';
 const RES_KEY = 'res';
+const RESLINKS_KEY = 'reslinks';
 const RES_ID_KEY = 'id';
 const PARENT_KEY = 'parent';
 const TEMPLATE_KEY = 'template';
@@ -158,6 +159,7 @@ export {
   NOT_EMPTY_CATEGORY,
   EMPTY_CATEGORY,
   RES_KEY,
+  RESLINKS_KEY,
   RES_ID_KEY,
   PARENT_KEY,
   TEMPLATE_KEY,

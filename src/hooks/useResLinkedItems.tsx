@@ -143,6 +143,7 @@ const useResLinkedItems = (): IResLinkedItems => {
       ),
       [TYPES[ITEM_KEY]]: arr.reduce((acc: TLinkedItem[], item) => [...acc, ...item[TYPES[ITEM_KEY]]], [])
     };
+    /*
     const params = config === null
       ? {
         [IS_COMPLEX_DATA_KEY]: false,
@@ -154,6 +155,15 @@ const useResLinkedItems = (): IResLinkedItems => {
         [IS_GROUP_IGNORED_KEY]: Boolean(config[IS_GROUP_IGNORED_KEY]),
         [IS_GROUP_USED_KEY]: Boolean(config[IS_GROUP_USED_KEY]),
       };
+      */
+    const params = [
+        IS_COMPLEX_DATA_KEY,
+        IS_GROUP_IGNORED_KEY,
+        IS_GROUP_USED_KEY
+      ].reduce((acc, key) => ({
+        ...acc,
+        [key]: config === null ? false : Boolean(config[key])
+      }), {});
 
     const handleLinkedItems = (arr: TLinkedItem[] | TLinkedGroup[] | TLinkedSubdept[] | TItemsArr) => JSON.stringify(arr.map(item => item[ID_KEY]));
 

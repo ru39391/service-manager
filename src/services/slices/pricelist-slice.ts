@@ -24,6 +24,7 @@ export type TPricelistAction = {
     groups?: TItemsArr;
     pricelist?: TItemsArr;
     res?: TResourceData[];
+    reslinks?: TItemsArr;
     alertType?: string;
     alertMsg?: string;
     type?: string;
@@ -37,6 +38,7 @@ export type TPricelistState = {
   groups: TItemsArr;
   pricelist: TItemsArr;
   res: TResourceData[];
+  reslinks: TItemsArr; // TODO: назначить верный тип
   isPricelistLoading: boolean;
   isPricelistSucceed: boolean;
   isPricelistFailed: boolean;
@@ -51,6 +53,7 @@ const initialState: TPricelistState = {
   groups: [],
   pricelist: [],
   res: [],
+  reslinks: [],
   isPricelistLoading: false,
   isPricelistSucceed: false,
   isPricelistFailed: false,
@@ -81,6 +84,7 @@ const pricelistSlice = createSlice({
           [NAME_KEY]: item[PARENT_KEY][NAME_KEY].replace(/<[^>]*>/g, '')
         },
       })) || [],
+      reslinks: action.payload.reslinks || [],
       isPricelistLoading: false,
       isPricelistSucceed: true,
       isPricelistFailed: false,

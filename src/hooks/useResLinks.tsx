@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
+import { useParams } from 'react-router-dom';
 
 import {
+  RESLINKS_KEY,
   ID_KEY,
   NAME_KEY,
   IS_VISIBLE_KEY,
@@ -63,8 +65,10 @@ const useResLinks = (): IResLinks => {
 
   const [linkedDataConfig, setLinkedDataConfig] = useState<TCustomData<boolean> | null>(null);
 
+  const { id: resId } = useParams();
+
   const pricelist: TCustomData<TItemsArr>  = useSelector(
-    ({ pricelist }) => Object.values(TYPES).reduce((acc, key) => ({ ...acc, [key]: pricelist[key] }), {}
+    ({ pricelist }) => [...Object.values(TYPES), RESLINKS_KEY].reduce((acc, key) => ({ ...acc, [key]: pricelist[key] }), {}
   ));
 
   const setResData = (arr: TItemsArr[]): TCustomData<TItemsArr> => arr.reduce(
@@ -251,6 +255,23 @@ const useResLinks = (): IResLinks => {
     }
   };
 
+  const setResLinks = () => {
+    const data = pricelist[RESLINKS_KEY].find(item => item[ID_KEY] === Number(resId));
+
+    if(!data) {
+      return;
+    }
+
+    setLinkedDataConfig(JSON.parse(data.config));
+
+    Object.values(TYPES).forEach((key, index) => {
+      //console.log(pricelist[key].filter(item => JSON.parse(data[key]).includes(item[ID_KEY])));
+      resLinkHandlers[Object.keys(TYPES)[index]]({
+        items: pricelist[key].filter(item => JSON.parse(data[key]).includes(item[ID_KEY]))
+      })
+    });
+  }
+
   useEffect(() => {
     updateLinkedDataConfig();
   }, [
@@ -274,6 +295,7 @@ const useResLinks = (): IResLinks => {
       filterItems(linkedDepts, DEPT_KEY, SUBDEPT_KEY)
     );
     setLinkedDataConfig(null);
+    console.log({linkedDepts, subdepts: filterItems(linkedDepts, DEPT_KEY, SUBDEPT_KEY)});
   }, [
     linkedDepts
   ]);
@@ -282,6 +304,12 @@ const useResLinks = (): IResLinks => {
     setExistableDepts(pricelist[TYPES[DEPT_KEY]]);
   }, [
     pricelist[TYPES[DEPT_KEY]]
+  ]);
+
+  useEffect(() => {
+    setResLinks();
+  }, [
+    pricelist[RESLINKS_KEY]
   ]);
 
   return {
