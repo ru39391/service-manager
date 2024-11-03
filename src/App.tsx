@@ -22,6 +22,7 @@ import {
   GROUP_KEY,
   ITEM_KEY,
   RES_KEY,
+  PARSER_KEY,
   TYPES,
   DEFAULT_DOC_TITLE
 } from './utils/constants';
@@ -76,7 +77,7 @@ const App: FC = () => {
           <Route index element={<Category />} />
           <Route path=':id' element={<Category />} />
         </Route>
-        <Route path='/parser' element={<Parser />} />
+        <Route path={`/${PARSER_KEY}`} element={<Parser />} />
       </Routes>
       <CssBaseline />
     </ThemeProvider>

@@ -2,6 +2,7 @@ import { FC } from 'react';
 import { Box, List } from '@mui/material';
 
 import NavItem from './NavItem';
+import NavParserItem from './NavParserItem';
 
 import useSubNav from '../hooks/useSubNav';
 
@@ -32,7 +33,7 @@ const Nav: FC = () => {
         bgcolor: 'background.default',
       }}
     >
-      {depts.length > 0 && <List
+      <List
         component="nav"
         sx={{
           position: 'absolute',
@@ -45,7 +46,7 @@ const Nav: FC = () => {
           },
         }}
       >
-        {/* // TODO: добавить ссылку на парсер */}
+        <NavParserItem />
         {depts.map(
           ({ item_id, name }) =>
             <NavItem
@@ -58,7 +59,7 @@ const Nav: FC = () => {
               setSubNav={setSubNav}
             />
         )}
-      </List>}
+      </List>
     </Box>
   )
 };

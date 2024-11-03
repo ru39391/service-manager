@@ -7,11 +7,7 @@ import {
   Breadcrumbs,
   IconButton
 } from '@mui/material';
-import {
-  Add,
-  EditOutlined,
-  DeleteOutlined
-} from '@mui/icons-material';
+import { Add, EditOutlined } from '@mui/icons-material';
 
 import useModal from '../hooks/useModal';
 import useCurrentData from '../hooks/useCurrentData';
@@ -22,13 +18,10 @@ import { setFormData } from '../services/slices/form-slice';
 import {
   RES_KEY,
   EDIT_TITLE,
-  REMOVE_TITLE,
   EDIT_ITEM_TITLE,
   ADD_CATEGORY_TITLE,
   ADD_ACTION_KEY,
-  EDIT_ACTION_KEY,
-  REMOVE_ACTION_KEY,
-  REMOVE_CONFIRM_MSG
+  EDIT_ACTION_KEY
 } from '../utils/constants';
 
 const Header: FC = () => {
@@ -64,16 +57,6 @@ const Header: FC = () => {
     dispatchFormData(EDIT_ACTION_KEY);
   }
 
-  // TODO: отследить баг удаления категории
-  // TODO: вынести иконки в навигацию
-  const removeCategory = () => {
-    toggleModal({
-      title: `${REMOVE_TITLE} ${pageTitle && (`«${pageTitle}»`)}`,
-      desc: `${REMOVE_CONFIRM_MSG} ${REMOVE_TITLE.toLocaleLowerCase()} ${pageTitle && (`«${pageTitle}»`)}?`
-    });
-    dispatchFormData(REMOVE_ACTION_KEY);
-  }
-
   return (
     title && <>
       <Box
@@ -85,39 +68,32 @@ const Header: FC = () => {
         }}
       >
         <Typography variant="h5">{title}</Typography>
-        {currentFormData.id && currentFormData.type !== RES_KEY && <Tooltip
-          placement="top"
-          title={EDIT_ITEM_TITLE}
-        >
-          <IconButton
-            sx={{ p: 1, color: 'text.secondary' }}
-            onClick={editCategory}
+        {currentFormData.id && currentFormData.type !== RES_KEY
+          && <Tooltip
+            placement="top"
+            title={EDIT_ITEM_TITLE}
           >
-            <EditOutlined fontSize="medium" />
-          </IconButton>
-        </Tooltip>}
-        {currentFormData.type !== RES_KEY && <Tooltip
-          placement="top"
-          title={ADD_CATEGORY_TITLE}
-        >
-          <IconButton
-            sx={{ p: 0, color: 'text.secondary' }}
-            onClick={addCategory}
+            <IconButton
+              sx={{ p: 1, color: 'text.secondary' }}
+              onClick={editCategory}
+            >
+              <EditOutlined fontSize="medium" />
+            </IconButton>
+          </Tooltip>
+        }
+        {currentFormData.type !== RES_KEY
+          && <Tooltip
+            placement="top"
+            title={ADD_CATEGORY_TITLE}
           >
-            <Add fontSize="large" />
-          </IconButton>
-        </Tooltip>}
-        {currentFormData.id && currentFormData.type !== RES_KEY && <Tooltip
-          placement="top"
-          title={REMOVE_TITLE}
-        >
-          <IconButton
-            sx={{ p: 1, color: 'text.secondary' }}
-            onClick={removeCategory}
-          >
-            <DeleteOutlined fontSize="medium" />
-          </IconButton>
-        </Tooltip>}
+            <IconButton
+              sx={{ p: 0, color: 'text.secondary' }}
+              onClick={addCategory}
+            >
+              <Add fontSize="large" />
+            </IconButton>
+          </Tooltip>
+        }
       </Box>
       <Breadcrumbs
         aria-label="breadcrumb"

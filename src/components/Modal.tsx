@@ -5,17 +5,16 @@ import {
 } from 'react';
 import {
   Dialog,
-  DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
   Slide,
-  Button,
   IconButton
 } from '@mui/material';
 import { Close, DeleteOutlined } from '@mui/icons-material';
 
 import useModal from '../hooks/useModal';
+import useUrlHandler from '../hooks/useUrlHandler';
 
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
@@ -49,6 +48,7 @@ const Modal: FC<IModal> = ({ fc, payload }) => {
     formDesc
   } = useSelector(state => state.form);
 
+  const { currUrlData } = useUrlHandler();
   const { modalContent, toggleModal } = useModal({ fc, payload });
 
   const closeModal = (): Promise<{ isSucceed: boolean; }> => {
@@ -115,7 +115,7 @@ const Modal: FC<IModal> = ({ fc, payload }) => {
             {/*
               // TODO: изменить условие для отображения иконки
             */}
-            {formData && formData.action === EDIT_ACTION_KEY
+            {formData && formData.action === EDIT_ACTION_KEY && formData.type !== currUrlData.type
               ? <IconButton
                   sx={{ p: 1, color: 'red' }}
                   onClick={() => openConfirmModal(formData ? { data: formData.data as TItemData, type: formData.type as string } : null)}

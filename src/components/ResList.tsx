@@ -1,12 +1,8 @@
-import { FC, useState, useEffect, ChangeEvent } from 'react';
+import { FC, useEffect, ChangeEvent } from 'react';
 import {
   Box,
   Breadcrumbs,
   Button,
-  ButtonGroup,
-  Card,
-  CardActions,
-  CardContent,
   Checkbox,
   FormControl,
   FormControlLabel,
@@ -17,15 +13,12 @@ import {
   Pagination,
   Select,
   TextField,
+  Tooltip,
   Typography
 } from '@mui/material';
-import {
-  Edit,
-  FilterAlt,
-  RemoveRedEye,
-  RestartAlt,
-  Settings
-} from '@mui/icons-material';
+import { FilterAlt, RestartAlt } from '@mui/icons-material';
+
+import ResCard from './ResCard';
 
 import useFilter from '../hooks/useFilter';
 import usePagination from '../hooks/usePagination';
@@ -38,8 +31,7 @@ import {
   PARENT_KEY,
   TEMPLATE_KEY,
   IS_PARENT_KEY,
-  UPDATED_KEY,
-  SITE_URL,
+  UPDATED_KEY
 } from '../utils/constants';
 
 import type { TResParent, TResTemplate } from '../types';
@@ -72,7 +64,6 @@ const ResList: FC = () => {
 
   useEffect(() => {
     setCurrentPage(1);
-    //console.log(filterData);
   }, [
     filterData
   ]);
@@ -95,7 +86,6 @@ const ResList: FC = () => {
 
       {/*
         // TODO: перенести фильтр в отдельный компонент
-        // TODO: настроить тултипы иконкам
       */}
       <Box
         sx={{
@@ -119,21 +109,26 @@ const ResList: FC = () => {
           value={filterData && filterData[NAME_KEY] ? filterData[NAME_KEY] : ''}
           onChange={({ target }) => handleFilterData({ [NAME_KEY]: target.value })}
         />
-        <IconButton
-          color="primary"
-          aria-label="Показать фильтр"
-          onClick={() => {
-            handleFilterData(
-              filterData && filterData[NAME_KEY]
-                ? { [NAME_KEY]: filterData[NAME_KEY], [UPDATED_KEY]: 1 }
-                : null
-            );
-            setFilterVisibility(!isFilterVisible);
-          }}
-          size="large"
+        <Tooltip
+          placement="top"
+          title={`${isFilterVisible ? 'Скрыть' : 'Показать'} фильтр`}
         >
-          <FilterAlt fontSize="inherit" />
-        </IconButton>
+          <IconButton
+            color="primary"
+            aria-label={`${isFilterVisible ? 'Скрыть' : 'Показать'} фильтр`}
+            onClick={() => {
+              handleFilterData(
+                filterData && filterData[NAME_KEY]
+                  ? { [NAME_KEY]: filterData[NAME_KEY], [UPDATED_KEY]: 1 }
+                  : null
+              );
+              setFilterVisibility(!isFilterVisible);
+            }}
+            size="large"
+          >
+            <FilterAlt fontSize="inherit" />
+          </IconButton>
+        </Tooltip>
       </Box>
       {isFilterVisible && <Grid
         container
@@ -213,30 +208,8 @@ const ResList: FC = () => {
       </Grid>}
 
       {Boolean(filterData) && <Typography sx={{ typography: 'body1', mb: 2 }}>{currentItemsMess}</Typography>}
-
-      {/* // TODO: перенести шаблон карточки ресурса в отдельный компонент */}
       {currentPageItems.length > 0 && <Grid container spacing={2} sx={{ mb: 3 }}>
-        {currentPageItems.map(item => (<Grid item key={item[RES_ID_KEY].toString()} xs={4}>
-          <Card variant="outlined">
-            <CardContent>
-              <Typography gutterBottom sx={{ color: 'text.secondary', fontSize: 14 }}>{item[PARENT_KEY][NAME_KEY]}, id: {item[PARENT_KEY][`${PARENT_KEY}_${RES_ID_KEY}`].toString()}</Typography>
-              <Typography variant="h5" component="div">{item[NAME_KEY]}</Typography>
-              <Typography sx={{ color: 'text.secondary', mb: 1.5 }}>{item[TEMPLATE_KEY][NAME_KEY]}</Typography>
-              <Typography variant="body2">
-                {TITLES[IS_PARENT_KEY]}: <Typography variant="body2" sx={{ color: 'text.secondary' }} component="span">{item[IS_PARENT_KEY] ? 'Да' : 'Нет'}</Typography><br />
-                Опубликовано: <Typography variant="body2" sx={{ color: 'text.secondary' }} component="span">{item.publishedon.date}</Typography><br />
-                Изменено: <Typography variant="body2" sx={{ color: 'text.secondary' }} component="span">{item.editedon.date}</Typography>
-              </Typography>
-            </CardContent>
-            <CardActions>
-            <ButtonGroup aria-label="outlined primary button group">
-              <IconButton href={`${'http://stomistok.local/'}${item.uri}`} target="_blank"><RemoveRedEye /></IconButton>
-              <IconButton href={`/${RES_KEY}/${item[RES_ID_KEY].toString()}`}><Settings /></IconButton>
-              <IconButton href={`${'http://stomistok.local/'}manager/?a=resource/update&id=${item[RES_ID_KEY].toString()}`} target="_blank"><Edit /></IconButton>
-            </ButtonGroup>
-            </CardActions>
-          </Card>
-        </Grid>))}
+        {currentPageItems.map(item => (<Grid item key={item[RES_ID_KEY].toString()} xs={4}><ResCard item={item} /></Grid>))}
       </Grid>}
       {Boolean(currentPageCounter) && currentPageCounter > 1
         && <Box sx={{ display: 'flex', justifyContent: 'center' }}>

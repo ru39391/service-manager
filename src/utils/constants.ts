@@ -7,6 +7,7 @@ const FILE_ITEMS_TITLE = 'Найдены обновлённые записи: ';
 const NOT_EMPTY_CATEGORY = 'Категория содержит следующие элементы: ';
 const EMPTY_CATEGORY = 'Выбранные категории не содержат услуг';
 
+const PARSER_TITLE = 'Парсер';
 const ADD_TITLE = 'Добавить';
 const EDIT_TITLE = 'Редактировать';
 const REMOVE_TITLE = 'Удалить';
@@ -54,6 +55,7 @@ const QUANTITY_KEY = 'quantity';
 const ITEM_KEY = 'items';
 const RES_KEY = 'res';
 const RESLINKS_KEY = 'reslinks';
+const PARSER_KEY = 'parser';
 const RES_ID_KEY = 'id';
 const PARENT_KEY = 'parent';
 const TEMPLATE_KEY = 'template';
@@ -143,6 +145,7 @@ export {
   FETCHING_ERROR_MSG,
   RESOURCES_ERROR_MSG,
   FILE_UPLOADING_ERROR_MSG,
+  PARSER_TITLE,
   ADD_TITLE,
   EDIT_TITLE,
   REMOVE_TITLE,
@@ -160,6 +163,7 @@ export {
   EMPTY_CATEGORY,
   RES_KEY,
   RESLINKS_KEY,
+  PARSER_KEY,
   RES_ID_KEY,
   PARENT_KEY,
   TEMPLATE_KEY,
