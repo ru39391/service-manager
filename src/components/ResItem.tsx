@@ -104,13 +104,6 @@ const ResItem: FC = () => {
     existableItems
   ]);
 
-  useEffect(() => {
-    // TODO: устранить баг с установкой существующих категорий - пример "Косметологии": существует три и все выбраны
-    // console.log({existableSubdepts});
-  }, [
-    existableSubdepts
-  ]);
-
   if(resLinkedItems.length > 0) {
     return (
       <>
@@ -146,7 +139,7 @@ const ResItem: FC = () => {
 
   return (
     <>
-      {existableDepts.length > 0 && <Autocomplete
+      {(existableDepts.length + linkedDepts.length) > 0 && <Autocomplete
         multiple
         filterSelectedOptions
         id={`${DEPT_KEY}-selecter`}
@@ -163,8 +156,7 @@ const ResItem: FC = () => {
         })}
       />}
 
-      {/* // TODO: устранить баг с установкой существующих категорий, возможное решение: убрать existableSubdepts.length > 0 или изменить условие с учётом привязанных элементов */}
-      {existableSubdepts.length > 0 && <Autocomplete
+      {(existableSubdepts.length + linkedSubdepts.length) > 0 && <Autocomplete
         multiple
         filterSelectedOptions
         id={`${SUBDEPT_KEY}-selecter`}
@@ -312,7 +304,7 @@ const ResItem: FC = () => {
                             flexWrap: 'wrap',
                           }}
                         >
-                          {/* TODO: https://skrinshoter.ru/vSESzEhTYzC - баг выбора услуг после удаления группы из списка */}
+                          {/* // TODO: https://skrinshoter.ru/vSESzEhTYzC - баг выбора услуг после удаления группы из списка */}
                           {existableItems.filter((item) => item[GROUP_KEY] === options[ID_KEY]).map(
                             (data) => <Chip
                               key={data[ID_KEY].toString()}
