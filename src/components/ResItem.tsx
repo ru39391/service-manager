@@ -123,6 +123,7 @@ const ResItem: FC = () => {
           >
             Назад
           </Button>
+          {/* // TODO: настроить сохранение {color || 'success'} */}
           <LoadingButton
             color='success'
             variant="outlined"
@@ -378,7 +379,6 @@ const ResItem: FC = () => {
         </Box>
       )}
 
-      {/* // TODO: настроить сохранение {color || 'success'} */}
       <Box sx={{ display: 'flex', justifyContent: 'space-between', mt: 1.5 }}>
         <Button
           variant="outlined"
@@ -402,46 +402,3 @@ const ResItem: FC = () => {
 };
 
 export default ResItem;
-
-/*
-  Чекбоксы:
-    - игнорировать отделения;
-    - игнорировать специализации;
-    - игнорировать группы;
-
-  Радио:
-    - выбрать услуги;
-    - выбрать группы;
-    - выбрать специализации;
-
-  Сортировка по INDEX_KEY
-
-  {
-    res_id: 7,
-    data: [{
-      item_id: 7917,
-      name: 'Лазерное удаление  невусов СО2 лазером',
-      index: 0,
-      parent: {
-        dept: {
-          item_id: 4,
-          name: 'Медицина',
-          index: 0,
-          isVisible: 0,
-        },
-        subdept: {
-          item_id: 41,
-          name: 'Cпециализация',
-          index: 0,
-          isVisible: 1,
-        },
-        group: {
-          item_id: 100,
-          name: 'Группа',
-          index: 0,
-          isVisible: 0,
-        }
-      }
-    }]
-  }
-*/

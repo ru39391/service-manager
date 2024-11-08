@@ -89,21 +89,7 @@ const useDataComparer = (): IDataComparer => {
       });
 
       const isEqual = currItem
-        ? Object.keys(item).every(key => {
-          // TODO: вычислять все изменённые параметры - реализовано?
-          /*
-          if(item[key] !== currItem[key]) {
-            console.log({
-              [ID_KEY]: item[ID_KEY],
-              key,
-              item,
-              currItem
-            });
-          }
-          */
-
-          return item[key] === currItem[key];
-        })
+        ? Object.keys(item).every(key => item[key] === currItem[key])
         : true;
 
       return isEqual

@@ -24,8 +24,9 @@ interface IFilter {
   setFilterVisibility: (value: boolean) => void;
 }
 
-// TODO: настроить сохранение параметров фильтра в sessionStorage - ПЛАТНО
-// TODO: возможная доработка - порядок сортировки и выделение цветом совпадающего текста - ПЛАТНО
+// TODO: необязательная доработка - настроить сохранение параметров фильтра в sessionStorage
+// TODO: необязательная доработка - порядок сортировки
+// TODO: необязательная доработка - выделение цветом совпадающего текста
 const useFilter = (): IFilter => {
   const [filterData, setFilterData] = useState<TItemData | null>(null);
   const [isFilterVisible, setFilterVisibility] = useState<boolean>(false);

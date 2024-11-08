@@ -73,7 +73,9 @@ const useCurrentData = (): ICurrentData => {
   const setCurrentFormValues = (type: string): TItemData => {
     //console.log('currentCategory: ', currentCategory);
 
-    // TODO: решить проблему с undefined (пробрасыванием из другого хука) - или для отслеживания обновления не нужно?
+    // TODO: проверить после загрузки нового документа:
+    // решить проблему с undefined (пробрасыванием из другого хука) - или для отслеживания обновления не нужно?
+    // вероятно, проблема решена - отследить на финальном тестировании
     return {
       ...formFields[type].reduce((acc, item) => ({ ...acc, [item]: '' }), {}),
       ...selecterFields[type].reduce(

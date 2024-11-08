@@ -262,12 +262,12 @@ const useResLinks = (): IResLinks => {
       return;
     }
 
-    setLinkedDataConfig(JSON.parse(data.config));
+    setLinkedDataConfig(JSON.parse(data.config as string));
 
     Object.values(TYPES).forEach((key, index) => {
       //console.log(pricelist[key].filter(item => JSON.parse(data[key]).includes(item[ID_KEY])));
       resLinkHandlers[Object.keys(TYPES)[index]]({
-        items: pricelist[key].filter(item => JSON.parse(data[key]).includes(item[ID_KEY]))
+        items: pricelist[key].filter(item => JSON.parse(data[key] as string).includes(item[ID_KEY]))
       })
     });
   }

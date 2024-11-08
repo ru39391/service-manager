@@ -38,7 +38,7 @@ export type TPricelistState = {
   groups: TItemsArr;
   pricelist: TItemsArr;
   res: TResourceData[];
-  reslinks: TItemsArr; // TODO: назначить верный тип
+  reslinks: TItemsArr;
   isPricelistLoading: boolean;
   isPricelistSucceed: boolean;
   isPricelistFailed: boolean;
