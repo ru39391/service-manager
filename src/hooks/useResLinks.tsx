@@ -172,7 +172,7 @@ const useResLinks = (): IResLinks => {
     }
 
     return isLinkedItemActive(arr, data)
-      ? [...arr].filter(item => item !== data)
+      ? [...arr].filter(item => item[ID_KEY] !== data[ID_KEY])
       : [...arr, data];
   };
 
@@ -295,7 +295,7 @@ const useResLinks = (): IResLinks => {
       filterItems(linkedDepts, DEPT_KEY, SUBDEPT_KEY)
     );
     setLinkedDataConfig(null);
-    console.log({linkedDepts, subdepts: filterItems(linkedDepts, DEPT_KEY, SUBDEPT_KEY)});
+    // console.log({linkedDepts, subdepts: filterItems(linkedDepts, DEPT_KEY, SUBDEPT_KEY)});
   }, [
     linkedDepts
   ]);

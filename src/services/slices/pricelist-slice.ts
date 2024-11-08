@@ -7,7 +7,7 @@ import type {
   TItemsArr,
 } from '../../types';
 
-import { fetchItemsArr } from '../../utils';
+import { fetchItemsArr, sortStrArray } from '../../utils';
 import {
   ADD_ACTION_KEY,
   EDIT_ACTION_KEY,
@@ -72,10 +72,22 @@ const pricelistSlice = createSlice({
     }),
     getPricelistSucceed: (state, action: TPricelistAction) => ({
       ...state,
-      depts: fetchItemsArr(action.payload.depts),
-      subdepts: fetchItemsArr(action.payload.subdepts),
-      groups: fetchItemsArr(action.payload.groups),
-      pricelist: fetchItemsArr(action.payload.pricelist),
+      depts: sortStrArray(
+        fetchItemsArr(action.payload.depts),
+        NAME_KEY
+      ),
+      subdepts: sortStrArray(
+        fetchItemsArr(action.payload.subdepts),
+        NAME_KEY
+      ),
+      groups: sortStrArray(
+        fetchItemsArr(action.payload.groups),
+        NAME_KEY
+      ),
+      pricelist: sortStrArray(
+        fetchItemsArr(action.payload.pricelist),
+        NAME_KEY
+      ),
       res: action.payload.res?.map(item => ({
         ...item,
         [NAME_KEY]: item[NAME_KEY].replace(/<[^>]*>/g, ''),

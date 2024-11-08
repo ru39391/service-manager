@@ -11,6 +11,7 @@ const PARSER_TITLE = 'Парсер';
 const ADD_TITLE = 'Добавить';
 const EDIT_TITLE = 'Редактировать';
 const REMOVE_TITLE = 'Удалить';
+const CLEAR_TITLE = 'Очистить';
 const SAVE_TITLE = 'Сохранить';
 const APPLY_TITLE = 'Применить обновления';
 const ADD_CATEGORY_TITLE = 'Добавить раздел';
@@ -150,6 +151,7 @@ export {
   ADD_TITLE,
   EDIT_TITLE,
   REMOVE_TITLE,
+  CLEAR_TITLE,
   SAVE_TITLE,
   APPLY_TITLE,
   ADD_CATEGORY_TITLE,

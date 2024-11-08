@@ -39,7 +39,10 @@ import {
   IS_GROUP_IGNORED_KEY,
   IS_GROUP_USED_KEY,
   LINKED_RES_PARAMS,
-  SAVE_TITLE
+  SAVE_TITLE,
+  CLEAR_TITLE,
+  REMOVE_TITLE,
+  NO_ITEMS_TITLE
 } from '../utils/constants';
 
 import type { TLinkedSubdept } from '../types';
@@ -97,7 +100,6 @@ const ResItem: FC = () => {
 
   useEffect(() => {
     setLinkedData();
-    console.log({linkedSubdepts});
   }, [
     linkedSubdepts,
     existableGroups,
@@ -146,6 +148,9 @@ const ResItem: FC = () => {
         sx={{ mb: 3, backgroundColor: '#fff' }}
         value={linkedDepts}
         options={existableDepts}
+        clearText={CLEAR_TITLE}
+        closeText={REMOVE_TITLE}
+        noOptionsText={NO_ITEMS_TITLE}
         getOptionLabel={(option) => option[NAME_KEY] as string}
         renderInput={(props) => <TextField {...props} label={[TITLES[DEPT_KEY]]} />}
         renderOption={(props, option) => <ListItem {...props}>{option[NAME_KEY]}</ListItem>}
@@ -163,6 +168,9 @@ const ResItem: FC = () => {
         sx={{ mb: 2.5, backgroundColor: '#fff' }}
         value={linkedSubdepts}
         options={existableSubdepts}
+        clearText={CLEAR_TITLE}
+        closeText={REMOVE_TITLE}
+        noOptionsText={NO_ITEMS_TITLE}
         getOptionLabel={(option) => option[NAME_KEY] as string}
         groupBy={(option) => option[CATEGORY_KEY] as string}
         renderInput={(props) => <TextField {...props} label={[TITLES[SUBDEPT_KEY]]} />}
@@ -174,13 +182,7 @@ const ResItem: FC = () => {
           </li>
         )}
         getOptionKey={(option) => option[ID_KEY]}
-        onChange={(event, value, reason ) => {
-          console.log({value});
-          resLinkHandlers[SUBDEPT_KEY]({
-            action: reason,
-            items: reason === 'clear' ? [] : value
-          })
-        }}
+        onChange={(event, value, reason ) => resLinkHandlers[SUBDEPT_KEY]({ action: reason, items: reason === 'clear' ? [] : value })}
       />}
 
       {existableGroups.length > 0
@@ -304,7 +306,6 @@ const ResItem: FC = () => {
                             flexWrap: 'wrap',
                           }}
                         >
-                          {/* // TODO: https://skrinshoter.ru/vSESzEhTYzC - баг выбора услуг после удаления группы из списка */}
                           {existableItems.filter((item) => item[GROUP_KEY] === options[ID_KEY]).map(
                             (data) => <Chip
                               key={data[ID_KEY].toString()}
@@ -330,7 +331,7 @@ const ResItem: FC = () => {
                         {existableGroups.filter((group) => group[SUBDEPT_KEY] === subdept[ID_KEY]).map(
                           (data) => <Chip
                             key={data[ID_KEY].toString()}
-                            label={data[NAME_KEY]}
+                            label={`${data[NAME_KEY]}`}
                             variant="outlined"
                             onClick={() => resLinkHandlers[GROUP_KEY]({ data })}
                             {...( isLinkedItemActive(linkedGroups, data) && { color: 'primary', icon: <Done />, sx: { backgroundColor: '#fff' } } )}
