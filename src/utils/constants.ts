@@ -15,6 +15,7 @@ const SAVE_TITLE = 'Сохранить';
 const APPLY_TITLE = 'Применить обновления';
 const ADD_CATEGORY_TITLE = 'Добавить раздел';
 const EDIT_ITEM_TITLE = 'Изменить данные';
+const NO_GROUP_TITLE = 'Без группы';
 
 const REMOVE_CONFIRM_MSG = 'Вы действительно хотите';
 const CONFIRM_MSG = 'Подтвердите выполнение действия';
@@ -153,6 +154,7 @@ export {
   APPLY_TITLE,
   ADD_CATEGORY_TITLE,
   EDIT_ITEM_TITLE,
+  NO_GROUP_TITLE,
   REMOVE_CONFIRM_MSG,
   CONFIRM_MSG,
   CATEGORY_TITLE,

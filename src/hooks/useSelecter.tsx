@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 
 import { useSelector, useDispatch } from '../services/hooks';
-import { setFormValues, setSelectedItems } from '../services/slices/form-slice';
+import { setFormValues } from '../services/slices/form-slice';
 
 import type { TCustomData, TItemData, TItemsArr } from '../types';
 
@@ -12,7 +12,9 @@ import {
   DEPT_KEY,
   SUBDEPT_KEY,
   GROUP_KEY,
-  TYPES
+  RES_ID_KEY,
+  TYPES,
+  NO_GROUP_TITLE
 } from '../utils/constants';
 
 interface ISelecter {
@@ -45,6 +47,15 @@ const useSelecter = (): ISelecter => {
     form: state.form,
   }));
 
+  const setDefaultGroupData = (data: TItemData): TItemData => ({
+    ...pricelist[TYPES[GROUP_KEY]][0],
+    ...data,
+    [ID_KEY]: 0,
+    [GROUP_KEY]: 0,
+    [RES_ID_KEY]: 10000,
+    [NAME_KEY]: NO_GROUP_TITLE
+  });
+
   const handleSelectedItem = (
     data: TItemData
   ): TItemData => pricelist[TYPES[data.type]].find((item: TItemsArr) => item[ID_KEY] === data[ID_KEY]);
@@ -63,11 +74,6 @@ const useSelecter = (): ISelecter => {
     const arr = sortStrArray([...pricelist[TYPES[DEPT_KEY]]], NAME_KEY);
 
     setDeptsList(arr);
-    /*
-    dispatch(
-      setSelectedItems({ items: { [DEPT_KEY]: arr } })
-    );
-    */
   }
 
   const handleSubeptsList = () => {
@@ -78,11 +84,7 @@ const useSelecter = (): ISelecter => {
     );
 
     setSubdeptsList(arr);
-    /*
-    dispatch(
-      setSelectedItems({ items: { [SUBDEPT_KEY]: arr } })
-    );
-    */
+
     dispatch(
       setFormValues({
         values: {
@@ -100,12 +102,8 @@ const useSelecter = (): ISelecter => {
       selectedSubdept && selectedSubdept[ID_KEY] as number
     );
 
-    setGroupsList(arr);
-    /*
-    dispatch(
-      setSelectedItems({ items: { [GROUP_KEY]: arr } })
-    );
-    */
+    setGroupsList(arr.length > 0 ? [...arr, setDefaultGroupData(arr[0])] : arr);
+
     dispatch(
       setFormValues({
         values: {
@@ -117,7 +115,9 @@ const useSelecter = (): ISelecter => {
   }
 
   const selectOption = (data: TItemData) => {
-    const optionData = handleSelectedItem(data);
+    const optionData = data.type === GROUP_KEY && data[ID_KEY] === 0
+      ? setDefaultGroupData({ [DEPT_KEY]: selectedDept[ID_KEY], [SUBDEPT_KEY]: selectedSubdept[ID_KEY] })
+      : handleSelectedItem(data);
 
     setSelectedData({});
 

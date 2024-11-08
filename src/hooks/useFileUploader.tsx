@@ -174,7 +174,6 @@ const useFileUploader = (): IFileUploaderHook => {
     reader.addEventListener('load', handleUploadedFile);
   };
 
-  // TODO: проверить код
   const getRowData = (data: TItemData | null = null): void => {
     const parsedData = [
       file[TYPES[DEPT_KEY]],
