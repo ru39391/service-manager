@@ -1,5 +1,4 @@
-import { FC, Fragment, useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import { FC, Fragment, useCallback, useEffect } from 'react';
 import {
   Autocomplete,
   Box,
@@ -22,6 +21,9 @@ import ResLinkedItems from './ResLinkedItems';
 import useResLinks from '../hooks/useResLinks';
 import useResLinkedItems from '../hooks/useResLinkedItems';
 
+import { useDispatch } from '../services/hooks';
+import { handleResLinkedData } from '../services/actions/pricelist';
+
 import {
   ID_KEY,
   NAME_KEY,
@@ -29,7 +31,6 @@ import {
   SUBDEPT_KEY,
   GROUP_KEY,
   ITEM_KEY,
-  RES_KEY,
   TYPES,
   TITLES,
   CATEGORY_KEY,
@@ -45,8 +46,6 @@ import {
   NO_ITEMS_TITLE
 } from '../utils/constants';
 
-import type { TLinkedSubdept } from '../types';
-
 const GroupHeader = styled('div')(({ theme }) => ({
   zIndex: 1,
   position: 'sticky',
@@ -60,7 +59,7 @@ const GroupHeader = styled('div')(({ theme }) => ({
 const GroupList = styled('ul')({ padding: 0, zIndex: 1 });
 
 const ResItem: FC = () => {
-  const { id: resId } = useParams();
+  const dispatch = useDispatch();
   const {
     linkedDepts,
     linkedSubdepts,
@@ -77,9 +76,10 @@ const ResItem: FC = () => {
   } = useResLinks();
   const {
     resLinkedItems,
+    resLinkedData,
     isLinkedListExist,
+    isLinkedListCurrent,
     renderLinkedItems,
-    updateLinkedItems,
     resetLinkedItems
   } = useResLinkedItems();
 
@@ -97,6 +97,13 @@ const ResItem: FC = () => {
       });
     }
   };
+
+  const dispatchResLinkedData = useCallback(() => {
+    if(resLinkedData) dispatch(handleResLinkedData(resLinkedData));
+  }, [
+    dispatch,
+    resLinkedData
+  ]);
 
   useEffect(() => {
     setLinkedData();
@@ -124,13 +131,9 @@ const ResItem: FC = () => {
             variant="outlined"
             loadingPosition="start"
             loading={false}
-            disabled={!isLinkedListExist}
+            disabled={!isLinkedListExist || isLinkedListCurrent}
             startIcon={<Check />}
-            onClick={() => updateLinkedItems({
-              [RES_KEY]: Number(resId),
-              arr: resLinkedItems.reduce((acc: TLinkedSubdept[], item) => [...acc, ...item[TYPES[SUBDEPT_KEY]]], []),
-              config: linkedDataConfig
-            })}
+            onClick={dispatchResLinkedData}
           >
             {SAVE_TITLE}
           </LoadingButton>

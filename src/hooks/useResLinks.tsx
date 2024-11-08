@@ -20,12 +20,7 @@ import {
 
 import { useSelector } from '../services/hooks';
 
-import type {
-  TCustomData,
-  TItemsArr,
-  TItemData,
-  TPricelistData
-} from '../types';
+import type { TCustomData, TItemsArr, TItemData } from '../types';
 
 import { sortStrArray, fetchArray, getMatchedItems } from '../utils';
 

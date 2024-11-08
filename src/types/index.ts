@@ -95,3 +95,8 @@ export type TLinkedSubdept = TLinkedData & {
 export type TLinkedDept = TLinkedData & {
   subdepts: TLinkedSubdept[];
 };
+
+export type TResLinkedAction = {
+  action: string;
+  data: TItemData;
+};
