@@ -55,6 +55,7 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
   const keys = [...Object.values(TYPES), RES_KEY, RESLINKS_KEY];
 
   try {
+    // TODO: поправить get-запросы для передачи массивов id
     const response = await Promise.all(keys.map(type => axios.get(`${API_URL}${type}`)));
     //console.log(response);
 
@@ -113,7 +114,7 @@ const handlePricelistData = ({ action, type, items }: { action: string; type: st
     successMsg,
     errorMsg
   }: {
-    handler: (url: string, data: TCustomData<TItemData>) => Promise<AxiosResponse<string, TCustomData<TItemData>>>;
+    handler: (url: string, data: TCustomData<TItemData>) => Promise<AxiosResponse<TResponseDefault>>;
     dispatcher: ActionCreatorWithPayload<TPricelistAction['payload'], string>;
     modalTitle: string;
     successMsg: string;
@@ -137,15 +138,22 @@ const handlePricelistData = ({ action, type, items }: { action: string; type: st
   });
 
   try {
-    const {
-      success,
-      data,
-      errors
-    }: TResponseDefault = await fetchData(items);
+    // TODO: поправить баги при создании новых элементов
+    // https://skrinshoter.ru/sScw5BDJzxS - создание ранее не существовавшего элемента
+    // https://skrinshoter.ru/vScnu3NL271 - передача одинаковых id при создании элемента:
+    // https://skrinshoter.ru/sScaHRXoCdG и https://skrinshoter.ru/sScFX0myXGu
+    // https://skrinshoter.ru/sScl1F4J1Lk и https://skrinshoter.ru/sScHUzcaAov
+    // https://skrinshoter.ru/sScH7bYbMIy
+    const { data: { success, data, errors } } = await handler(
+      `${API_URL}${type}`,
+      {
+        ...items.reduce(
+          (acc: TCustomData<TItemData>, item, index) => ({...acc, [index]: item }), {}
+        )
+      }
+    );
+    // TODO: настроить передачу данных для удаления элементов
     /*
-    await handler(`${API_URL}${type}`, {
-      ...items.reduce((acc, item, index) => ({...acc, [index]: item }), {})
-    });
     await axios.delete(`${API_URL}${type}`, {
       ...items.reduce((acc, item, index) => ({...acc, [index]: item }), {})
     });
@@ -188,8 +196,8 @@ const handlePricelistData = ({ action, type, items }: { action: string; type: st
     } else {
       dispatch(getPricelistFailed({ alertMsg: errors ? message as string : errorMsg }));
     }
-  } catch(error) {
-    const { errors }: { errors: TResponseDefault['errors']; } = error;
+  } catch({response}) {
+    const { errors }: { errors: TResponseDefault['errors']; } = response.data;
 
     dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : errorMsg }));
   }

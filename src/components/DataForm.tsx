@@ -198,7 +198,7 @@ const DataForm: FC = () => {
   ]);
 
   useEffect(() => {
-    console.log('formValues: ', formValues);
+    //console.log('formValues: ', formValues);
 
     handleTextFields({
       [PRICE_KEY]: formData && formValues[PRICE_KEY] === undefined
