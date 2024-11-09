@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 
 import {
@@ -61,6 +61,7 @@ const useResLinkedItems = (): IResLinkedItems => {
 
   const { id: resId } = useParams();
 
+  const { response } = useSelector(state => state.pricelist);
   const pricelist: TCustomData<TItemsArr>  = useSelector(
     ({ pricelist }) => [...Object.values(TYPES), RESLINKS_KEY].reduce((acc, key) => ({ ...acc, [key]: pricelist[key] }), {}
   ));
@@ -217,6 +218,12 @@ const useResLinkedItems = (): IResLinkedItems => {
     setResLinkedItems([]);
     setResLinkedData(null);
   };
+
+  useEffect(() => {
+    setLinkedListCurrent(Boolean(response));
+  }, [
+    response
+  ]);
 
   return {
     resLinkedItems,

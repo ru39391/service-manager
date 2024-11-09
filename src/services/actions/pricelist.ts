@@ -218,31 +218,26 @@ const handleResLinkedData = (payload: { action: string; data: TItemData; }): TAp
     successMsg,
     errorMsg
   }: {
-    // TODO: исправить unknown на подходящий тип с учётом ответа https://skrinshoter.ru/sSbpvKfn5YS
-    handler: (url: string, data: TCustomData<TItemData>) => Promise<AxiosResponse<unknown>>;
+    handler: (url: string, data: TCustomData<TItemData>) => Promise<AxiosResponse<TResponseDefault>>;
     dispatcher: ActionCreatorWithPayload<TPricelistAction['payload'], string>;
     successMsg: string;
     errorMsg: string;
   } = actionData[payload.action];
 
   try {
-    const { data } = await handler(`${API_URL}${RESLINKS_KEY}`, { 0: payload.data });
+    const { data: { success, data } } = await handler(`${API_URL}${RESLINKS_KEY}`, { 0: payload.data });
 
-    console.log({ data });
-
-    /*
-    if(success) {
+    if(success && data) {
       dispatch(dispatcher({
         type: RESLINKS_KEY,
-        items: data,
+        items: data.succeed || [],
         alertMsg: successMsg
       }));
     } else {
       dispatch(getPricelistFailed({ alertMsg: errorMsg }));
     }
-    */
-  } catch(error) {
-    const { errors }: { errors: TResponseDefault['errors']; } = error;
+  } catch({response}) {
+    const { errors }: { errors: TResponseDefault['errors']; } = response.data;
 
     dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : UPDATE_ITEM_ERROR_MSG }));
   }

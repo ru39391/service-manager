@@ -21,7 +21,7 @@ import ResLinkedItems from './ResLinkedItems';
 import useResLinks from '../hooks/useResLinks';
 import useResLinkedItems from '../hooks/useResLinkedItems';
 
-import { useDispatch } from '../services/hooks';
+import { useSelector, useDispatch } from '../services/hooks';
 import { handleResLinkedData } from '../services/actions/pricelist';
 
 import {
@@ -59,6 +59,8 @@ const GroupHeader = styled('div')(({ theme }) => ({
 const GroupList = styled('ul')({ padding: 0, zIndex: 1 });
 
 const ResItem: FC = () => {
+  const { isPricelistLoading } = useSelector(state => state.pricelist);
+
   const dispatch = useDispatch();
   const {
     linkedDepts,
@@ -125,12 +127,11 @@ const ResItem: FC = () => {
           >
             Назад
           </Button>
-          {/* // TODO: настроить сохранение {color || 'success'} */}
           <LoadingButton
             color='success'
             variant="outlined"
             loadingPosition="start"
-            loading={false}
+            loading={isPricelistLoading}
             disabled={!isLinkedListExist || isLinkedListCurrent}
             startIcon={<Check />}
             onClick={dispatchResLinkedData}

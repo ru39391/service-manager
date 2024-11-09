@@ -17,15 +17,13 @@ export type TItemsArr = TItemData[];
 
 export type TPricelistData = TCustomData<TItemsArr>;
 
-export type TResponseList = TItemsArr | TCustomData<TItemData>;
-
 export type TResponseItems = {
   success: boolean;
   message?: string;
   counter: TCustomData<number>;
-  succeed?: TResponseList;
-  failed?: TResponseList;
-  inValid: TResponseList;
+  succeed?: TItemsArr;
+  failed?: TItemsArr;
+  inValid: TItemsArr;
 };
 
 export type TResponseDefault = {
