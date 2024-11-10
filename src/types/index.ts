@@ -98,3 +98,8 @@ export type TResLinkedAction = {
   action: string;
   data: TItemData;
 };
+
+export type TUrlData = {
+  type: string;
+  id: number | null;
+};

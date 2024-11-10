@@ -11,7 +11,9 @@ import {
   Slide,
   IconButton
 } from '@mui/material';
-import { Close, DeleteOutlined } from '@mui/icons-material';
+import { Close } from '@mui/icons-material';
+
+import DeleteIconBtn from './DeleteIconBtn';
 
 import useModal from '../hooks/useModal';
 import useUrlHandler from '../hooks/useUrlHandler';
@@ -23,7 +25,6 @@ import type { TItemData } from '../types';
 
 import {
   NAME_KEY,
-  EDIT_ACTION_KEY,
   REMOVE_ACTION_KEY,
   REMOVE_TITLE,
   REMOVE_CONFIRM_MSG
@@ -63,22 +64,19 @@ const Modal: FC<IModal> = ({ fc, payload }) => {
     });
   }
 
-  const openConfirmModal = async (payload: { data: TItemData; type: string; } | null) => {
+  const openConfirmModal = async (payload: { data: TItemData; type: string; isParserData: boolean; } | null) => {
     if(!payload) {
       return;
     }
 
-    const { data, type } = payload;
+    const { data, type, isParserData } = payload;
+
+    console.log({ data, type, isParserData });
 
     try {
       const { isSucceed } = await closeModal();
 
       if(isSucceed) {
-        toggleModal({
-          title: `${REMOVE_TITLE} ${data[NAME_KEY] && (`«${data[NAME_KEY]}»`)}`,
-          desc: `${REMOVE_CONFIRM_MSG} ${REMOVE_TITLE.toLocaleLowerCase()} ${data[NAME_KEY] && (`«${data[NAME_KEY]}»`)}?`
-        });
-
         dispatch(setFormData({
           data: {
             action: REMOVE_ACTION_KEY,
@@ -86,6 +84,23 @@ const Modal: FC<IModal> = ({ fc, payload }) => {
             data
           }
         }));
+
+        if(isParserData) {
+          // TODO: настроить удаление элемента из списка обработанного документа
+          toggleModal(null);
+          console.log({
+            data: {
+              action: REMOVE_ACTION_KEY,
+              type,
+              data
+            }
+          });
+        } else {
+          toggleModal({
+            title: `${REMOVE_TITLE} ${data[NAME_KEY] && (`«${data[NAME_KEY]}»`)}`,
+            desc: `${REMOVE_CONFIRM_MSG} ${REMOVE_TITLE.toLocaleLowerCase()} ${data[NAME_KEY] && (`«${data[NAME_KEY]}»`)}?`
+          });
+        }
       }
     } catch (error) {
       console.error(error);
@@ -112,18 +127,7 @@ const Modal: FC<IModal> = ({ fc, payload }) => {
         >
           <span>
             {formTitle}
-            {/*
-              // TODO: изменить условие для отображения иконки
-            */}
-            {formData && formData.action === EDIT_ACTION_KEY && formData.type !== currUrlData.type
-              ? <IconButton
-                  sx={{ p: 1, color: 'red' }}
-                  onClick={() => openConfirmModal(formData ? { data: formData.data as TItemData, type: formData.type as string } : null)}
-                >
-                  <DeleteOutlined fontSize="medium" />
-                </IconButton>
-              : ''
-            }
+            <DeleteIconBtn formData={formData} urlData={currUrlData} openModal={openConfirmModal} />
           </span>
           <IconButton
             sx={{

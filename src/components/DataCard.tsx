@@ -145,7 +145,7 @@ const DataCard: FC = () => {
             (key) =>
               <Fragment key={key}>
                 <Typography gutterBottom variant="body1" component="div" sx={{ mb: .25 }}>{CAPTIONS[key]}</Typography>
-                <Typography variant="body2" sx={{ mb: 1.5, color: 'text.secondary' }}>
+                <Typography variant="body2" component="div" sx={{ mb: 1.5, color: 'text.secondary' }}>
                   {formData.data[key]}
                   {tableData && formData.data[key] !== tableData.rows[0][key]
                     && <Alert icon={<Check fontSize="inherit" />} severity="success">Текущее значение: {tableData.rows[0][key]}</Alert>}

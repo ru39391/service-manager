@@ -1,10 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
 
-type TUrlData = {
-  type: string;
-  id: number | null;
-};
+import type { TUrlData } from '../types';
 
 interface IUrlHandler {
   currUrlData: TUrlData;

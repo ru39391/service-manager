@@ -49,8 +49,6 @@ import {
 } from '../../utils/constants';
 import { handleRespData, setRespMessage } from '../../utils';
 
-import { fetchData } from '../../mocks';
-
 const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
 
@@ -139,8 +137,8 @@ const handlePricelistData = ({ action, type, items }: { action: string; type: st
   } = actionData[action];
   const payload = items.reduce((acc: TCustomData<TItemData>, item, index) => ({...acc, [index]: item }), {});
 
-  console.log({ action, type, items });
-  console.log({ action: actionData[action], url: `${API_URL}${type}`, payload });
+  //console.log({ action, type, items });
+  //console.log({ action: actionData[action], url: `${API_URL}${type}`, payload });
   //return;
 
   dispatch(getPricelistLoading());
@@ -179,7 +177,7 @@ const handlePricelistData = ({ action, type, items }: { action: string; type: st
     if(success) {
       dispatch(dispatcher({
         type,
-        items: itemsArr, // .filter((item) => item[UPDATEDON_KEY] !== null)
+        items: itemsArr,
         alertMsg: `${successMsg}, обработано элементов: ${succeedValue}`
       }));
       failedValue || inValidValue

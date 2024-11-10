@@ -5,9 +5,7 @@ import {
   RESLINKS_KEY,
   ID_KEY,
   NAME_KEY,
-  IS_VISIBLE_KEY,
   CATEGORY_KEY,
-  CHILDREN_KEY,
   LABEL_KEY,
   DEPT_KEY,
   SUBDEPT_KEY,
@@ -46,7 +44,7 @@ interface IResLinks {
   handleDataConfig: (data: TCustomData<boolean>) => void;
 }
 
-// TODO: не использовать ли useCallback
+// TODO: отыскать вероятные места применения useCallback
 const useResLinks = (): IResLinks => {
   const [existableDepts, setExistableDepts] = useState<TItemsArr>([]);
   const [existableSubdepts, setExistableSubdepts] = useState<TItemsArr>([]);
