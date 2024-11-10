@@ -42,6 +42,8 @@ import {
   REMOVE_ITEM_SUCCESS_MSG,
   REMOVE_ITEM_WARNING_MSG,
   REMOVE_ITEM_ERROR_MSG,
+  ACTION_ERROR_MSG,
+  DATA_ERROR_MSG,
   API_URL,
   TYPES
 } from '../../utils/constants';
@@ -84,6 +86,21 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
 };
 
 const handlePricelistData = ({ action, type, items }: { action: string; type: string | null; items: TItemsArr; }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
+  if(!action) {
+    dispatch(getPricelistFailed({ alertMsg: ACTION_ERROR_MSG }));
+    return;
+  }
+
+  if(!type) {
+    dispatch(getPricelistFailed({ alertMsg: 'Не удалось определить тип переданного элемента' }));
+    return;
+  }
+
+  if(!items) {
+    dispatch(getPricelistFailed({ alertMsg: DATA_ERROR_MSG }));
+    return;
+  }
+
   const actionData = {
     [ADD_ACTION_KEY]: {
       handler: async (url: string, data: TCustomData<TItemData>) => await axios.post(url, data),
@@ -121,21 +138,9 @@ const handlePricelistData = ({ action, type, items }: { action: string; type: st
     errorMsg: string;
   } = actionData[action];
 
-  //console.log(actionData[action]);
-  //return;
-
-  if(!type) {
-    dispatch(getPricelistFailed({ alertMsg: 'Не удалось определить тип переданного элемента' }));
-    return;
-  }
+  console.log({ action, type, items });
 
   dispatch(getPricelistLoading());
-
-  console.log({
-    action,
-    url: `${API_URL}${type}`,
-    payload: { ...items.reduce((acc, item, index) => ({...acc, [index]: item }), {}) }
-  });
 
   try {
     // TODO: поправить баги при создании новых элементов
@@ -204,7 +209,20 @@ const handlePricelistData = ({ action, type, items }: { action: string; type: st
 };
 
 const handleResLinkedData = (payload: { action: string; data: TItemData; }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
-  dispatch(getPricelistLoading());
+  if(!payload) {
+    dispatch(getPricelistFailed({ alertMsg: DATA_ERROR_MSG }));
+    return;
+  }
+
+  if(payload && !payload.action) {
+    dispatch(getPricelistFailed({ alertMsg: ACTION_ERROR_MSG }));
+    return;
+  }
+
+  if(payload && !payload.data) {
+    dispatch(getPricelistFailed({ alertMsg: DATA_ERROR_MSG }));
+    return;
+  }
 
   const actionData = {
     [ADD_ACTION_KEY]: {
@@ -232,6 +250,8 @@ const handleResLinkedData = (payload: { action: string; data: TItemData; }): TAp
     errorMsg: string;
   } = actionData[payload.action];
 
+  dispatch(getPricelistLoading());
+
   try {
     const { data: { success, data } } = await handler(`${API_URL}${RESLINKS_KEY}`, { 0: payload.data });
 
@@ -247,7 +267,7 @@ const handleResLinkedData = (payload: { action: string; data: TItemData; }): TAp
   } catch({response}) {
     const { errors }: { errors: TResponseDefault['errors']; } = response.data;
 
-    dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : UPDATE_ITEM_ERROR_MSG }));
+    dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : errorMsg }));
   }
 };
 

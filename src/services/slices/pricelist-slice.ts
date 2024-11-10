@@ -7,14 +7,19 @@ import type {
   TItemsArr,
 } from '../../types';
 
-import { fetchItemsArr, sortStrArray } from '../../utils';
+import { fetchItemsArr, sortStrArray, handleFetchedArr } from '../../utils';
 import {
   ADD_ACTION_KEY,
   EDIT_ACTION_KEY,
   REMOVE_ACTION_KEY,
   ID_KEY,
   NAME_KEY,
-  PARENT_KEY
+  PARENT_KEY,
+  TYPES,
+  DEPT_KEY,
+  SUBDEPT_KEY,
+  GROUP_KEY,
+  ITEM_KEY
 } from '../../utils/constants';
 
 export type TPricelistAction = {
@@ -72,21 +77,13 @@ const pricelistSlice = createSlice({
     }),
     getPricelistSucceed: (state, action: TPricelistAction) => ({
       ...state,
-      depts: sortStrArray(
-        fetchItemsArr(action.payload.depts),
-        NAME_KEY
-      ),
-      subdepts: sortStrArray(
-        fetchItemsArr(action.payload.subdepts),
-        NAME_KEY
-      ),
-      groups: sortStrArray(
-        fetchItemsArr(action.payload.groups),
-        NAME_KEY
-      ),
-      pricelist: sortStrArray(
-        fetchItemsArr(action.payload.pricelist),
-        NAME_KEY
+      ...[
+        TYPES[DEPT_KEY],
+        TYPES[SUBDEPT_KEY],
+        TYPES[GROUP_KEY],
+        TYPES[ITEM_KEY]
+      ].reduce(
+        (acc, key) => ({ ...acc, [key]: handleFetchedArr(action.payload[key] || []) }), {}
       ),
       res: action.payload.res?.map(item => ({
         ...item,
@@ -121,7 +118,7 @@ const pricelistSlice = createSlice({
 
       return {
         ...state,
-        ...(type && Array.isArray(items) && { [type]: [...state[type], ...items] }),
+        ...(type && Array.isArray(items) && { [type]: handleFetchedArr([...state[type], ...items]) }),
         isPricelistLoading: false,
         isPricelistSucceed: true,
         isPricelistFailed: false,
@@ -144,6 +141,7 @@ const pricelistSlice = createSlice({
 
       return {
         ...state,
+        // TODO: настроить обработку методами sortStrArray и fetchItemsArr для изменённых данных
         ...(type && Array.isArray(items) && { [type]: [...currItems, ...items] }),
         isPricelistLoading: false,
         isPricelistSucceed: true,

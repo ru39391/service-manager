@@ -15,11 +15,13 @@ import {
   DEPT_KEY,
   SUBDEPT_KEY,
   GROUP_KEY,
+  COMPLEX_KEY,
   IS_VISIBLE_KEY,
   IS_COMPLEX_ITEM_KEY,
   IS_COMPLEX_KEY,
   ITEM_KEY,
   TYPES,
+  ID_KEY,
 } from '../utils/constants';
 
 interface IForm {
@@ -29,6 +31,7 @@ interface IForm {
   requiredFormFields: string[];
   textFieldValues: TCustomData<string> | null;
   handleTextFields: (data: TCustomData<number | undefined>) => void;
+  setDataParams: ({ type, data }: { type: string; data: TItemData }) => TItemData;
 }
 
 const useForm = (): IForm => {
@@ -56,6 +59,18 @@ const useForm = (): IForm => {
     [TYPES[ITEM_KEY]]: [IS_VISIBLE_KEY, IS_COMPLEX_ITEM_KEY, IS_COMPLEX_KEY]
   };
   const requiredFormFields = [NAME_KEY, PRICE_KEY];
+
+  const setDataParams = ({ type, data }: { type: string; data: TItemData }): TItemData => {
+    const keys = [
+      ...formFields[type],
+      ...selecterFields[type],
+      ...togglerFields[type],
+      ID_KEY,
+      ...(type === TYPES[ITEM_KEY] ? [COMPLEX_KEY] : [])
+    ];
+
+    return keys.reduce((acc, key) => ({ ...acc, [key]: data[key] }), {});
+  };
 
   const handleFormValues = () => {
     if(!formData) {
@@ -116,7 +131,6 @@ const useForm = (): IForm => {
 
   useEffect(() => {
     handleFormValues();
-    //console.log(formValues);
   }, [
     formValues
   ]);
@@ -127,7 +141,8 @@ const useForm = (): IForm => {
     selecterFields,
     requiredFormFields,
     textFieldValues,
-    handleTextFields
+    handleTextFields,
+    setDataParams
   };
 }
 

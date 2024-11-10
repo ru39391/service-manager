@@ -43,13 +43,6 @@ const useCurrentData = (): ICurrentData => {
   const pricelist = useSelector(state => state.pricelist);
   const { currUrlData } = useUrlHandler();
   const { formFields, selecterFields } = useForm();
-  /*
-  const {
-    selectedDept,
-    selectedSubdept,
-    selectedGroup
-  } = useSelecter();
-  */
 
   const handleItemData = (): void => {
     const { type, id } = currUrlData;

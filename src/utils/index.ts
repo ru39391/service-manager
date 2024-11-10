@@ -62,6 +62,8 @@ const setRespMessage = (
 
 const fetchItemsArr = (arr: TItemsArr | undefined): TItemsArr => arr?.map(data => ({ ...data, ...( data[NAME_KEY] && typeof data[NAME_KEY] === 'string' && { [NAME_KEY]: data[NAME_KEY].trim() } ) })) || [];
 
+const handleFetchedArr = (arr: TItemsArr): TItemsArr => sortStrArray(fetchItemsArr(arr), NAME_KEY);
+
 /**
  * Возвращает выборку дочерних элементов установленных категорий
  * @returns {object[]} массив подходящих элементов
@@ -81,5 +83,6 @@ export {
   handleRespData,
   setRespMessage,
   fetchItemsArr,
+  handleFetchedArr,
   getMatchedItems
 };

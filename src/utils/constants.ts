@@ -37,6 +37,9 @@ const REMOVE_ITEM_SUCCESS_MSG = 'Записи успешно удалены';
 const REMOVE_ITEM_WARNING_MSG = 'Не удалось удалить некоторые записи';
 const REMOVE_ITEM_ERROR_MSG = 'При удалении элементов произошла ошибка, повторите попытку позже';
 
+const ACTION_ERROR_MSG = 'Передан некорректный тип обработчика';
+const DATA_ERROR_MSG = 'Переданы некорректные данные: проверьте, правильно ли заполнены поля формы';
+
 const INDEX_KEY = 'index';
 const ID_KEY = 'item_id';
 const NAME_KEY = 'name';
@@ -147,6 +150,8 @@ export {
   FETCHING_ERROR_MSG,
   RESOURCES_ERROR_MSG,
   FILE_UPLOADING_ERROR_MSG,
+  ACTION_ERROR_MSG,
+  DATA_ERROR_MSG,
   PARSER_TITLE,
   ADD_TITLE,
   EDIT_TITLE,

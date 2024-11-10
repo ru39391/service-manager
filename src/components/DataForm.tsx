@@ -18,6 +18,7 @@ import useCategoryCounter from '../hooks/useCategoryCounter';
 
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormValues } from '../services/slices/form-slice';
+import { getPricelistFailed } from '../services/slices/pricelist-slice';
 
 import { handlePricelistData } from '../services/actions/pricelist';
 
@@ -42,6 +43,7 @@ import {
   SAVE_TITLE,
   NOT_EMPTY_CATEGORY,
   CONFIRM_MSG,
+  DATA_ERROR_MSG,
   TYPES
 } from '../utils/constants';
 
@@ -60,16 +62,29 @@ const DataForm: FC = () => {
     selecterFields,
     requiredFormFields,
     textFieldValues,
-    handleTextFields
+    handleTextFields,
+    setDataParams
   } = useForm();
 
   const complexKeys: string[] = [IS_COMPLEX_ITEM_KEY, IS_COMPLEX_KEY];
   const handlersData = {
     [ADD_ACTION_KEY]: useCallback(() => {
+      if(!formData) {
+        dispatch(getPricelistFailed({ alertMsg: DATA_ERROR_MSG }));
+        return;
+      }
+
+      const { type, data } = formData;
+
       dispatch(handlePricelistData({
         action: ADD_ACTION_KEY,
-        type: formData ? formData.type : null,
-        items: formData ? [{...formData.data as TItemData, ...formValues, ...( !formData.data[ID_KEY] && { ...setItemId() })}] : []
+        type,
+        items: [
+          setDataParams({
+            type,
+            data: {...data, ...formValues, ...( !data[ID_KEY] && { ...setItemId(type) })}
+          })
+        ]
       }));
     }, [
       dispatch,
@@ -185,7 +200,7 @@ const DataForm: FC = () => {
   };
 
   useEffect(() => {
-    console.log(formData);
+    //console.log(formData);
 
     setSubCategories({
       type: formData ? formData.type : null,
