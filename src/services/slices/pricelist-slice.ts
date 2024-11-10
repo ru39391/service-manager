@@ -141,8 +141,7 @@ const pricelistSlice = createSlice({
 
       return {
         ...state,
-        // TODO: настроить обработку методами sortStrArray и fetchItemsArr для изменённых данных
-        ...(type && Array.isArray(items) && { [type]: [...currItems, ...items] }),
+        ...(type && Array.isArray(items) && { [type]: handleFetchedArr([...currItems, ...items]) }),
         isPricelistLoading: false,
         isPricelistSucceed: true,
         isPricelistFailed: false,

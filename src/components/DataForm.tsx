@@ -54,7 +54,7 @@ import {
 const DataForm: FC = () => {
   const dispatch = useDispatch();
   const { formData, formValues } = useSelector(state => state.form);
-  const { subCategoryCounter, setSubCategories } = useCategoryCounter();
+  const { subCategoryCounter, setSubCategories, findData } = useCategoryCounter();
   const { currComplexSumm, setItemId } = useComplex();
   const {
     isDisabled,
@@ -79,12 +79,10 @@ const DataForm: FC = () => {
       dispatch(handlePricelistData({
         action: ADD_ACTION_KEY,
         type,
-        items: [
-          setDataParams({
-            type,
-            data: {...data, ...formValues, ...( !data[ID_KEY] && { ...setItemId(type) })}
-          })
-        ]
+        items: setDataParams({
+          type,
+          data: {...data, ...formValues, ...( !data[ID_KEY] && { ...setItemId(type) })}
+        })
       }));
     }, [
       dispatch,
@@ -93,10 +91,20 @@ const DataForm: FC = () => {
       setItemId
     ]),
     [EDIT_ACTION_KEY]: useCallback(() => {
+      if(!formData) {
+        dispatch(getPricelistFailed({ alertMsg: DATA_ERROR_MSG }));
+        return;
+      }
+
+      const { type, data } = formData;
+
       dispatch(handlePricelistData({
         action: EDIT_ACTION_KEY,
-        type: formData ? formData.type : null,
-        items: formData ? [{[ID_KEY]: formData.data[ID_KEY], ...formValues}] : []
+        type,
+        items: setDataParams({
+          type,
+          data: { [ID_KEY]: data[ID_KEY], ...formValues }
+        })
       }));
     }, [
       dispatch,
@@ -104,10 +112,17 @@ const DataForm: FC = () => {
       formValues
     ]),
     [REMOVE_ACTION_KEY]: useCallback(() => {
+      if(!formData) {
+        dispatch(getPricelistFailed({ alertMsg: DATA_ERROR_MSG }));
+        return;
+      }
+
+      const { type, data } = formData;
+
       dispatch(handlePricelistData({
         action: REMOVE_ACTION_KEY,
-        type: formData ? formData.type : null,
-        items: formData ? [{[ID_KEY]: formData.data[ID_KEY]}] : [],
+        type,
+        items: [{ [ID_KEY]: data[ID_KEY] }]
       }));
     }, [
       dispatch,

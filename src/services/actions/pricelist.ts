@@ -137,32 +137,19 @@ const handlePricelistData = ({ action, type, items }: { action: string; type: st
     successMsg: string;
     errorMsg: string;
   } = actionData[action];
+  const payload = items.reduce((acc: TCustomData<TItemData>, item, index) => ({...acc, [index]: item }), {});
 
   console.log({ action, type, items });
+  console.log({ action: actionData[action], url: `${API_URL}${type}`, payload });
+  //return;
 
   dispatch(getPricelistLoading());
 
   try {
-    // TODO: поправить баги при создании новых элементов
-    // https://skrinshoter.ru/sScw5BDJzxS - создание ранее не существовавшего элемента
-    // https://skrinshoter.ru/vScnu3NL271 - передача одинаковых id при создании элемента:
-    // https://skrinshoter.ru/sScaHRXoCdG и https://skrinshoter.ru/sScFX0myXGu
-    // https://skrinshoter.ru/sScl1F4J1Lk и https://skrinshoter.ru/sScHUzcaAov
-    // https://skrinshoter.ru/sScH7bYbMIy
     const { data: { success, data, errors } } = await handler(
       `${API_URL}${type}`,
-      {
-        ...items.reduce(
-          (acc: TCustomData<TItemData>, item, index) => ({...acc, [index]: item }), {}
-        )
-      }
+      action === REMOVE_ACTION_KEY ? { data: payload } : payload
     );
-    // TODO: настроить передачу данных для удаления элементов
-    /*
-    await axios.delete(`${API_URL}${type}`, {
-      ...items.reduce((acc, item, index) => ({...acc, [index]: item }), {})
-    });
-    */
 
     const {
       message,

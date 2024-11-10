@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 import { useSelector } from '../services/hooks';
 
-import type { TCustomData, TItemData } from '../types';
+import type { TCustomData, TItemData, TItemsArr } from '../types';
 
 import {
   ID_KEY,
@@ -22,6 +22,7 @@ type TCategoryData = {
 interface ICategoryCounter {
   subCategoryCounter: string;
   setSubCategories: ({type, data}: TCategoryData) => void;
+  findData: (value: number, { type, key }: TCustomData<string>) => TItemsArr;
 }
 
 const useCategoryCounter = (): ICategoryCounter => {
@@ -37,6 +38,8 @@ const useCategoryCounter = (): ICategoryCounter => {
     [TYPES[GROUP_KEY]]: [TYPES[GROUP_KEY], TYPES[ITEM_KEY]],
     [TYPES[ITEM_KEY]]: []
   };
+
+  const findData = (value: number, { type, key }: TCustomData<string>): TItemsArr => pricelist[type].filter((item: TItemData) => item[key] === value);
 
   const filterData = (arr: TCustomData<number | string>[]): TCustomData<number | string>[] => {
     if(!sortedParams) {
@@ -85,7 +88,8 @@ const useCategoryCounter = (): ICategoryCounter => {
 
   return {
     subCategoryCounter,
-    setSubCategories
+    setSubCategories,
+    findData
   }
 }
 
