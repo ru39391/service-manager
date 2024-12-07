@@ -8,12 +8,15 @@ import useModal from '../hooks/useModal';
 
 import { useSelector } from '../services/hooks';
 
+import { PARSER_CONFIRM_MSG } from '../utils/constants';
+
 interface IModalFooter {
   icon: ReactNode | undefined;
   color: ButtonOwnProps['color'] | undefined;
   actionBtnCaption: string;
   introText: string | undefined;
   disabled: boolean;
+  isParserData: boolean;
   actionHandler: () => void;
 }
 
@@ -23,6 +26,7 @@ const ModalFooter: FC<IModalFooter> = ({
   actionBtnCaption,
   introText,
   disabled,
+  isParserData,
   actionHandler
 }) => {
   const { isPricelistLoading } = useSelector(state => state.pricelist);
@@ -31,7 +35,8 @@ const ModalFooter: FC<IModalFooter> = ({
 
   return (
     <>
-      {introText && <DialogContentText sx={{ mb: 4 }}>{introText}.</DialogContentText>}
+      {introText && !isParserData && <DialogContentText sx={{ mb: 4 }}>{introText}.</DialogContentText>}
+      {isParserData && <DialogContentText sx={{ mb: 4 }}>{PARSER_CONFIRM_MSG}.</DialogContentText>}
       <Box sx={{ display: 'flex', justifyContent: 'space-between' }}>
         <LoadingButton
           color={color || 'success'}

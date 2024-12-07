@@ -55,7 +55,7 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
   const keys = [...Object.values(TYPES), RES_KEY, RESLINKS_KEY];
 
   try {
-    // TODO: поправить get-запросы для передачи массивов id
+    // TODO: поправить get-запросы для передачи массивов id - в php-контроллере
     const response = await Promise.all(keys.map(type => axios.get(`${API_URL}${type}`)));
     //console.log(response);
 

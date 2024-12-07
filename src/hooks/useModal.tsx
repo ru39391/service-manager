@@ -16,9 +16,15 @@ type TModalData = {
   payload?: TCustomData<null> | undefined;
 };
 
+type TModalPayloadData = {
+  title: string;
+  desc: string;
+  isParserData?: boolean;
+};
+
 interface IModal {
   modalContent: ReactNode | null;
-  toggleModal: (data: TCustomData<string> | null) => void;
+  toggleModal: (data: TModalPayloadData | null) => void;
 }
 
 const useModal = ({ fc, payload }:TModalData = { fc: undefined, payload: { data: null } }): IModal => {
@@ -26,8 +32,10 @@ const useModal = ({ fc, payload }:TModalData = { fc: undefined, payload: { data:
 
   const dispatch = useDispatch();
 
-  const toggleModal = (data: TCustomData<string> | null): void => {
-    data ? dispatch(setFormVisible({ title: data.title, desc: data.desc })) : dispatch(setFormHidden());
+  const toggleModal = (data: TModalPayloadData | null): void => {
+    data
+      ? dispatch(setFormVisible({ title: data.title, desc: data.desc, isParserData: Boolean(data.isParserData) }))
+      : dispatch(setFormHidden());
   }
 
   const handleComponent = ({ el, props }: { el: FunctionComponent | undefined; props: TCustomData<null>; }): void => {

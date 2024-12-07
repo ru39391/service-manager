@@ -46,7 +46,8 @@ const Modal: FC<IModal> = ({ fc, payload }) => {
     isVisible,
     formData,
     formTitle,
-    formDesc
+    formDesc,
+    isParserData
   } = useSelector(state => state.form);
 
   const { currUrlData } = useUrlHandler();
@@ -71,8 +72,6 @@ const Modal: FC<IModal> = ({ fc, payload }) => {
 
     const { data, type, isParserData } = payload;
 
-    console.log({ data, type, isParserData });
-
     try {
       const { isSucceed } = await closeModal();
 
@@ -85,22 +84,11 @@ const Modal: FC<IModal> = ({ fc, payload }) => {
           }
         }));
 
-        if(isParserData) {
-          // TODO: настроить удаление элемента из списка обработанного документа
-          toggleModal(null);
-          console.log({
-            data: {
-              action: REMOVE_ACTION_KEY,
-              type,
-              data
-            }
-          });
-        } else {
-          toggleModal({
-            title: `${REMOVE_TITLE} ${data[NAME_KEY] && (`«${data[NAME_KEY]}»`)}`,
-            desc: `${REMOVE_CONFIRM_MSG} ${REMOVE_TITLE.toLocaleLowerCase()} ${data[NAME_KEY] && (`«${data[NAME_KEY]}»`)}?`
-          });
-        }
+        toggleModal({
+          title: `${REMOVE_TITLE} ${data[NAME_KEY] && (`«${data[NAME_KEY]}»`)}`,
+          desc: isParserData ? '' : `${REMOVE_CONFIRM_MSG} ${REMOVE_TITLE.toLocaleLowerCase()} ${data[NAME_KEY] && (`«${data[NAME_KEY]}»`)}?`,
+          isParserData
+        });
       }
     } catch (error) {
       console.error(error);
@@ -127,7 +115,7 @@ const Modal: FC<IModal> = ({ fc, payload }) => {
         >
           <span>
             {formTitle}
-            <DeleteIconBtn formData={formData} urlData={currUrlData} openModal={openConfirmModal} />
+            {!isParserData && <DeleteIconBtn formData={formData} urlData={currUrlData} openModal={openConfirmModal} />}
           </span>
           <IconButton
             sx={{

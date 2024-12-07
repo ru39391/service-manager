@@ -103,3 +103,8 @@ export type TUrlData = {
   type: string;
   id: number | null;
 };
+
+export type TParserData = {
+  type: string;
+  items: TItemsArr;
+};

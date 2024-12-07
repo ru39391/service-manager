@@ -1,6 +1,7 @@
 import { createSlice } from '@reduxjs/toolkit'
 
 import type { TItemData, TItemsArr } from '../../types';
+import { ID_KEY } from '../../utils/constants';
 
 export type TFileAction = {
   payload: {
@@ -9,9 +10,10 @@ export type TFileAction = {
     groups?: TItemsArr;
     pricelist?: TItemsArr;
     data?: TItemData | null;
-    item?: TItemData;
+    items?: TItemsArr;
     key?: string;
     errorMsg?: string;
+    isLoading?: boolean;
   };
 };
 
@@ -41,9 +43,9 @@ const fileSlice = createSlice({
   name: 'file',
   initialState,
   reducers: {
-    getFileUploading: (state) => ({
+    getFileUploading: (state, action: TFileAction) => ({
       ...state,
-      isFileUploading: true
+      isFileUploading: Boolean(action.payload.isLoading)
     }),
     getFileUploadingSucceed: (state, action: TFileAction) => ({
       ...state,
@@ -65,10 +67,19 @@ const fileSlice = createSlice({
       ...state,
       rowData: action.payload.data || null
     }),
-    updateItems: (state, action: TFileAction) => ({
-      ...state,
-      ...(action.payload.key && {[action.payload.key]: [...state[action.payload.key], action.payload.item]})
-    }),
+    removeItems(state, action: TFileAction) {
+      const { key, items } = {
+        key: action.payload.key || '',
+        items: action.payload.items || []
+      };
+
+      return {
+        ...state,
+        ...(
+          key && items.length > 0 && {[key]: [...state[key]].filter(item => !items.map(data => data[ID_KEY]).includes(item[ID_KEY]))}
+        )
+      }
+    },
   }
 });
 
@@ -81,5 +92,5 @@ export const {
   getFileUploadingSucceed,
   getFileUploadingFailed,
   setRowData,
-  updateItems
+  removeItems
 } = fileSlice.actions;

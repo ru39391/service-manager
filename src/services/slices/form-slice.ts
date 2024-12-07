@@ -20,6 +20,7 @@ export type TFormAction = {
     data?: TFormData | null;
     values?: TItemData | null;
     items?: TCustomData<TItemsArr>;
+    isParserData?: boolean;
   };
 };
 
@@ -28,6 +29,7 @@ export type TFormState = {
   formTitle: string;
   formDesc: string;
   formData: TFormData | null;
+  isParserData: boolean;
   formValues: TItemData;
   currDeptsList: TItemsArr;
   currSubdeptsList: TItemsArr;
@@ -39,6 +41,7 @@ const initialState: TFormState = {
   formTitle: '',
   formDesc: '',
   formData: null,
+  isParserData: false,
   formValues: {},
   currDeptsList: [],
   currSubdeptsList: [],
@@ -54,6 +57,7 @@ const formSlice = createSlice({
       isVisible: true,
       formTitle: action.payload.title || '',
       formDesc: action.payload.desc || '',
+      isParserData: Boolean(action.payload.isParserData) || false,
     }),
     setFormHidden: (state) => ({
       ...state,
@@ -61,6 +65,7 @@ const formSlice = createSlice({
       formTitle: '',
       formDesc: '',
       formData: null,
+      isParserData: false,
       formValues: {}
     }),
     setFormData: (state, action: TFormAction) => ({

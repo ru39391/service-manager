@@ -20,6 +20,7 @@ const NO_GROUP_TITLE = 'Без группы';
 
 const REMOVE_CONFIRM_MSG = 'Вы действительно хотите';
 const CONFIRM_MSG = 'Подтвердите выполнение действия';
+const PARSER_CONFIRM_MSG = 'Удаление не затронет существующие элементы - лишь исключит позицию из обрабатываемого списка';
 
 const FETCHING_ERROR_MSG = 'При получении списка услуг произошла ошибка';
 const RESOURCES_ERROR_MSG = 'Ошибка при получении списка ресурсов';
@@ -163,6 +164,7 @@ export {
   EDIT_ITEM_TITLE,
   NO_GROUP_TITLE,
   REMOVE_CONFIRM_MSG,
+  PARSER_CONFIRM_MSG,
   CONFIRM_MSG,
   CATEGORY_TITLE,
   NO_ITEMS_TITLE,

@@ -20,9 +20,10 @@ import { useSelector, useDispatch } from '../services/hooks';
 import { setFormValues } from '../services/slices/form-slice';
 import { getPricelistFailed } from '../services/slices/pricelist-slice';
 
+import { removeFileItems } from '../services/actions/file';
 import { handlePricelistData } from '../services/actions/pricelist';
 
-import type { TCustomData, TItemData } from '../types';
+import type { TCustomData } from '../types';
 
 import {
   ID_KEY,
@@ -53,8 +54,8 @@ import {
 */
 const DataForm: FC = () => {
   const dispatch = useDispatch();
-  const { formData, formValues } = useSelector(state => state.form);
-  const { subCategoryCounter, setSubCategories, findData } = useCategoryCounter();
+  const { formData, formValues, isParserData } = useSelector(state => state.form);
+  const { subCategoryCounter, setSubCategories } = useCategoryCounter();
   const { currComplexSumm, setItemId } = useComplex();
   const {
     isDisabled,
@@ -129,6 +130,23 @@ const DataForm: FC = () => {
       formData
     ]),
   };
+
+  const removeFileData = useCallback(() => {
+    if(!formData) {
+      dispatch(getPricelistFailed({ alertMsg: DATA_ERROR_MSG }));
+      return;
+    }
+
+    const { type, data } = formData;
+
+    dispatch(removeFileItems({
+      type,
+      items: [{ [ID_KEY]: data[ID_KEY] }]
+    }));
+  }, [
+    dispatch,
+    formData
+  ]);
 
   const handlePriceValue = (data: { [PRICE_KEY]: number; [COMPLEX_KEY]: string }): number => {
     if(data[COMPLEX_KEY] === undefined) {
@@ -262,7 +280,8 @@ const DataForm: FC = () => {
       disabled={false}
       actionBtnCaption={REMOVE_TITLE}
       introText={subCategoryCounter ? `${NOT_EMPTY_CATEGORY}${subCategoryCounter}` : CONFIRM_MSG}
-      actionHandler={handlersData[formData.action]}
+      isParserData={isParserData}
+      actionHandler={isParserData ? removeFileData : handlersData[formData.action]}
     />;
   }
 
