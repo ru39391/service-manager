@@ -44,7 +44,7 @@ interface IResLinks {
   handleDataConfig: (data: TCustomData<boolean>) => void;
 }
 
-// TODO: отыскать вероятные места применения useCallback
+// TODO: отыскать вероятные места применения useCallback и useMemo
 const useResLinks = (): IResLinks => {
   const [existableDepts, setExistableDepts] = useState<TItemsArr>([]);
   const [existableSubdepts, setExistableSubdepts] = useState<TItemsArr>([]);

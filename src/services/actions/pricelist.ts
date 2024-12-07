@@ -99,6 +99,8 @@ const handlePricelistData = ({ action, type, items }: { action: string; type: st
     return;
   }
 
+  dispatch(getPricelistLoading());
+
   const actionData = {
     [ADD_ACTION_KEY]: {
       handler: async (url: string, data: TCustomData<TItemData>) => await axios.post(url, data),
@@ -140,8 +142,6 @@ const handlePricelistData = ({ action, type, items }: { action: string; type: st
   //console.log({ action, type, items });
   //console.log({ action: actionData[action], url: `${API_URL}${type}`, payload });
   //return;
-
-  dispatch(getPricelistLoading());
 
   try {
     const { data: { success, data, errors } } = await handler(
@@ -209,6 +209,8 @@ const handleResLinkedData = (payload: { action: string; data: TItemData; }): TAp
     return;
   }
 
+  dispatch(getPricelistLoading());
+
   const actionData = {
     [ADD_ACTION_KEY]: {
       handler: async (url: string, data: TCustomData<TItemData>) => await axios.post(url, data),
@@ -234,8 +236,6 @@ const handleResLinkedData = (payload: { action: string; data: TItemData; }): TAp
     successMsg: string;
     errorMsg: string;
   } = actionData[payload.action];
-
-  dispatch(getPricelistLoading());
 
   try {
     const { data: { success, data } } = await handler(`${API_URL}${RESLINKS_KEY}`, { 0: payload.data });
