@@ -1,3 +1,10 @@
+import type {
+  TCustomData,
+  TPricelistKeys,
+  TPricelistTypes,
+  THandledItemKeys
+} from '../types';
+
 const DEFAULT_DOC_TITLE = 'Управление услугами';
 
 const CATEGORY_TITLE = 'Категория';
@@ -82,7 +89,7 @@ const IS_COMPLEX_DATA_KEY = 'isComplexData';
 const IS_GROUP_IGNORED_KEY = 'isGroupIgnored';
 const IS_GROUP_USED_KEY = 'isGroupUsed';
 
-const TITLES = {
+const TITLES: TCustomData<string> = {
   [DEPT_KEY]: 'Отделения',
   [SUBDEPT_KEY]: 'Специализации',
   [GROUP_KEY]: 'Группы услуг',
@@ -94,7 +101,7 @@ const TITLES = {
 
 const SORT_CAPTION = 'Порядок сортировки';
 
-const CAPTIONS = {
+const CAPTIONS: TCustomData<string> = {
   [INDEX_KEY]: '№',
   [ID_KEY]: 'ID',
   [NAME_KEY]: 'Название',
@@ -111,20 +118,20 @@ const CAPTIONS = {
   [QUANTITY_KEY]: 'Количество',
 };
 
-const HANDLED_ITEMS_CAPTIONS = {
+const HANDLED_ITEMS_CAPTIONS: Record<THandledItemKeys, string> = {
   [CREATED_KEY]: 'Новые записи',
   [UPDATED_KEY]: 'Изменённые записи',
   [REMOVED_KEY]: 'Удалённые записи',
 };
 
-const TYPES = {
+const TYPES: Record<TPricelistKeys, TPricelistTypes> = {
   [DEPT_KEY]: `${DEPT_KEY}s`,
   [SUBDEPT_KEY]: `${SUBDEPT_KEY}s`,
   [GROUP_KEY]: `${GROUP_KEY}s`,
   [ITEM_KEY]: 'pricelist'
 };
 
-const LINKED_RES_PARAMS = {
+const LINKED_RES_PARAMS: TCustomData<string> = {
   [IS_COMPLEX_DATA_KEY]: 'Комплексный выбор',
   [IS_GROUP_IGNORED_KEY]: 'Игнорировать группы',
   [IS_GROUP_USED_KEY]: 'Сохранить группировку',

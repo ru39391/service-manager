@@ -159,7 +159,7 @@ const ResItem: FC = () => {
         renderInput={(props) => <TextField {...props} label={[TITLES[DEPT_KEY]]} />}
         renderOption={(props, option) => <ListItem {...props}>{option[NAME_KEY]}</ListItem>}
         getOptionKey={(option) => option[ID_KEY]}
-        onChange={(event, value, reason ) => resLinkHandlers[DEPT_KEY]({
+        onChange={(_, value, reason ) => resLinkHandlers[DEPT_KEY]({
           action: reason,
           items: reason === 'clear' ? [] : value
         })}
@@ -186,7 +186,7 @@ const ResItem: FC = () => {
           </li>
         )}
         getOptionKey={(option) => option[ID_KEY]}
-        onChange={(event, value, reason ) => resLinkHandlers[SUBDEPT_KEY]({ action: reason, items: reason === 'clear' ? [] : value })}
+        onChange={(_, value, reason ) => resLinkHandlers[SUBDEPT_KEY]({ action: reason, items: reason === 'clear' ? [] : value })}
       />}
 
       {existableGroups.length > 0

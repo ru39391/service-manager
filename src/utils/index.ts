@@ -1,7 +1,6 @@
 import type {
   TItemData,
-  TItemsArr,
-  TResponseList
+  TItemsArr
 } from '../types';
 import { ID_KEY, NAME_KEY } from './constants';
 
@@ -32,7 +31,7 @@ const sortStrArray = (arr: TItemsArr, key: string): TItemsArr => {
   });
 };
 
-const handleRespData = (data: TResponseList | undefined) => {
+const handleRespData = (data: TItemsArr | undefined): TItemsArr => {
   if(!data) {
     return [];
   }

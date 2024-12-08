@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import useUrlHandler from './useUrlHandler';
 
-import type { TCustomData } from '../types';
+import type { TCustomData, TPricelistKeys, TPricelistTypes } from '../types';
 
 import {
   DEPT_KEY,
@@ -13,11 +13,11 @@ import {
 } from '../utils/constants';
 
 interface ICategoryItems {
-  currSubCategory: string;
+  currSubCategory: TPricelistTypes;
   subCategoryItems: TCustomData<string>[];
   categoryTypes: TCustomData<string> | null;
   categoryParams: TCustomData<number | null> | null;
-  setCurrSubCategory: (value: string) => void
+  setCurrSubCategory: (value: TPricelistTypes) => void
 }
 
 /**
@@ -30,7 +30,7 @@ interface ICategoryItems {
  * @property {function} setCurrSubCategory - метод установки текущей подкатегории, изменяет состояние currSubCategory при изменении значения выпадающего списка
  */
 const useCategoryItems = (): ICategoryItems => {
-  const [currSubCategory, setCurrSubCategory] = useState<string>(TYPES[ITEM_KEY]);
+  const [currSubCategory, setCurrSubCategory] = useState<TPricelistTypes>(TYPES[ITEM_KEY]);
   const [categoryTypes, setCategoryTypes] = useState<TCustomData<string> | null>(null);
   const [categoryParams, setCategoryParams] = useState<TCustomData<number | null> | null>(null);
   const [subCategoryItems, setSubCategoryItems] = useState<TCustomData<string>[]>([]);
@@ -41,7 +41,7 @@ const useCategoryItems = (): ICategoryItems => {
     [TYPES[SUBDEPT_KEY]]: [TYPES[GROUP_KEY], TYPES[ITEM_KEY]],
     [TYPES[GROUP_KEY]]: [TYPES[GROUP_KEY], TYPES[ITEM_KEY]],
   };
-  const keysData: TCustomData<string> =
+  const keysData: TCustomData<TPricelistKeys> =
     Object.values(TYPES).reduce(
       (acc, type, index) => ({
         ...acc,
@@ -55,7 +55,7 @@ const useCategoryItems = (): ICategoryItems => {
     const subCategoryArr = type ? categoryData[type] : [TYPES[ITEM_KEY]];
     const subCategoryTypes =
       Object.values(keysData).reduce(
-        (acc: TCustomData<string>, item: string) => ({
+        (acc: TCustomData<string>, item: TPricelistKeys) => ({
           ...acc,
           [TYPES[item]]: TITLES[item]
         }), {}

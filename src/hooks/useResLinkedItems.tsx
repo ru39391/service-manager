@@ -29,7 +29,8 @@ import type {
   TLinkedSubdept,
   TLinkedGroup,
   TLinkedItem,
-  TResLinkedAction
+  TResLinkedAction,
+  TPricelistExtTypes
 } from '../types';
 
 import { fetchArray, getMatchedItems } from '../utils';
@@ -63,7 +64,7 @@ const useResLinkedItems = (): IResLinkedItems => {
 
   const { response } = useSelector(state => state.pricelist);
   const pricelist: TCustomData<TItemsArr>  = useSelector(
-    ({ pricelist }) => [...Object.values(TYPES), RESLINKS_KEY].reduce((acc, key) => ({ ...acc, [key]: pricelist[key] }), {}
+    ({ pricelist }) => [...Object.values(TYPES), RESLINKS_KEY].reduce((acc, key) => ({ ...acc, [key]: pricelist[key as TPricelistExtTypes] }), {}
   ));
 
   const handleCurrResLinkedData = ({ item, data }: TCurrResLinkedData) => {

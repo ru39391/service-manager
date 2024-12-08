@@ -5,7 +5,12 @@ import {
 
 import { useSelector } from '../services/hooks';
 
-import type { TCustomData, TItemData, TItemsArr } from '../types';
+import type {
+  TCustomData,
+  TItemData,
+  TItemsArr,
+  TPricelistKeys
+} from '../types';
 
 import {
   ADD_ACTION_KEY,
@@ -27,7 +32,7 @@ import {
 interface IForm {
   isDisabled: boolean;
   formFields: TCustomData<string[]>;
-  selecterFields: TCustomData<string[]>;
+  selecterFields: TCustomData<TPricelistKeys[]>;
   requiredFormFields: string[];
   textFieldValues: TCustomData<string> | null;
   handleTextFields: (data: TCustomData<number | undefined>) => void;
@@ -46,7 +51,7 @@ const useForm = (): IForm => {
     [TYPES[GROUP_KEY]]: [NAME_KEY],
     [TYPES[ITEM_KEY]]: [NAME_KEY, PRICE_KEY, INDEX_KEY]
   };
-  const selecterFields = {
+  const selecterFields: TCustomData<TPricelistKeys[]> = {
     [TYPES[DEPT_KEY]]: [],
     [TYPES[SUBDEPT_KEY]]: [DEPT_KEY],
     [TYPES[GROUP_KEY]]: [DEPT_KEY, SUBDEPT_KEY, GROUP_KEY],

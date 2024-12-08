@@ -18,7 +18,7 @@ type TModalData = {
 
 type TModalPayloadData = {
   title: string;
-  desc: string;
+  desc?: string;
   isParserData?: boolean;
 };
 
@@ -34,7 +34,7 @@ const useModal = ({ fc, payload }:TModalData = { fc: undefined, payload: { data:
 
   const toggleModal = (data: TModalPayloadData | null): void => {
     data
-      ? dispatch(setFormVisible({ title: data.title, desc: data.desc, isParserData: Boolean(data.isParserData) }))
+      ? dispatch(setFormVisible({ title: data.title, desc: data.desc || '', isParserData: Boolean(data.isParserData) }))
       : dispatch(setFormHidden());
   }
 

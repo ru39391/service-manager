@@ -4,7 +4,12 @@ import { useSelector } from '../services/hooks';
 import useForm from './useForm';
 import useUrlHandler from './useUrlHandler';
 
-import type { TCustomData, TItemData, TResourceData } from '../types';
+import type {
+  TCustomData,
+  TItemData,
+  TResourceData,
+  TUrlData
+} from '../types';
 
 import {
   RES_KEY,
@@ -45,7 +50,7 @@ const useCurrentData = (): ICurrentData => {
   const { formFields, selecterFields } = useForm();
 
   const handleItemData = (): void => {
-    const { type, id } = currUrlData;
+    const { type, id }: TUrlData = currUrlData;
     const isItemExist = id !== null && Boolean(type) && Boolean(pricelist[type].length);
     const itemData: TItemData = isItemExist ? pricelist[type].find((item: TItemData) => item[ID_KEY] === id) : {};
     const resData: TResourceData = isItemExist ? pricelist[type].find((item: TResourceData) => item[RES_ID_KEY] === id) : {};

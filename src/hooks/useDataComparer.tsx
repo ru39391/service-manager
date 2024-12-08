@@ -5,7 +5,11 @@ import type {
   TPricelistData,
   TCustomData,
   TItemsArr,
-  TItemData
+  TItemData,
+  THandledItemKeys,
+  TPricelistTypes,
+  TPricelistResponse,
+  TActionKeys
 } from '../types';
 import type { TPricelistState } from '../services/slices/pricelist-slice';
 
@@ -25,12 +29,12 @@ type TFileHandlerData = {
 }
 
 interface IDataComparer {
-  comparedFileData: TCustomData<TPricelistData> | null;
+  comparedFileData: Record<THandledItemKeys, TPricelistData> | null;
   compareFileData: (data: TPricelistData | null) => void;
 }
 
 const useDataComparer = (): IDataComparer => {
-  const [comparedFileData, setComparedFileData] = useState<TCustomData<TPricelistData> | null>(null);
+  const [comparedFileData, setComparedFileData] = useState<Record<THandledItemKeys, TPricelistData> | null>(null);
 
   const pricelist = useSelector(state => state.pricelist);
   const { response } = pricelist;
@@ -40,7 +44,7 @@ const useDataComparer = (): IDataComparer => {
       key,
       arr
     }: {
-      key: string;
+      key: TPricelistTypes;
       arr: TItemsArr;
     }
   ): TCustomData<{ ids: number[]; arr: TItemsArr; }> => {
@@ -104,12 +108,12 @@ const useDataComparer = (): IDataComparer => {
       keys,
       items
     }: {
-      key: string;
+      key: THandledItemKeys;
       keys: string[];
       items: TItemsArr[];
     }
   ): TPricelistData => keys.reduce((acc, item, index) => {
-    const { ids, arr } = setItemIds({ key: item, arr: items[index] })[key];
+    const { ids, arr } = setItemIds({ key: item as TPricelistTypes, arr: items[index] })[key];
 
     return {
       ...acc,
@@ -135,7 +139,7 @@ const useDataComparer = (): IDataComparer => {
     setComparedFileData(
       Object.keys(handlers).reduce((acc, key, index) => (
         { ...acc, [key]: Object.values(handlers)[index]({keys, items}) }
-      ), {})
+      ), {} as Record<THandledItemKeys, TPricelistData>)
     );
   };
 
@@ -144,12 +148,12 @@ const useDataComparer = (): IDataComparer => {
       return;
     }
 
-    const { action, type, ids } = {
-      action: data.action as string,
-      type: data.type as string,
-      ids: data.ids as number[]
+    const { action, type, ids }: TPricelistResponse = {
+      action: data.action,
+      type: data.type,
+      ids: data.ids
     };
-    const keys = {
+    const keys: Record<TActionKeys, THandledItemKeys> = {
       [ADD_ACTION_KEY]: CREATED_KEY,
       [EDIT_ACTION_KEY]: UPDATED_KEY,
       [REMOVE_ACTION_KEY]: REMOVED_KEY

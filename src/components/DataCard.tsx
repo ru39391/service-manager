@@ -98,15 +98,11 @@ const DataCard: FC = () => {
   };
 
   const handleCurrFormData = (formData: TFormData | null) => {
-    const {
-      action,
-      type,
-      data
-    } = {
-      action: formData ? formData.action : '',
-      type: formData ? formData.type : '',
-      data: formData ? formData.data : null
-    };
+    if(!formData) {
+      return;
+    }
+
+    const { action, type, data } = formData;
     const isDataExist = formData
       ? Boolean(data)
       : Boolean(formData);
@@ -193,27 +189,31 @@ const DataCard: FC = () => {
         <ModalFooter
           icon={<Check />}
           color='success'
+          disabled={false}
           actionBtnCaption={formData && formData.action === ADD_ACTION_KEY ? SAVE_TITLE : EDIT_TITLE}
-          actionHandler={handlersData[formData.action as string]}
+          actionHandler={handlersData[formData.action]}
         />
       </>
     );
   }
 
   return (
-    <ModalFooter
-      icon={formData && formData.action === REMOVE_ACTION_KEY ? <Delete /> : <Check />}
-      color={formData && formData.action === REMOVE_ACTION_KEY ? 'error' : 'success'}
-      actionBtnCaption={
-        formData && formData.action === REMOVE_ACTION_KEY
-          ? REMOVE_TITLE
-          : formData && formData.action === ADD_ACTION_KEY ? SAVE_TITLE : EDIT_TITLE
-      }
-      introText={
-        formDesc ? CONFIRM_MSG : `Вы собираетесь ${REMOVE_TITLE.toLowerCase()} позиции прайс-листа. Общее количество удаляемых записей: ${formData && 1}. ${CONFIRM_MSG}`
-      }
-      actionHandler={formData && handlersData[formData.action as string]}
-    />
+    formData
+      ? <ModalFooter
+          icon={formData && formData.action === REMOVE_ACTION_KEY ? <Delete /> : <Check />}
+          color={formData && formData.action === REMOVE_ACTION_KEY ? 'error' : 'success'}
+          actionBtnCaption={
+            formData && formData.action === REMOVE_ACTION_KEY
+              ? REMOVE_TITLE
+              : formData && formData.action === ADD_ACTION_KEY ? SAVE_TITLE : EDIT_TITLE
+          }
+          introText={
+            formDesc ? CONFIRM_MSG : `Вы собираетесь ${REMOVE_TITLE.toLowerCase()} позиции прайс-листа. Общее количество удаляемых записей: ${formData && 1}. ${CONFIRM_MSG}`
+          }
+          disabled={false}
+          actionHandler={handlersData[formData.action]}
+        />
+      : ''
   )
 }
 

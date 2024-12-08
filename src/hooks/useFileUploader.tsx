@@ -180,10 +180,12 @@ const useFileUploader = (): IFileUploaderHook => {
       file[TYPES[SUBDEPT_KEY]],
       file[TYPES[GROUP_KEY]],
       file[TYPES[ITEM_KEY]]
-    ].reduce((acc, item) => ({...acc, [Object.keys(item[0]).length]: item}), {});
+    ].reduce(
+      (acc, item) => ({...acc, [Object.keys(item[0]).length]: item}), {} as Record<string, TItemsArr>
+    );
 
     data
-      ? dispatch(setRowData({ data: parsedData[data.key].find((item: TItemData) => item[ID_KEY] === data.id) }))
+      ? dispatch(setRowData({ data: parsedData[data.key.toString()].find((item: TItemData) => item[ID_KEY] === Number(data.id)) }))
       : dispatch(setRowData({ data }));
   }
 

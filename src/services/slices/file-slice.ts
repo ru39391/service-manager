@@ -1,6 +1,6 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import type { TItemData, TItemsArr } from '../../types';
+import type { TItemData, TItemsArr, TPricelistTypes } from '../../types';
 import { ID_KEY } from '../../utils/constants';
 
 export type TFileAction = {
@@ -11,7 +11,7 @@ export type TFileAction = {
     pricelist?: TItemsArr;
     data?: TItemData | null;
     items?: TItemsArr;
-    key?: string;
+    key?: TPricelistTypes;
     errorMsg?: string;
     isLoading?: boolean;
   };
@@ -69,8 +69,8 @@ const fileSlice = createSlice({
     }),
     removeItems(state, action: TFileAction) {
       const { key, items } = {
-        key: action.payload.key || '',
-        items: action.payload.items || []
+        key: action.payload.key as TPricelistTypes,
+        items: action.payload.items as TItemsArr || []
       };
 
       return {

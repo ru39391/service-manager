@@ -1,12 +1,18 @@
 import { createSlice } from '@reduxjs/toolkit'
 
-import type { TCustomData, TItemData, TItemsArr } from '../../types';
+import type {
+  TCustomData,
+  TItemData,
+  TItemsArr,
+  TActionKeys,
+  TPricelistTypes
+} from '../../types';
 
 import { DEPT_KEY, SUBDEPT_KEY, GROUP_KEY } from '../../utils/constants';
 
 export type TFormData = {
-  action: string;
-  type: string;
+  action: TActionKeys;
+  type: TPricelistTypes;
   data: TItemData;
   values?: TItemData;
   items?: TItemsArr;

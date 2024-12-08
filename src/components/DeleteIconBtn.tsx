@@ -4,14 +4,14 @@ import { DeleteOutlined } from '@mui/icons-material';
 
 import { TFormData } from '../services/slices/form-slice';
 
-import type { TItemData, TUrlData } from '../types';
+import type { TItemData, TUrlData, TPricelistTypes } from '../types';
 
 import { EDIT_ACTION_KEY, PARSER_KEY } from '../utils/constants';
 
 interface IDeleteIconBtn {
   formData: TFormData | null;
   urlData: TUrlData;
-  openModal: (payload: { data: TItemData; type: string; isParserData: boolean; }) => Promise<void>;
+  openModal: (payload: { data: TItemData; type: TPricelistTypes; isParserData: boolean; }) => Promise<void>;
 }
 
 const DeleteIconBtn: FC<IDeleteIconBtn> = ({ formData, urlData, openModal }) => {

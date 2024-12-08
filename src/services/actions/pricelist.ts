@@ -21,7 +21,8 @@ import type {
   TItemsArr,
   TResponseData,
   TResponseItems,
-  TResponseDefault
+  TResponseDefault,
+  TPricelistExtTypes
 } from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';
 import type { TPricelistAction } from '../slices/pricelist-slice';
@@ -83,7 +84,7 @@ const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch)
   }
 };
 
-const handlePricelistData = ({ action, type, items }: { action: string; type: string | null; items: TItemsArr; }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
+const handlePricelistData = ({ action, type, items }: { action: string; type: TPricelistExtTypes | null; items: TItemsArr; }): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   if(!action) {
     dispatch(getPricelistFailed({ alertMsg: ACTION_ERROR_MSG }));
     return;
@@ -249,7 +250,7 @@ const handleResLinkedData = (payload: { action: string; data: TItemData; }): TAp
     } else {
       dispatch(getPricelistFailed({ alertMsg: errorMsg }));
     }
-  } catch({response}) {
+  } catch({ response }) {
     const { errors }: { errors: TResponseDefault['errors']; } = response.data;
 
     dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : errorMsg }));

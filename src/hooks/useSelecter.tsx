@@ -3,7 +3,12 @@ import { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormValues } from '../services/slices/form-slice';
 
-import type { TCustomData, TItemData, TItemsArr } from '../types';
+import type {
+  TCustomData,
+  TItemData,
+  TItemsArr,
+  TPricelistKeys
+} from '../types';
 
 import { sortStrArray } from '../utils';
 import {
@@ -17,6 +22,11 @@ import {
   NO_GROUP_TITLE
 } from '../utils/constants';
 
+type TSelectedItem = {
+  type: TPricelistKeys;
+  [ID_KEY]: number;
+}
+
 interface ISelecter {
   deptsList: TItemsArr;
   subdeptsList: TItemsArr;
@@ -24,7 +34,7 @@ interface ISelecter {
   selectedDept: TItemData;
   selectedSubdept: TItemData;
   selectedGroup: TItemData;
-  selectOption: (data: TItemData) => void;
+  selectOption: (data: TSelectedItem) => void;
 }
 
 const useSelecter = (): ISelecter => {
@@ -57,8 +67,8 @@ const useSelecter = (): ISelecter => {
   });
 
   const handleSelectedItem = (
-    data: TItemData
-  ): TItemData => pricelist[TYPES[data.type]].find((item: TItemsArr) => item[ID_KEY] === data[ID_KEY]);
+    payload: TSelectedItem
+  ): TItemData => pricelist[TYPES[payload.type]].find((item: TItemData) => item[ID_KEY] === payload[ID_KEY]) as TItemData;
 
   const handleItemsList = (
     arr: TItemsArr,
@@ -66,7 +76,7 @@ const useSelecter = (): ISelecter => {
     id: number
   ): TItemsArr => sortStrArray([...arr.filter((item) => item[key] === id)], NAME_KEY);
 
-  const handleFormData = (type: string): TItemData | null => formData
+  const handleFormData = (type: TPricelistKeys): TItemData | null => formData
     ? handleSelectedItem({ type, [ID_KEY]: formData.data[type] as number })
     : null;
 
@@ -114,7 +124,7 @@ const useSelecter = (): ISelecter => {
     );
   }
 
-  const selectOption = (data: TItemData) => {
+  const selectOption = (data: TSelectedItem) => {
     const optionData = data.type === GROUP_KEY && data[ID_KEY] === 0
       ? setDefaultGroupData({ [DEPT_KEY]: selectedDept[ID_KEY], [SUBDEPT_KEY]: selectedSubdept[ID_KEY] })
       : handleSelectedItem(data);

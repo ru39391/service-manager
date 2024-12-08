@@ -23,7 +23,7 @@ import useUrlHandler from '../hooks/useUrlHandler';
 import { useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
 
-import type { TCustomData } from '../types';
+import type { TCustomData, TPricelistKeys } from '../types';
 
 import {
   ID_KEY,
@@ -64,7 +64,7 @@ const NavItem: FC<INavItem> = ({
    * @property {number} id - item_id категории
    * @property {string} type - тип категории данных ('dept' | 'subdept')
    */
-  const changeLoc = (id: number, type: string): void => {
+  const changeLoc = (id: number, type: TPricelistKeys): void => {
     navigate(`/${TYPES[type]}/${id.toString()}`, { replace: true });
     setCurrSubCategoryId(id);
 

@@ -34,7 +34,14 @@ import useFileDataNav from '../hooks/useFileDataNav';
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
 
-import type { TCustomData, TPricelistData, TItemData } from '../types';
+import type {
+  TCustomData,
+  TPricelistData,
+  TItemData,
+  TPricelistTypes,
+  THandledItemKeys,
+  TActionKeys
+} from '../types';
 
 import {
   ADD_ACTION_KEY,
@@ -67,7 +74,7 @@ const InvisibleInput = styled('input')({
 });
 
 const Parser: FC = () => {
-  const [currCategory, setCurrCategory] = useState<string>(CREATED_KEY);
+  const [currCategory, setCurrCategory] = useState<THandledItemKeys>(CREATED_KEY);
 
   const file = useSelector(state => state.file);
   const { isFileUploading } = file;
@@ -102,7 +109,15 @@ const Parser: FC = () => {
     return Object.values(data).length === dataItems.length ? null : data;
   };
 
-  const selectFileCategory = ({ category, subCategory }: TCustomData<string>): void => {
+  const selectFileCategory = (
+    {
+      category,
+      subCategory
+    }: {
+      category: THandledItemKeys;
+      subCategory: TPricelistTypes;
+    }
+  ): void => {
     if(!comparedFileData) {
       return;
     }
@@ -119,15 +134,25 @@ const Parser: FC = () => {
     );
   };
 
-  const setConfirmModalVisible = ({currCategory, currSubCategory}: TCustomData<string>): void => {
+  const setConfirmModalVisible = (
+    {
+      currCategory,
+      currSubCategory
+    }:{
+      currCategory: THandledItemKeys;
+      currSubCategory: TPricelistTypes;
+    }
+  ): void => {
+    const { key, title }: TCustomData<string> = params[currCategory];
+
     toggleModal({
-      title: `${params[currCategory].title} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}`,
-      desc: `Вы собираетесь ${params[currCategory].title.toLowerCase()} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}. Общее количество обновляемых записей: ${tableData ? tableData.rows.length : 0}`
+      title: `${title} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}`,
+      desc: `Вы собираетесь ${title.toLowerCase()} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}. Общее количество обновляемых записей: ${tableData ? tableData.rows.length : 0}`
     });
     dispatch(setFormData({
       data: {
         isFormHidden: true,
-        action: params[currCategory].key,
+        action: key as TActionKeys,
         type: currSubCategory,
         items: comparedFileData ? comparedFileData[currCategory][currSubCategory] : [],
         data: {}
@@ -142,18 +167,19 @@ const Parser: FC = () => {
       currSubCategory
     }: {
       values: TItemData;
-      currCategory: string;
-      currSubCategory: string;
+      currCategory: THandledItemKeys;
+      currSubCategory: TPricelistTypes;
     }
   ) => {
+    const { key, title }: TCustomData<string> = params[currCategory];
     const items = comparedFileData ? comparedFileData[currCategory][currSubCategory] : [];
     const data = items.length ? items.find((item: TItemData) => item[ID_KEY] === values[ID_KEY]) : {};
 
-    toggleModal({ title: `${params[currCategory].title} «${values[NAME_KEY]}»` });
+    toggleModal({ title: `${title} «${values[NAME_KEY]}»` });
     dispatch(setFormData({
       data: {
         isFormHidden: true,
-        action: params[currCategory].key,
+        action: key as TActionKeys,
         type: currSubCategory,
         values,
         ...( data ? { data } : { data: {} } )
@@ -185,7 +211,7 @@ const Parser: FC = () => {
   return (
     <>
       <Layout>
-        <Grid item xs={3} sx={(theme) => ({ ...theme.custom.dFlexColumn })}>
+        <Grid item xs={3} sx={{ display: 'flex', flexDirection: 'column' }}>
           <Box
             sx={{
               top: 24,
@@ -237,13 +263,13 @@ const Parser: FC = () => {
                       (item) =>
                       <ListItemButton
                         key={categoryTypes[item.key as string]}
-                        selected={currCategory === key && currSubCategory === item.key as string}
+                        selected={currCategory === key as THandledItemKeys && currSubCategory === item.key as string}
                         sx={{
                           pl: 6,
                           color: 'grey.600',
                           fontSize: 14,
                         }}
-                        onClick={() => selectFileCategory({ category: key, subCategory: item.key as string })}
+                        onClick={() => selectFileCategory({category: key as THandledItemKeys, subCategory: item.key as TPricelistTypes })}
                       >
                         <ListItemText
                           disableTypography

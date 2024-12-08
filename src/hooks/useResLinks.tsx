@@ -18,7 +18,12 @@ import {
 
 import { useSelector } from '../services/hooks';
 
-import type { TCustomData, TItemsArr, TItemData } from '../types';
+import type {
+  TCustomData,
+  TItemsArr,
+  TItemData,
+  TPricelistExtTypes
+} from '../types';
 
 import { sortStrArray, fetchArray, getMatchedItems } from '../utils';
 
@@ -61,7 +66,7 @@ const useResLinks = (): IResLinks => {
   const { id: resId } = useParams();
 
   const pricelist: TCustomData<TItemsArr>  = useSelector(
-    ({ pricelist }) => [...Object.values(TYPES), RESLINKS_KEY].reduce((acc, key) => ({ ...acc, [key]: pricelist[key] }), {}
+    ({ pricelist }) => [...Object.values(TYPES), RESLINKS_KEY].reduce((acc, key) => ({ ...acc, [key]: pricelist[key as TPricelistExtTypes] }), {}
   ));
 
   const setResData = (arr: TItemsArr[]): TCustomData<TItemsArr> => arr.reduce(

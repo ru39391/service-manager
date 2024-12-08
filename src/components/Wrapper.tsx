@@ -12,7 +12,7 @@ interface IWrapper {
 const Wrapper: FC<IWrapper> = ({ children }) => {
   return (
     <Layout>
-      <Grid item xs={3} sx={(theme) => ({ ...theme.custom.dFlexColumn })}><Nav /></Grid>
+      <Grid item xs={3} sx={{ display: 'flex', flexDirection: 'column' }}><Nav /></Grid>
       <Grid
         item
         xs={9}

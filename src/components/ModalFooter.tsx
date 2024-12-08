@@ -11,12 +11,12 @@ import { useSelector } from '../services/hooks';
 import { PARSER_CONFIRM_MSG } from '../utils/constants';
 
 interface IModalFooter {
-  icon: ReactNode | undefined;
-  color: ButtonOwnProps['color'] | undefined;
+  icon?: ReactNode;
+  color?: ButtonOwnProps['color'];
   actionBtnCaption: string;
-  introText: string | undefined;
+  introText?: string;
   disabled: boolean;
-  isParserData: boolean;
+  isParserData?: boolean;
   actionHandler: () => void;
 }
 

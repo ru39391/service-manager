@@ -20,7 +20,7 @@ import useCategoryItems from '../hooks/useCategoryItems';
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
 
-import type { TItemData } from '../types';
+import type { TItemData, TPricelistTypes } from '../types';
 
 import {
   ADD_TITLE,
@@ -53,7 +53,7 @@ const ItemsList: FC = () => {
       data: Object.values(TYPES).reduce((acc, type) => ({...acc, [type]: pricelist[type]}), {}),
       category: currSubCategory,
       params: categoryParams
-    });
+    }, null);
   }, [
     pricelist,
     currSubCategory,
@@ -65,7 +65,7 @@ const ItemsList: FC = () => {
     dispatch(setFormData({
       data: {
         action: ADD_ACTION_KEY,
-        type: currSubCategory,
+        type: currSubCategory as TPricelistTypes,
         data: setCurrentFormValues(currSubCategory)
       }
     }));
@@ -76,8 +76,8 @@ const ItemsList: FC = () => {
     dispatch(setFormData({
       data: {
         action: EDIT_ACTION_KEY,
-        type: currSubCategory,
-        data: pricelist[currSubCategory].find((item: TItemData) => item[ID_KEY] === values[ID_KEY])
+        type: currSubCategory as TPricelistTypes,
+        data: pricelist[currSubCategory].find((item: TItemData) => item[ID_KEY] === values[ID_KEY]) as TItemData
       }
     }));
   }
@@ -99,7 +99,7 @@ const ItemsList: FC = () => {
             id="demo-select-small"
             value={currSubCategory}
             label={CATEGORY_TITLE}
-            onChange={({ target }) => setCurrSubCategory(target.value)}
+            onChange={({ target }) => setCurrSubCategory(target.value as TPricelistTypes)}
           >
             {subCategoryItems.map((item) => <MenuItem key={Object.keys(item)[0]} value={Object.keys(item)[0]}>{Object.values(item)[0]}</MenuItem>)}
           </Select>

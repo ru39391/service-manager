@@ -8,7 +8,7 @@ import {
 
 import useSelecter from '../hooks/useSelecter';
 
-import type { TItemData } from '../types';
+import type { TItemData, TPricelistKeys } from '../types';
 
 import {
   ID_KEY,
@@ -17,7 +17,7 @@ import {
 } from '../utils/constants';
 
 interface ISelecter {
-  keys: string[];
+  keys: TPricelistKeys[];
 }
 
 const Selecter: FC<ISelecter> = ({ keys }) => {

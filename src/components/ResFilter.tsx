@@ -140,7 +140,7 @@ const ResFilter: FC<IResFilter> = ({
               {items.map(
                 (item: TResParent | TResTemplate) =>
                   <MenuItem
-                    key={item[id].toString()}
+                    key={item[id]}
                     value={item[id]}
                   >
                     {item[NAME_KEY]} - {item[id].toString()}

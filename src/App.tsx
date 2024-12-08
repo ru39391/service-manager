@@ -37,12 +37,6 @@ const App: FC = () => {
         //@ts-expect-error
         body: '#F4F5FA'
       }
-    },
-    custom: {
-      dFlexColumn: {
-        display: 'flex',
-        flexDirection: 'column',
-      }
     }
   });
 

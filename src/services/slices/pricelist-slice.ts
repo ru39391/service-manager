@@ -2,12 +2,13 @@ import { createSlice } from '@reduxjs/toolkit'
 
 import type {
   TResourceData,
-  TCustomData,
   TItemData,
   TItemsArr,
+  TPricelistResponse,
+  TPricelistExtTypes
 } from '../../types';
 
-import { fetchItemsArr, sortStrArray, handleFetchedArr } from '../../utils';
+import { handleFetchedArr } from '../../utils';
 import {
   ADD_ACTION_KEY,
   EDIT_ACTION_KEY,
@@ -32,7 +33,7 @@ export type TPricelistAction = {
     reslinks?: TItemsArr;
     alertType?: string;
     alertMsg?: string;
-    type?: string;
+    type?: TPricelistExtTypes;
     items?: TItemsArr;
   };
 };
@@ -49,7 +50,7 @@ export type TPricelistState = {
   isPricelistFailed: boolean;
   alertType: string;
   alertMsg: string;
-  response: TCustomData<string | number[]> | null;
+  response: TPricelistResponse | null;
 };
 
 const initialState: TPricelistState = {
@@ -112,7 +113,7 @@ const pricelistSlice = createSlice({
     }),
     createItems(state, action: TPricelistAction) {
       const { type, items } = {
-        type: action.payload.type as string,
+        type: action.payload.type as TPricelistExtTypes,
         items: action.payload.items as TItemsArr
       };
 
@@ -133,7 +134,7 @@ const pricelistSlice = createSlice({
     },
     updateItems(state, action: TPricelistAction) {
       const { type, items } = {
-        type: action.payload.type as string,
+        type: action.payload.type as TPricelistExtTypes,
         items: action.payload.items as TItemsArr
       };
       const ids = items ? items.map((item) => item[ID_KEY] as number) : [];
@@ -152,7 +153,7 @@ const pricelistSlice = createSlice({
     },
     removeItems(state, action: TPricelistAction) {
       const { type, items } = {
-        type: action.payload.type as string,
+        type: action.payload.type as TPricelistExtTypes,
         items: action.payload.items as TItemsArr
       };
       const ids = items ? items.map((item) => item[ID_KEY] as number) : [];

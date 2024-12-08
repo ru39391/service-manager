@@ -6,7 +6,12 @@ import {
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormValues } from '../services/slices/form-slice';
 
-import type { TCustomData, TItemData, TItemsArr } from '../types';
+import type {
+  TCustomData,
+  TItemData,
+  TItemsArr,
+  TPricelistTypes
+} from '../types';
 
 import {
   ID_KEY,
@@ -32,7 +37,7 @@ interface IComplex {
   complexItems: TItemsArr;
   currComplexItems: TItemsArr;
   currComplexSumm: number;
-  setItemId: (type: string) => TCustomData<number>;
+  setItemId: (type: TPricelistTypes) => TCustomData<number>;
   handleComplexItem: (data: TItemData) => void;
 }
 
@@ -52,7 +57,7 @@ const useComplex = (): IComplex => {
     pricelist: state.pricelist
   }));
 
-  const setItemId = (type: string): TCustomData<number> => ({ [ID_KEY]: Math.max(...pricelist[type].map((item: TItemData) => item[ID_KEY])) + 1 });
+  const setItemId = (type: TPricelistTypes): TCustomData<number> => ({ [ID_KEY]: Math.max(...pricelist[type].map((item: TItemData) => Number(item[ID_KEY]))) + 1 });
 
   const fetchComplexItems = () => {
     const complexItemsArr: TItemsArr = pricelist[TYPES[ITEM_KEY]].filter((item: TItemData) => item[IS_COMPLEX_ITEM_KEY] === 1);
@@ -197,8 +202,8 @@ const useComplex = (): IComplex => {
 
   useEffect(() => {
     handleComplexData({
-      [COMPLEX_KEY]: formData ? formData.data[COMPLEX_KEY] : '[]',
-      [IS_COMPLEX_KEY]: formData ? formData.data[IS_COMPLEX_KEY] : 0
+      [COMPLEX_KEY]: formData ? formData.data[COMPLEX_KEY].toString() : '[]',
+      [IS_COMPLEX_KEY]: formData ? Number(formData.data[IS_COMPLEX_KEY]) : 0
     });
   }, [
     formData

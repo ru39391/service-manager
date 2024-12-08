@@ -7,15 +7,35 @@ import {
   GROUP_KEY
 } from '../utils/constants';
 
+export type TPricelistKeys = 'dept' | 'subdept' | 'group' | 'items';
+
+export type TPricelistTypes = 'depts' | 'subdepts' | 'groups' | 'pricelist';
+
+export type TPricelistExtTypes = TPricelistTypes | 'reslinks';
+
+export type TActionKeys = 'add' | 'edit' | 'remove';
+
+export type THandledItemKeys = 'created' | 'updated' | 'removed';
+
 export type TCustomData<T> = {
   [key: string]: T;
+};
+
+export type TPriceList<T> = {
+  [key in TPricelistTypes]: T;
 };
 
 export type TItemData = TCustomData<string | number>;
 
 export type TItemsArr = TItemData[];
 
-export type TPricelistData = TCustomData<TItemsArr>;
+export type TPricelistData =  TCustomData<TItemsArr>; //Record<TPricelistExtTypes, TItemsArr>;
+
+export type TPricelistResponse = {
+  action: TActionKeys;
+  type: string; //TPricelistTypes; //TPricelistExtTypes;
+  ids: number[];
+};
 
 export type TResponseItems = {
   success: boolean;
@@ -100,11 +120,11 @@ export type TResLinkedAction = {
 };
 
 export type TUrlData = {
-  type: string;
+  type: TPricelistTypes | string;
   id: number | null;
 };
 
 export type TParserData = {
-  type: string;
+  type: TPricelistTypes;
   items: TItemsArr;
 };

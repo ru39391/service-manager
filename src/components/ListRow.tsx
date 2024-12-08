@@ -5,7 +5,6 @@ import {
   ListItemText,
   Typography,
 } from '@mui/material';
-import { TypographyOwnProps } from '@mui/material/Typography';
 
 import type { TLinkedItem } from '../types';
 

@@ -2,7 +2,12 @@ import { useState, useEffect } from 'react';
 
 import { useSelector } from '../services/hooks';
 
-import type { TItemData, TResParent, TResTemplate, TResourceData } from '../types';
+import type {
+  TItemData,
+  TResParent,
+  TResTemplate,
+  TResourceData
+} from '../types';
 
 import { fetchArray, sortStrArray } from '../utils';
 import {

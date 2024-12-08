@@ -23,6 +23,7 @@ import {
   ADD_ACTION_KEY,
   EDIT_ACTION_KEY
 } from '../utils/constants';
+import { TItemData, TPricelistTypes, TActionKeys } from '../types';
 
 const Header: FC = () => {
   const dispatch = useDispatch();
@@ -35,14 +36,14 @@ const Header: FC = () => {
   } = useCurrentData();
   const title = pageTitle || currentFormData.caption as string;
 
-  const dispatchFormData = (action: string) => {
+  const dispatchFormData = (action: TActionKeys) => {
     const { type } = currentFormData;
 
     dispatch(setFormData({
       data: {
         action,
-        type: type as string,
-        data: action === ADD_ACTION_KEY ? setCurrentFormValues(type as string) : currentCategory
+        type: type as TPricelistTypes,
+        data: action === ADD_ACTION_KEY ? setCurrentFormValues(type as string) : currentCategory as TItemData
       }
     }));
   }

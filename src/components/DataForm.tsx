@@ -354,7 +354,7 @@ const DataForm: FC = () => {
           <ModalFooter
             disabled={isDisabled}
             actionBtnCaption={SAVE_TITLE}
-            actionHandler={handlersData[formData.action as string]}
+            actionHandler={handlersData[formData.action]}
           />
         </>
       }

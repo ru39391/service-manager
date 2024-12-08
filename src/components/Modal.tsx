@@ -21,7 +21,7 @@ import useUrlHandler from '../hooks/useUrlHandler';
 import { useSelector, useDispatch } from '../services/hooks';
 import { setFormData } from '../services/slices/form-slice';
 
-import type { TItemData } from '../types';
+import type { TItemData, TPricelistTypes } from '../types';
 
 import {
   NAME_KEY,
@@ -65,7 +65,7 @@ const Modal: FC<IModal> = ({ fc, payload }) => {
     });
   }
 
-  const openConfirmModal = async (payload: { data: TItemData; type: string; isParserData: boolean; } | null) => {
+  const openConfirmModal = async (payload: { data: TItemData; type: TPricelistTypes; isParserData: boolean; } | null) => {
     if(!payload) {
       return;
     }
