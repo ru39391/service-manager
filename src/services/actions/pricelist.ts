@@ -1,6 +1,6 @@
 import axios from 'axios';
 import { AxiosResponse } from 'axios';
-import { ActionCreatorWithPayload } from '@reduxjs/toolkit';
+import { PayloadAction } from '@reduxjs/toolkit';
 import {
   getPricelistLoading,
   getPricelistSucceed,
@@ -22,6 +22,7 @@ import type {
   TResponseData,
   TResponseItems,
   TResponseDefault,
+  TErrorResponse,
   TPricelistExtTypes
 } from '../../types';
 import type { TAppThunk, TAppDispatch } from '../../services/store';
@@ -49,6 +50,14 @@ import {
   TYPES
 } from '../../utils/constants';
 import { handleRespData, setRespMessage } from '../../utils';
+
+type TActionData = {
+  handler: (url: string, data: TCustomData<TItemData>) => Promise<AxiosResponse<TResponseDefault>>;
+  dispatcher: (data: TPricelistAction['payload']) => PayloadAction<TPricelistAction['payload'], string>;
+  modalTitle?: string;
+  successMsg: string;
+  errorMsg: string;
+};
 
 const fetchPricelistData = (): TAppThunk<void> => async (dispatch: TAppDispatch) => {
   dispatch(getPricelistLoading());
@@ -102,7 +111,7 @@ const handlePricelistData = ({ action, type, items }: { action: string; type: TP
 
   dispatch(getPricelistLoading());
 
-  const actionData = {
+  const actionData: Record<string, TActionData> = {
     [ADD_ACTION_KEY]: {
       handler: async (url: string, data: TCustomData<TItemData>) => await axios.post(url, data),
       dispatcher: (data: TPricelistAction['payload']) => createItems(data),
@@ -131,12 +140,6 @@ const handlePricelistData = ({ action, type, items }: { action: string; type: TP
     modalTitle,
     successMsg,
     errorMsg
-  }: {
-    handler: (url: string, data: TCustomData<TItemData>) => Promise<AxiosResponse<TResponseDefault>>;
-    dispatcher: ActionCreatorWithPayload<TPricelistAction['payload'], string>;
-    modalTitle: string;
-    successMsg: string;
-    errorMsg: string;
   } = actionData[action];
   const payload = items.reduce((acc: TCustomData<TItemData>, item, index) => ({...acc, [index]: item }), {});
 
@@ -187,8 +190,9 @@ const handlePricelistData = ({ action, type, items }: { action: string; type: TP
     } else {
       dispatch(getPricelistFailed({ alertMsg: errors ? message as string : errorMsg }));
     }
-  } catch({response}) {
-    const { errors }: { errors: TResponseDefault['errors']; } = response.data;
+  } catch(error) {
+    const { response } = error as TErrorResponse;
+    const { errors } = response.data;
 
     dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : errorMsg }));
   }
@@ -212,7 +216,7 @@ const handleResLinkedData = (payload: { action: string; data: TItemData; }): TAp
 
   dispatch(getPricelistLoading());
 
-  const actionData = {
+  const actionData: Record<string, TActionData> = {
     [ADD_ACTION_KEY]: {
       handler: async (url: string, data: TCustomData<TItemData>) => await axios.post(url, data),
       dispatcher: (data: TPricelistAction['payload']) => createItems(data),
@@ -231,11 +235,6 @@ const handleResLinkedData = (payload: { action: string; data: TItemData; }): TAp
     dispatcher,
     successMsg,
     errorMsg
-  }: {
-    handler: (url: string, data: TCustomData<TItemData>) => Promise<AxiosResponse<TResponseDefault>>;
-    dispatcher: ActionCreatorWithPayload<TPricelistAction['payload'], string>;
-    successMsg: string;
-    errorMsg: string;
   } = actionData[payload.action];
 
   try {
@@ -250,8 +249,9 @@ const handleResLinkedData = (payload: { action: string; data: TItemData; }): TAp
     } else {
       dispatch(getPricelistFailed({ alertMsg: errorMsg }));
     }
-  } catch({ response }) {
-    const { errors }: { errors: TResponseDefault['errors']; } = response.data;
+  } catch(error) {
+    const { response } = error as TErrorResponse;
+    const { errors } = response.data;
 
     dispatch(getPricelistFailed({ alertMsg: errors ? errors.message as string : errorMsg }));
   }

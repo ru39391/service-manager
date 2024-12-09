@@ -11,7 +11,8 @@ import type {
   TLinkedItem,
   TLinkedGroup,
   TLinkedSubdept,
-  TLinkedDept
+  TLinkedDept,
+  TLinkedDeptKeys
 } from '../types';
 
 import {
@@ -46,7 +47,7 @@ const ResLinkedItems: FC<IResLinkedItems> = ({ isLinkedListExist, linkedItems })
       (dept) => <Card key={dept[ID_KEY].toString()} variant="outlined" sx={{ mb: 1 }}>
         <CardContent>
           <Typography variant="h6" color="textPrimary" component="div" sx={{ mb: .5 }}>{dept[NAME_KEY]}</Typography>
-          {dept[TYPES[SUBDEPT_KEY]].map(
+          {dept[TYPES[SUBDEPT_KEY] as TLinkedDeptKeys].map(
             (subdept: TLinkedSubdept) => <Fragment key={subdept[ID_KEY].toString()}>
               <Typography variant="subtitle1" color="textSecondary" component="div" sx={{ mb: .5 }}>
               {[

@@ -22,7 +22,8 @@ import type {
   TCustomData,
   TItemsArr,
   TItemData,
-  TPricelistExtTypes
+  TPricelistExtTypes,
+  TPricelistKeys
 } from '../types';
 
 import { sortStrArray, fetchArray, getMatchedItems } from '../utils';
@@ -85,7 +86,7 @@ const useResLinks = (): IResLinks => {
   ].reduce((acc, handler, index) => ({
     ...acc,
     [Object.keys(TYPES)[index]]: (arr: TItemsArr) => handler(sortStrArray(arr, CATEGORY_KEY))
-  }), {});
+  }), {} as Record<TPricelistKeys, (arr: TItemsArr) => void>);
 
   const resLinkHandlers = [
     setLinkedDepts,
@@ -103,7 +104,7 @@ const useResLinks = (): IResLinks => {
         }
       )
     )
-  }), {});
+  }), {} as Record<TPricelistKeys, (payload: TLinkedResData) => void>);
 
   const handleDataConfig = (data: TCustomData<boolean>) => {
     setLinkedDataConfig(linkedDataConfig ? { ...linkedDataConfig, ...data } : { ...data });
@@ -124,7 +125,7 @@ const useResLinks = (): IResLinks => {
    */
   const handleExistableItems = (
     { arr, items }: TCustomData<TItemsArr>,
-    { key, action }: TCustomData<string>
+    { key, action }: { key: TPricelistKeys | string; action: string; }
   ) => {
     const isOptionRemoved = [
       key,
@@ -136,11 +137,11 @@ const useResLinks = (): IResLinks => {
       return;
     }
 
-    existableDataHandlers[key](
+    existableDataHandlers[key as TPricelistKeys](
       sortStrArray(
         fetchArray(
           [
-            ...existableData[key],
+            ...existableData[key as TPricelistKeys],
             ...arr.filter(item => !items.map(data => data[ID_KEY]).includes(item[ID_KEY]))
           ],
           ID_KEY
@@ -178,15 +179,15 @@ const useResLinks = (): IResLinks => {
    * Формирует массив дочерних элементов выбранных категорий
    * @returns {object[]} массив подходящих элементов
    * @property {object[]} arr - массив объектов родительской категории
-   * @property {string} categoryKey - ключ параметра категории, напр. DEPT_KEY
-   * @property {string} currentKey - ключ параметра дочернего элемента, напр. SUBDEPT_KEY
-   * @property {string} extendedKey - ключ для выборки услуг, вложенных напрямую в специализацию, напр. GROUP_KEY
+   * @property {TPricelistKeys} categoryKey - ключ параметра категории, напр. DEPT_KEY
+   * @property {TPricelistKeys} currentKey - ключ параметра дочернего элемента, напр. SUBDEPT_KEY
+   * @property {TPricelistKeys} extendedKey - ключ для выборки услуг, вложенных напрямую в специализацию, напр. GROUP_KEY
    */
   const filterItems = (
     arr: TItemsArr,
-    categoryKey: string,
-    currentKey: string,
-    extendedKey: string = ''
+    categoryKey: TPricelistKeys,
+    currentKey: TPricelistKeys,
+    extendedKey: TPricelistKeys | null = null
   ): TItemsArr => {
     if(!arr.length) {
       resLinkHandlers[currentKey]({ items: [] });
@@ -264,7 +265,7 @@ const useResLinks = (): IResLinks => {
 
     Object.values(TYPES).forEach((key, index) => {
       //console.log(pricelist[key].filter(item => JSON.parse(data[key]).includes(item[ID_KEY])));
-      resLinkHandlers[Object.keys(TYPES)[index]]({
+      resLinkHandlers[Object.keys(TYPES)[index] as TPricelistKeys]({
         items: pricelist[key].filter(item => JSON.parse(data[key] as string).includes(item[ID_KEY]))
       })
     });

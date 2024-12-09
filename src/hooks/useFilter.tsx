@@ -6,7 +6,9 @@ import type {
   TItemData,
   TResParent,
   TResTemplate,
-  TResourceData
+  TResourceData,
+  TFilterData,
+  TFilterKeys
 } from '../types';
 
 import { fetchArray, sortStrArray } from '../utils';
@@ -19,13 +21,15 @@ import {
   UPDATED_KEY
 } from '../utils/constants';
 
+type THandleParamsList = typeof PARENT_KEY | typeof TEMPLATE_KEY;
+
 interface IFilter {
   filterData: TItemData | null;
   isFilterVisible: boolean;
   filterResultList: TResourceData[];
   parentsList: TResParent[];
   templatesList: TResTemplate[];
-  handleFilterData: (data: TItemData | null) => void;
+  handleFilterData: (data: TFilterData | null) => void;
   setFilterVisibility: (value: boolean) => void;
 }
 
@@ -33,7 +37,7 @@ interface IFilter {
 // TODO: необязательная доработка - порядок сортировки
 // TODO: необязательная доработка - выделение цветом совпадающего текста
 const useFilter = (): IFilter => {
-  const [filterData, setFilterData] = useState<TItemData | null>(null);
+  const [filterData, setFilterData] = useState<TFilterData | null>(null);
   const [isFilterVisible, setFilterVisibility] = useState<boolean>(false);
   const [filterResultList, setFilterResultList] = useState<TResourceData[]>([]);
   const [parentsList, setParentsList] = useState<TResParent[]>([]);
@@ -41,7 +45,7 @@ const useFilter = (): IFilter => {
 
   const { res } = useSelector(state => state.pricelist);
 
-  const handleParamsList = (key: string): void => {
+  const handleParamsList = (key: THandleParamsList): void => {
     const paramKey = `${key}_${RES_ID_KEY}`;
     const resParamsArr = res.map(item => item[key]);
     const paramsArr = fetchArray(resParamsArr, paramKey);
@@ -53,7 +57,7 @@ const useFilter = (): IFilter => {
     }
   }
 
-  const handleFilterData = (data: TItemData | null): void => {
+  const handleFilterData = (data: TFilterData | null): void => {
     if(data && [
       Object.values(data).length === 1,
       data[NAME_KEY] !== undefined,
@@ -75,17 +79,29 @@ const useFilter = (): IFilter => {
       return;
     }
 
-    const keys = Object.keys(filterData);
+    const keys = Object.keys(filterData) as TFilterKeys[];
 
     setFilterResultList(res.filter((item) => {
       const filterKeysData = keys.reduce(
-        (acc, key) => ({
+        (acc, key: TFilterKeys) => ({
           ...acc,
-          ...( key === NAME_KEY && { [key]: item[key].toLowerCase().includes(filterData[key].toString().toLowerCase()) }),
-          ...( [PARENT_KEY, TEMPLATE_KEY].includes(key) && { [key]: item[key][`${key}_${RES_ID_KEY}`] === filterData[key] }),
-          ...( key === IS_PARENT_KEY && { [key]: item[key] === Boolean(filterData[key]) }),
-        }), {}
-      )
+          ...(
+            key === NAME_KEY && filterData !== null && filterData[NAME_KEY] !== undefined
+              && { [NAME_KEY]: item[NAME_KEY].toLowerCase().includes(filterData[NAME_KEY].toString().toLowerCase()) }
+          ),
+          ...(
+            [PARENT_KEY, TEMPLATE_KEY].includes(key)
+              && {
+                [PARENT_KEY]: item[PARENT_KEY][`${PARENT_KEY}_${RES_ID_KEY}`] === filterData[PARENT_KEY],
+                [TEMPLATE_KEY]: item[TEMPLATE_KEY][`${TEMPLATE_KEY}_${RES_ID_KEY}`] === filterData[TEMPLATE_KEY]
+              }
+          ),
+          ...(
+            key === IS_PARENT_KEY
+              && { [IS_PARENT_KEY]: item[IS_PARENT_KEY] === Boolean(filterData[IS_PARENT_KEY]) }
+          ),
+        }), {} as Record<TFilterKeys, boolean>
+      );
 
       return Object.values(filterKeysData).every(value => value);
     }));

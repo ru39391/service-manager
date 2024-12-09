@@ -15,7 +15,7 @@ import {
 } from '../utils/constants';
 
 interface IListRow {
-  caption: string | undefined;
+  caption?: string;
   items: TLinkedItem[];
 }
 

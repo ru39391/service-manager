@@ -30,7 +30,11 @@ import type {
   TLinkedGroup,
   TLinkedItem,
   TResLinkedAction,
-  TPricelistExtTypes
+  TPricelistExtTypes,
+  TResLinkParams,
+  TLinkedDeptKeys,
+  TLinkedSubdeptKeys,
+  TLinkedGroupKeys
 } from '../types';
 
 import { fetchArray, getMatchedItems } from '../utils';
@@ -44,6 +48,13 @@ type TCurrResLinkedData = {
   item: TItemData | undefined;
   data: TItemData;
 }
+
+type TResItemsData = {
+  groups: TLinkedGroup[];
+  pricelist: TLinkedItem[];
+}
+
+type TResItemsKeys = keyof TResItemsData;
 
 interface IResLinkedItems {
   resLinkedItems: TLinkedDept[];
@@ -86,15 +97,25 @@ const useResLinkedItems = (): IResLinkedItems => {
     );
 
     const currResLinkedData = pricelist[RESLINKS_KEY].find(item => item[ID_KEY] === Number(resId));
-    const data: TCustomData<TLinkedGroup[] | TLinkedItem[]> = {
+    const data = {
       [TYPES[GROUP_KEY]]: arr.reduce(
-        (acc: TLinkedGroup[], item) => [
-          ...acc,
-          ...item[TYPES[GROUP_KEY]].filter((group: TLinkedGroup) => group[TYPES[ITEM_KEY]].length > 0)
-        ], []
+        (acc: TLinkedGroup[], item) => {
+          const groups = item[TYPES[GROUP_KEY] as TLinkedSubdeptKeys] as TLinkedGroup[];
+
+          return [
+            ...acc,
+            ...groups.filter((group: TLinkedGroup) => {
+              const items = group[TYPES[ITEM_KEY] as TLinkedGroupKeys] as TLinkedItem[];
+
+              return items.length > 0;
+            })
+          ]
+        }, []
       ),
-      [TYPES[ITEM_KEY]]: arr.reduce((acc: TLinkedItem[], item) => [...acc, ...item[TYPES[ITEM_KEY]]], [])
-    };
+      [TYPES[ITEM_KEY]]: arr.reduce(
+        (acc: TLinkedItem[], item) => [...acc, ...item[TYPES[ITEM_KEY] as TLinkedSubdeptKeys] as TLinkedItem[]], []
+      )
+    } as TResItemsData;
     const params = [
         IS_COMPLEX_DATA_KEY,
         IS_GROUP_IGNORED_KEY,
@@ -102,7 +123,8 @@ const useResLinkedItems = (): IResLinkedItems => {
       ].reduce((acc, key) => ({
         ...acc,
         [key]: config === null ? false : Boolean(config[key])
-      }), {});
+      }), {} as Record<TResLinkParams, boolean>);
+    const groups = data[TYPES[GROUP_KEY] as TResItemsKeys] as TLinkedGroup[];
     const updResLinkedData = {
       [ID_KEY]: Number(resId),
       [TYPES[DEPT_KEY]]: handleLinkedItems(
@@ -112,11 +134,13 @@ const useResLinkedItems = (): IResLinkedItems => {
         )
       ),
       [TYPES[SUBDEPT_KEY]]: handleLinkedItems(arr),
-      [TYPES[GROUP_KEY]]: handleLinkedItems(data[TYPES[GROUP_KEY]]),
+      [TYPES[GROUP_KEY]]: handleLinkedItems(data[TYPES[GROUP_KEY] as TResItemsKeys]),
       [TYPES[ITEM_KEY]]: handleLinkedItems(
         [
-          ...data[TYPES[ITEM_KEY]],
-          ...data[TYPES[GROUP_KEY]].reduce((acc: TLinkedItem[], item) => [...acc, ...item[TYPES[ITEM_KEY]]], [])
+          ...data[TYPES[ITEM_KEY] as TResItemsKeys] as TLinkedItem[],
+          ...groups.reduce(
+              (acc: TLinkedItem[], item: TLinkedGroup) => [...acc, ...item[TYPES[ITEM_KEY] as TLinkedGroupKeys] as TLinkedItem[]], [] as TLinkedItem[]
+            )
         ]
       ),
       config: JSON.stringify(params)
@@ -210,7 +234,7 @@ const useResLinkedItems = (): IResLinkedItems => {
     setResLinkedItems(depts);
     setLinkedListExist([...groupedItems, ...items].length > 0);
     updateLinkedItems({
-      arr: depts.reduce((acc: TLinkedSubdept[], item) => [...acc, ...item[TYPES[SUBDEPT_KEY]]], []),
+      arr: depts.reduce((acc: TLinkedSubdept[], item) => [...acc, ...item[TYPES[SUBDEPT_KEY] as TLinkedDeptKeys] as TLinkedSubdept[]], []),
       config
     })
   };

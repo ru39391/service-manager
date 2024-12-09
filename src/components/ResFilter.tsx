@@ -29,7 +29,14 @@ import {
   UPDATED_KEY
 } from '../utils/constants';
 
-import type { TResourceData, TResParent, TResTemplate } from '../types';
+import type {
+  TResourceData,
+  TResParent,
+  TResTemplate,
+  TResTemplateKeys,
+  TResParentKeys,
+  TFilterData
+} from '../types';
 
 interface IResFilter {
   currentPage: number;
@@ -53,6 +60,8 @@ const ResFilter: FC<IResFilter> = ({
     handleFilterData,
     setFilterVisibility
   } = useFilter();
+
+  const isItemResParent = (item: TResParent | TResTemplate): item is TResParent => 'parent_id' in item;
 
   useEffect(() => {
     handlePageItems(filterResultList, currentPage);
@@ -101,7 +110,7 @@ const ResFilter: FC<IResFilter> = ({
             onClick={() => {
               handleFilterData(
                 filterData && filterData[NAME_KEY]
-                  ? { [NAME_KEY]: filterData[NAME_KEY], [UPDATED_KEY]: 1 }
+                  ? { [NAME_KEY]: filterData[NAME_KEY], [UPDATED_KEY]: 1 } as TFilterData
                   : null
               );
               setFilterVisibility(!isFilterVisible);
@@ -140,10 +149,10 @@ const ResFilter: FC<IResFilter> = ({
               {items.map(
                 (item: TResParent | TResTemplate) =>
                   <MenuItem
-                    key={item[id]}
-                    value={item[id]}
+                    key={isItemResParent(item) ? item[id as TResParentKeys] : item[id as TResTemplateKeys]}
+                    value={isItemResParent(item) ? item[id as TResParentKeys] : item[id as TResTemplateKeys]}
                   >
-                    {item[NAME_KEY]} - {item[id].toString()}
+                    {item[NAME_KEY]} - {(isItemResParent(item) ? item[id as TResParentKeys] : item[id as TResTemplateKeys]).toString()}
                   </MenuItem>
                 )
               }
