@@ -202,8 +202,8 @@ const useComplex = (): IComplex => {
 
   useEffect(() => {
     handleComplexData({
-      [COMPLEX_KEY]: formData ? formData.data[COMPLEX_KEY].toString() : '[]',
-      [IS_COMPLEX_KEY]: formData ? Number(formData.data[IS_COMPLEX_KEY]) : 0
+      [COMPLEX_KEY]: formData && formData.data[COMPLEX_KEY] ? formData.data[COMPLEX_KEY].toString() : '[]',
+      [IS_COMPLEX_KEY]: formData && formData.data[IS_COMPLEX_KEY] ? Number(formData.data[IS_COMPLEX_KEY]) : 0
     });
   }, [
     formData

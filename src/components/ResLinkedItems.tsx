@@ -12,7 +12,9 @@ import type {
   TLinkedGroup,
   TLinkedSubdept,
   TLinkedDept,
-  TLinkedDeptKeys
+  TLinkedDeptKeys,
+  TLinkedSubdeptKeys,
+  TLinkedGroupKeys
 } from '../types';
 
 import {
@@ -47,19 +49,27 @@ const ResLinkedItems: FC<IResLinkedItems> = ({ isLinkedListExist, linkedItems })
       (dept) => <Card key={dept[ID_KEY].toString()} variant="outlined" sx={{ mb: 1 }}>
         <CardContent>
           <Typography variant="h6" color="textPrimary" component="div" sx={{ mb: .5 }}>{dept[NAME_KEY]}</Typography>
-          {dept[TYPES[SUBDEPT_KEY] as TLinkedDeptKeys].map(
+          {[...dept[TYPES[SUBDEPT_KEY] as TLinkedDeptKeys] as TLinkedSubdept[]].map(
             (subdept: TLinkedSubdept) => <Fragment key={subdept[ID_KEY].toString()}>
               <Typography variant="subtitle1" color="textSecondary" component="div" sx={{ mb: .5 }}>
               {[
-                ...subdept[TYPES[ITEM_KEY]],
-                ...subdept[TYPES[GROUP_KEY]].reduce((acc: TLinkedItem[], data: TLinkedGroup) => [...acc, ...data[TYPES[ITEM_KEY]]], [])
+                ...[...subdept[TYPES[ITEM_KEY] as TLinkedSubdeptKeys] as TLinkedItem[]],
+                ...[...subdept[TYPES[GROUP_KEY] as TLinkedSubdeptKeys] as TLinkedGroup[]].reduce(
+                  (acc: TLinkedItem[], data: TLinkedGroup) => [...acc, ...data[TYPES[ITEM_KEY] as TLinkedGroupKeys] as TLinkedItem[]], []
+                )
               ].length === 0 ? EMPTY_CATEGORY : subdept[NAME_KEY]}
               </Typography>
-              <ListRow items={subdept[TYPES[ITEM_KEY]]} />
+              <ListRow items={subdept[TYPES[ITEM_KEY] as TLinkedSubdeptKeys] as TLinkedItem[]} />
 
-              {subdept[TYPES[GROUP_KEY]].length > 0 && subdept[TYPES[GROUP_KEY]].map(
-                (group: TLinkedGroup) => <ListRow key={group[ID_KEY].toString()} caption={group[NAME_KEY]} items={group[TYPES[ITEM_KEY]]} />
-              )}
+              {[...subdept[TYPES[GROUP_KEY] as TLinkedSubdeptKeys] as TLinkedGroup[]].length > 0
+                && [...subdept[TYPES[GROUP_KEY] as TLinkedSubdeptKeys] as TLinkedGroup[]].map(
+                  (group: TLinkedGroup) => <ListRow
+                      key={group[ID_KEY].toString()}
+                      caption={group[NAME_KEY]}
+                      items={group[TYPES[ITEM_KEY] as TLinkedGroupKeys] as TLinkedItem[]}
+                    />
+                )
+              }
             </Fragment>
           )}
         </CardContent>

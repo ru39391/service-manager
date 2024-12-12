@@ -20,6 +20,10 @@ import {
   ITEM_KEY
 } from '../utils/constants';
 
+import { TPricelistState } from '../services/slices/pricelist-slice';
+
+export type TPricelistStateKeys = keyof TPricelistState;
+
 // TODO: провести рефакторинг файла
 // TODO: разобраться с заменой TPricelistTypes и TPricelistExtTypes на более гибкий вариант, например, keyof TPricelistState
 export type TPricelistKeys = typeof DEPT_KEY | typeof SUBDEPT_KEY | typeof GROUP_KEY | typeof ITEM_KEY;
@@ -114,6 +118,8 @@ export type TResourceData = {
   publishedon: TResDate;
   editedon: TResDate;
 };
+
+export type TResourceKeys = keyof TResourceData;
 
 export type TLinkedData = {
   [ID_KEY]: number;

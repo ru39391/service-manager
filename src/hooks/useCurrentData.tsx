@@ -7,8 +7,11 @@ import useUrlHandler from './useUrlHandler';
 import type {
   TCustomData,
   TItemData,
+  TPricelistTypes,
   TResourceData,
-  TUrlData
+  TUrlData,
+  TPricelistStateKeys,
+  TItemsArr
 } from '../types';
 
 import {
@@ -49,11 +52,26 @@ const useCurrentData = (): ICurrentData => {
   const { currUrlData } = useUrlHandler();
   const { formFields, selecterFields } = useForm();
 
+  const isPricelistItemData = (item: TItemData | TResourceData): item is TItemData => typeof DEPT_KEY in item;
+
   const handleItemData = (): void => {
     const { type, id }: TUrlData = currUrlData;
-    const isItemExist = id !== null && Boolean(type) && Boolean(pricelist[type].length);
-    const itemData: TItemData = isItemExist ? pricelist[type].find((item: TItemData) => item[ID_KEY] === id) : {};
-    const resData: TResourceData = isItemExist ? pricelist[type].find((item: TResourceData) => item[RES_ID_KEY] === id) : {};
+    const key = type as TPricelistStateKeys;
+
+    if(!pricelist[key]) {
+      setCurrentCategory({} as TItemData);
+      setPageTitle('');
+      return;
+    }
+
+    const arr = type === RES_KEY ? pricelist[key] as TResourceData[] : pricelist[key] as TItemsArr;
+    const isItemExist = id !== null && Boolean(key) && Boolean(arr.length);
+    const itemData: TItemData = isItemExist
+      ? [...arr as TItemsArr].find((item: TItemData) => item[ID_KEY] === id) || {}
+      : {};
+    const resData: TResourceData = isItemExist
+      ? [...arr as TResourceData[]].find((item: TResourceData) => item[RES_ID_KEY] === id) || {} as TResourceData
+      : {} as TResourceData;
 
     setCurrentCategory(type === RES_KEY ? resData : itemData);
     setPageTitle(
@@ -64,12 +82,16 @@ const useCurrentData = (): ICurrentData => {
 
     setCurrentFormData({
       ...currUrlData,
-      caption: Object.values(TITLES)[Object.values(TYPES).indexOf(type)]
+      caption: Object.values(TITLES)[Object.values(TYPES).indexOf(type as TPricelistTypes)]
     });
   };
 
   const setCurrentFormValues = (type: string): TItemData => {
     //console.log('currentCategory: ', currentCategory);
+
+    if(!isPricelistItemData(currentCategory)) {
+      return {} as TItemData;
+    }
 
     // TODO: проверить после загрузки нового документа:
     // решить проблему с undefined (пробрасыванием из другого хука) - или для отслеживания обновления не нужно?
@@ -105,6 +127,12 @@ const useCurrentData = (): ICurrentData => {
       )
     }
   }
+
+  useEffect(() => {
+    console.log({ currentCategory });
+  }, [
+    currentCategory
+  ]);
 
   useEffect(() => {
     handleItemData();
