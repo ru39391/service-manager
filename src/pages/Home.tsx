@@ -1,11 +1,15 @@
-import { FC } from 'react';
+import { FC, Suspense, lazy } from 'react';
 
-import ResList from '../components/ResList';
+//import ResList from '../components/ResList';
 import Wrapper from '../components/Wrapper';
+
+const ResList = lazy(() => import('../components/ResList'));
 
 const Home: FC = () => {
   return (
-    <Wrapper><ResList /></Wrapper>
+    <Wrapper>
+      <Suspense><ResList /></Suspense>
+    </Wrapper>
   )
 };
 

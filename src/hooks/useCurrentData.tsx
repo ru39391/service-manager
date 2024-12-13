@@ -129,12 +129,6 @@ const useCurrentData = (): ICurrentData => {
   }
 
   useEffect(() => {
-    console.log({ currentCategory });
-  }, [
-    currentCategory
-  ]);
-
-  useEffect(() => {
     handleItemData();
   }, [
     currUrlData,
