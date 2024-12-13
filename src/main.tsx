@@ -6,8 +6,10 @@ import App from './App.tsx';
 import { Provider } from 'react-redux';
 import store from './services/store';
 
+import { ROOT_PATH } from './utils/constants';
+
 ReactDOM.createRoot(document.getElementById('root')!).render(
-  <BrowserRouter>
+  <BrowserRouter basename={ROOT_PATH}>
     <React.StrictMode>
       <Provider store={store}><App /></Provider>
     </React.StrictMode>

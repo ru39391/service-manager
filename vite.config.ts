@@ -8,10 +8,6 @@ export default defineConfig({
     rollupOptions: {
       output: {
         manualChunks(id) {
-          if (id.includes('/react')) {
-            //console.log(id);
-          }
-
           if (id.includes('node_modules')) {
             if (id.includes('/@mui/base/') && !id.includes('/@mui/lab/')) {
               return 'mui-base';
@@ -45,49 +41,68 @@ export default defineConfig({
               return 'mui-theming';
             }
 
-            if (id.includes('/axios/')) {
-              return 'axios';
+            if (id.includes('/@mui/styled-engine/')) {
+              return 'mui-styled-engine';
             }
 
-            if (id.includes('redux/')) {
-              return 'redux';
+            if (id.includes('/axios/')) {
+              return 'axios';
             }
 
             if (id.includes('/@popperjs/')) {
               return 'popperjs';
             }
 
-            if (id.includes('/@emotion/')) {
-              return 'emotion';
-            }
-
             if (id.includes('/@floating-ui/')) {
               return 'floating-ui';
             }
 
-            if (id.includes('/react/')) {
-              return 'react';
+            if (id.includes('/prop-types/')) {
+              return 'prop-types';
             }
 
-            if (id.includes('/react-is/')) {
-              return 'react-is';
+            if (id.includes('/scheduler/')) {
+              return 'scheduler';
             }
 
-            if (id.includes('/react-dom/')) {
-              return 'react-dom';
+            if (id.includes('/stylis/')) {
+              return 'stylis';
             }
 
-            if (id.includes('/react-router')) {
-              return 'react-router';
+            if (id.includes('/@fontsource/')) {
+              return 'fontsource';
             }
 
-            if (id.includes('/react-transition-group/')) {
-              return 'react-transition-group';
+            if (id.includes('/@babel/')) {
+              return 'babel';
+            }
+
+            if (id.includes('/hoist-non-react-statics/')) {
+              return 'hoist-non-react-statics';
+            }
+
+            if (id.includes('/reselect/')) {
+              return 'reselect';
+            }
+
+            if (id.includes('/immer/')) {
+              return 'immer';
+            }
+
+            if (id.includes('/xlsx/')) {
+              return 'xlsx';
+            }
+
+            if (id.includes('/clsx/')) {
+              return 'clsx';
             }
 
             return 'vendor';
           }
-        }
+        },
+        entryFileNames: 'assets/[name].js',
+        chunkFileNames: 'assets/[name].js',
+        assetFileNames: 'assets/[name].[ext]'
       }
     },
   }

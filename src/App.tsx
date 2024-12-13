@@ -33,10 +33,6 @@ const App: FC = () => {
   const theme = createTheme({
     palette: {
       mode: 'light',
-      background: {
-        //@ts-expect-error
-        body: '#F4F5FA'
-      }
     }
   });
 

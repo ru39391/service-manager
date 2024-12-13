@@ -21,7 +21,8 @@ import {
   EDIT_ITEM_TITLE,
   ADD_CATEGORY_TITLE,
   ADD_ACTION_KEY,
-  EDIT_ACTION_KEY
+  EDIT_ACTION_KEY,
+  ROOT_PATH
 } from '../utils/constants';
 import { TItemData, TPricelistTypes, TActionKeys } from '../types';
 
@@ -101,7 +102,7 @@ const Header: FC = () => {
         sx={{ mb: 4, typography: 'subtitle2' }}
       >
         <Link
-          href="/"
+          href={ROOT_PATH}
           color="inherit"
           underline="hover"
           sx={{ display: 'flex', alignItems: 'center' }}
@@ -109,7 +110,7 @@ const Header: FC = () => {
           Главная
         </Link>
         {currentFormData.type !== RES_KEY && <Link
-          href={`/${currentFormData.type}`}
+          href={`${ROOT_PATH}/${currentFormData.type}`}
           color="inherit"
           underline="hover"
           sx={{ display: 'flex', alignItems: 'center' }}

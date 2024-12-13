@@ -21,7 +21,9 @@ import {
   RES_KEY,
   PARENT_KEY,
   TEMPLATE_KEY,
-  IS_PARENT_KEY
+  IS_PARENT_KEY,
+  SITE_URL,
+  ROOT_PATH
 } from '../utils/constants';
 
 import type { TResourceData } from '../types';
@@ -46,13 +48,13 @@ const ResCard: FC<IResCard> = ({ item }) => {
       <CardActions>
       <ButtonGroup aria-label="outlined primary button group">
         <Tooltip placement="top" title="Просмотр страницы">
-          <IconButton href={`${'http://stomistok.local/'}${item.uri}`} target="_blank"><RemoveRedEye /></IconButton>
+          <IconButton href={`${SITE_URL}${item.uri}`} target="_blank"><RemoveRedEye /></IconButton>
         </Tooltip>
         <Tooltip placement="top" title="Изменить список услуг">
-          <IconButton href={`/${RES_KEY}/${item[RES_ID_KEY].toString()}`}><Settings /></IconButton>
+          <IconButton href={`${ROOT_PATH}/${RES_KEY}/${item[RES_ID_KEY].toString()}`}><Settings /></IconButton>
         </Tooltip>
         <Tooltip placement="top" title="Редактировать ресурс">
-          <IconButton href={`${'http://stomistok.local/'}manager/?a=resource/update&id=${item[RES_ID_KEY].toString()}`} target="_blank"><Edit /></IconButton>
+          <IconButton href={`${SITE_URL}manager/?a=resource/update&id=${item[RES_ID_KEY].toString()}`} target="_blank"><Edit /></IconButton>
         </Tooltip>
       </ButtonGroup>
       </CardActions>

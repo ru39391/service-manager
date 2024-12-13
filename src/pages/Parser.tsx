@@ -60,7 +60,8 @@ import {
   EDIT_ITEM_TITLE,
   ID_KEY,
   NAME_KEY,
-  TYPES
+  TYPES,
+  ROOT_PATH
 } from '../utils/constants';
 
 const InvisibleInput = styled('input')({
@@ -301,7 +302,7 @@ const Parser: FC = () => {
             sx={{ mb: 4, typography: 'subtitle2' }}
           >
             <Link
-              href="/"
+              href={ROOT_PATH}
               color="inherit"
               underline="hover"
               sx={{ display: 'flex', alignItems: 'center' }}

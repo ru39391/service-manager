@@ -27,7 +27,7 @@ const Layout: FC<ILayout> = ({ children }) => {
           py: 3,
           height: '100%',
           minHeight: '100vh',
-          bgcolor: 'background.body'
+          bgcolor: '#F4F5FA'
         }}
       >
         {children}

@@ -139,8 +139,9 @@ const LINKED_RES_PARAMS: TCustomData<string> = {
   [REMOVE_ACTION_KEY]: 'Отменить выбор групп'
 }
 
-const SITE_URL = `http://localhost/`;
-const API_URL = `${SITE_URL}api/`;//'http://stomistok.local/api/';
+const ROOT_PATH = import.meta.env.VITE_ROOT_PATH;
+const SITE_URL = import.meta.env.VITE_SITE_URL;
+const API_URL = import.meta.env.VITE_API_URL;
 
 const PAGE_COUNTER = 15;
 
@@ -215,8 +216,9 @@ export {
   HANDLED_ITEMS_CAPTIONS,
   TITLES,
   TYPES,
-  API_URL,
   SITE_URL,
+  API_URL,
+  ROOT_PATH,
   PAGE_COUNTER,
   IS_COMPLEX_DATA_KEY,
   IS_GROUP_IGNORED_KEY,
