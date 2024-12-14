@@ -100,9 +100,9 @@ export default defineConfig({
             return 'vendor';
           }
         },
-        entryFileNames: 'assets/[name].js',
-        chunkFileNames: 'assets/[name].js',
-        assetFileNames: 'assets/[name].[ext]'
+        entryFileNames: 'app/assets/[name].js',
+        chunkFileNames: 'app/assets/[name].js',
+        assetFileNames: 'app/assets/[name].[ext]'
       }
     },
   }
