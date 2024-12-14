@@ -60,7 +60,7 @@ const useFileUploader = (): IFileUploaderHook => {
       .map(
         ({ RAZDID, RAZDNAME }) => ({
           [ID_KEY]: Number(RAZDID),
-          [NAME_KEY]: RAZDNAME.toString().trim().slice(0, 255)
+          [NAME_KEY]: RAZDNAME.toString().slice(0, 255).trim()
         })
       );
 
@@ -72,7 +72,7 @@ const useFileUploader = (): IFileUploaderHook => {
       .map(
         ({ SPECID, SPECNAME, RAZDID }) => ({
           [ID_KEY]: Number(SPECID),
-          [NAME_KEY]: SPECNAME.toString().trim().slice(0, 255),
+          [NAME_KEY]: SPECNAME.toString().slice(0, 255).trim(),
           [DEPT_KEY]: Number(RAZDID)
         })
       );
@@ -86,7 +86,7 @@ const useFileUploader = (): IFileUploaderHook => {
       .map(
         ({ RAZDID, SPECID, ZAGOLOVOK_ID, SCHID, SCHNAME }) => ({
           [ID_KEY]: Number(SCHID),
-          [NAME_KEY]: SCHNAME.toString().trim().slice(0, 255),
+          [NAME_KEY]: SCHNAME.toString().slice(0, 255).trim(),
           [DEPT_KEY]: Number(RAZDID),
           [SUBDEPT_KEY]: Number(SPECID),
           [GROUP_KEY]: Number(ZAGOLOVOK_ID)
@@ -127,7 +127,7 @@ const useFileUploader = (): IFileUploaderHook => {
 
           return {
             [ID_KEY]: Number(SCHID),
-            [NAME_KEY]: SCHNAME.toString().trim().slice(0, 255),
+            [NAME_KEY]: SCHNAME.toString().slice(0, 255).trim(),
             [PRICE_KEY]: ISCOMPLEX ? summ : Number(SPRICE),
             [DEPT_KEY]: Number(RAZDID),
             [SUBDEPT_KEY]: Number(SPECID),

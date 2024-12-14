@@ -208,6 +208,7 @@ const ResItem: FC = () => {
                 />
               }
             />
+            {/* // TODO: "Комплексный выбор" не устанавливается при получении данных с сервера */}
             <FormControlLabel
               label={LINKED_RES_PARAMS[IS_COMPLEX_DATA_KEY]}
               sx={{ mb: .25 }}
