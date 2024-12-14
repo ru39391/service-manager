@@ -161,7 +161,7 @@ const useComplex = (): IComplex => {
   }
 
   const handleComplexItem = (data: TItemData) => {
-    console.log(data);
+    // console.log(data);
 
     switch(data.action) {
       case `${REMOVE_ACTION_KEY}`:

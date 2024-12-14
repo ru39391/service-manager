@@ -2,7 +2,11 @@ import type {
   TItemData,
   TItemsArr
 } from '../types';
-import { ID_KEY, NAME_KEY } from './constants';
+import {
+  ID_KEY,
+  NAME_KEY,
+  COMPLEX_KEY
+} from './constants';
 
 const fetchArray = (arr: TItemsArr, param: string): TItemsArr => {
   return arr.reduce((acc: TItemsArr, item: TItemData) => {
@@ -59,7 +63,15 @@ const setRespMessage = (
     `
 };
 
-const fetchItemsArr = (arr: TItemsArr | undefined): TItemsArr => arr?.map(data => ({ ...data, ...( data[NAME_KEY] && typeof data[NAME_KEY] === 'string' && { [NAME_KEY]: data[NAME_KEY].trim() } ) })) || [];
+const fetchItemsArr = (arr: TItemsArr | undefined): TItemsArr => arr?.map(
+  data => ({
+    ...data,
+    ...(
+      data[NAME_KEY] && typeof data[NAME_KEY] === 'string' && { [NAME_KEY]: data[NAME_KEY].trim() },
+      data[COMPLEX_KEY] && typeof data[COMPLEX_KEY] === 'string' && !Array.isArray(JSON.parse(data[COMPLEX_KEY])) && { [COMPLEX_KEY]: '[]' }
+    )
+  })
+) || [];
 
 const handleFetchedArr = (arr: TItemsArr): TItemsArr => sortStrArray(fetchItemsArr(arr), NAME_KEY);
 

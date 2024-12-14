@@ -148,7 +148,8 @@ const Parser: FC = () => {
 
     toggleModal({
       title: `${title} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}`,
-      desc: `Вы собираетесь ${title.toLowerCase()} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}. Общее количество обновляемых записей: ${tableData ? tableData.rows.length : 0}`
+      desc: `Вы собираетесь ${title.toLowerCase()} ${categoryTypes && categoryTypes[currSubCategory].toLowerCase()}. Общее количество обновляемых записей: ${tableData ? tableData.rows.length : 0}`,
+      isParserData: true
     });
     dispatch(setFormData({
       data: {

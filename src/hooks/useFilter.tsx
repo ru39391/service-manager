@@ -109,7 +109,7 @@ const useFilter = (): IFilter => {
 
   useEffect(() => {
     filterList();
-    console.log(filterData);
+    // console.log(filterData);
   }, [
     filterData
   ]);

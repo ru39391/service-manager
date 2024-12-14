@@ -17,10 +17,12 @@ import type { TCustomData, TItemData } from '../types';
 import {
   ID_KEY,
   ITEM_KEY,
+  INDEX_KEY,
   COMPLEX_KEY,
   IS_VISIBLE_KEY,
   IS_COMPLEX_ITEM_KEY,
   IS_COMPLEX_KEY,
+  ROW_INDEX_KEY,
   ADD_ACTION_KEY,
   EDIT_ACTION_KEY,
   REMOVE_ACTION_KEY,
@@ -140,7 +142,7 @@ const DataCard: FC = () => {
           {formFields[formData.type].map(
             (key) =>
               <Fragment key={key}>
-                <Typography gutterBottom variant="body1" component="div" sx={{ mb: .25 }}>{CAPTIONS[key]}</Typography>
+                <Typography gutterBottom variant="body1" component="div" sx={{ mb: .25 }}>{key === INDEX_KEY ? CAPTIONS[ROW_INDEX_KEY] : CAPTIONS[key]}</Typography>
                 <Typography variant="body2" component="div" sx={{ mb: 1.5, color: 'text.secondary' }}>
                   {formData.data[key]}
                   {tableData && formData.data[key] !== tableData.rows[0][key]
@@ -179,9 +181,12 @@ const DataCard: FC = () => {
                 {complexData[COMPLEX_KEY].split(', ').map(
                   (item, index) => <Typography key={index} variant="body2" sx={{ mb: .05, color: 'text.secondary' }}>{item}</Typography>
                 )}
-                {tableData && complexData[COMPLEX_KEY] !== tableData.rows[0][COMPLEX_KEY] && tableData.rows[0][COMPLEX_KEY].split(', ').map(
-                  (item: string, index: number) => <Alert key={index} icon={<Check fontSize="inherit" />} severity="success">{item}</Alert>
-                )}
+                {tableData && complexData[COMPLEX_KEY] !== tableData.rows[0][COMPLEX_KEY] && Boolean(tableData.rows[0][COMPLEX_KEY]) && tableData.rows[0][COMPLEX_KEY].split(', ').length > 0
+                  ? tableData.rows[0][COMPLEX_KEY].split(', ').map(
+                    (item: string, index: number) => <Alert key={index} icon={<Check fontSize="inherit" />} severity="success">{item}</Alert>
+                  )
+                  : <Alert icon={<Check fontSize="inherit" />} severity="success">Текущее значение: список услуг не указан</Alert>
+                }
               </>
             : ''
           }

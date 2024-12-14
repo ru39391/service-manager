@@ -55,6 +55,7 @@ const PRICE_KEY = 'price';
 const DEPT_KEY = 'dept';
 const SUBDEPT_KEY = 'subdept';
 const GROUP_KEY = 'group';
+const ROW_INDEX_KEY = 'id';
 
 const IS_COMPLEX_ITEM_KEY = 'isComplexItem';
 const IS_COMPLEX_KEY = 'isComplex';
@@ -102,7 +103,7 @@ const TITLES: TCustomData<string> = {
 const SORT_CAPTION = 'Порядок сортировки';
 
 const CAPTIONS: TCustomData<string> = {
-  [INDEX_KEY]: '№',
+  [ROW_INDEX_KEY]: '№',
   [ID_KEY]: 'ID',
   [NAME_KEY]: 'Название',
   [PRICE_KEY]: 'Цена, руб.',
@@ -208,6 +209,7 @@ export {
   CREATEDON_KEY,
   UPDATEDON_KEY,
   QUANTITY_KEY,
+  ROW_INDEX_KEY,
   SORT_CAPTION,
   CAPTIONS,
   CREATED_KEY,

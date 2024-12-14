@@ -15,7 +15,8 @@ import {
   CAPTIONS,
   TYPES,
   ITEM_KEY,
-  PRICE_KEY
+  PRICE_KEY,
+  ROW_INDEX_KEY
 } from '../utils/constants';
 
 import type {
@@ -54,7 +55,7 @@ const useTableData = (): ITableData => {
     return data ? data[NAME_KEY] as string : '';
   }
 
-  const getItemsName = (arr: TCustomData<number>[], items: TItemsArr): string => arr.length
+  const getItemsName = (arr: TCustomData<number>[], items: TItemsArr): string => Array.isArray(arr) && arr.length
    ? arr
       .map(item => ({ id: Number(Object.keys(item)[0]), quantity: Object.values(item)[0] }))
       .reduce((acc: string[], row: TCustomData<number>) => {
@@ -74,7 +75,7 @@ const useTableData = (): ITableData => {
     }
 
     const keys = [
-      INDEX_KEY,
+      ROW_INDEX_KEY,
       ID_KEY,
       NAME_KEY,
       PRICE_KEY,
@@ -88,10 +89,9 @@ const useTableData = (): ITableData => {
     ];
     const items = fileData || data;
     const rows: GridValidRowModel[] = sortStrArray([...arr], NAME_KEY)
-      .reduce((acc: GridValidRowModel[], item: GridValidRowModel, index) => [...acc, {
-        id: index,
-        [INDEX_KEY]: index + 1,
-        ...Object.keys(item).reduce((acc, key, index) => key === INDEX_KEY ? acc : ({ ...acc, [key]: Object.values(item)[index] }), {}),
+      .reduce((acc: GridValidRowModel[], item: GridValidRowModel, index) => !item ? [] : [...acc, {
+        [ROW_INDEX_KEY]: index + 1,
+        ...Object.keys(item).reduce((acc, key, index) => ({ ...acc, [key]: Object.values(item)[index] }), {}),
         ...(isValueExist(item[DEPT_KEY]) && { [DEPT_KEY]: getCategoryName(items[TYPES[DEPT_KEY]], item, DEPT_KEY) }),
         ...(isValueExist(item[SUBDEPT_KEY]) && { [SUBDEPT_KEY]: getCategoryName(items[TYPES[SUBDEPT_KEY]], item, SUBDEPT_KEY) }),
         ...(isValueExist(item[GROUP_KEY]) && { [GROUP_KEY]: getCategoryName(items[TYPES[GROUP_KEY]], item, GROUP_KEY) }),
@@ -100,7 +100,7 @@ const useTableData = (): ITableData => {
         ...(isValueExist(item[COMPLEX_KEY]) && { [COMPLEX_KEY]: getItemsName(JSON.parse(item[COMPLEX_KEY]), items[TYPES[ITEM_KEY]]) }),
         ...(isValueExist(item[IS_VISIBLE_KEY]) && setBooleanCaption(item, IS_VISIBLE_KEY))
       }], []);
-    const cols: GridColDef<GridValidRowModel>[] = Object.keys(rows[0])
+    const cols: GridColDef<GridValidRowModel>[] = !rows[0] ? [] : Object.keys(rows[0])
       .filter((key) => keys.includes(key))
       .map((item) => ({
         field: item,
