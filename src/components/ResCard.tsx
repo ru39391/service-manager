@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { NavLink } from 'react-router-dom';
 import {
   ButtonGroup,
   Card,
@@ -22,8 +23,7 @@ import {
   PARENT_KEY,
   TEMPLATE_KEY,
   IS_PARENT_KEY,
-  SITE_URL,
-  ROOT_PATH
+  SITE_URL
 } from '../utils/constants';
 
 import type { TResourceData } from '../types';
@@ -51,7 +51,7 @@ const ResCard: FC<IResCard> = ({ item }) => {
           <IconButton href={`${SITE_URL}${item.uri}`} target="_blank"><RemoveRedEye /></IconButton>
         </Tooltip>
         <Tooltip placement="top" title="Изменить список услуг">
-          <IconButton href={`${ROOT_PATH}/${RES_KEY}/${item[RES_ID_KEY].toString()}`}><Settings /></IconButton>
+          <IconButton component={NavLink} to={`/${RES_KEY}/${item[RES_ID_KEY].toString()}`}><Settings /></IconButton>
         </Tooltip>
         <Tooltip placement="top" title="Редактировать ресурс">
           <IconButton href={`${SITE_URL}manager/?a=resource/update&id=${item[RES_ID_KEY].toString()}`} target="_blank"><Edit /></IconButton>

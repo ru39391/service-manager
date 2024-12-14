@@ -4,6 +4,7 @@ import {
   useState,
   useEffect
 } from 'react';
+import { NavLink } from 'react-router-dom';
 import { styled } from '@mui/material/styles';
 import {
   Badge,
@@ -60,8 +61,7 @@ import {
   EDIT_ITEM_TITLE,
   ID_KEY,
   NAME_KEY,
-  TYPES,
-  ROOT_PATH
+  TYPES
 } from '../utils/constants';
 
 const InvisibleInput = styled('input')({
@@ -302,7 +302,8 @@ const Parser: FC = () => {
             sx={{ mb: 4, typography: 'subtitle2' }}
           >
             <Link
-              href={ROOT_PATH}
+              component={NavLink}
+              to="/"
               color="inherit"
               underline="hover"
               sx={{ display: 'flex', alignItems: 'center' }}

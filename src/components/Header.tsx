@@ -1,4 +1,5 @@
 import { FC } from 'react';
+import { NavLink } from 'react-router-dom';
 import {
   Box,
   Link,
@@ -21,8 +22,7 @@ import {
   EDIT_ITEM_TITLE,
   ADD_CATEGORY_TITLE,
   ADD_ACTION_KEY,
-  EDIT_ACTION_KEY,
-  ROOT_PATH
+  EDIT_ACTION_KEY
 } from '../utils/constants';
 import { TItemData, TPricelistTypes, TActionKeys } from '../types';
 
@@ -102,7 +102,8 @@ const Header: FC = () => {
         sx={{ mb: 4, typography: 'subtitle2' }}
       >
         <Link
-          href={ROOT_PATH}
+          component={NavLink}
+          to="/"
           color="inherit"
           underline="hover"
           sx={{ display: 'flex', alignItems: 'center' }}
@@ -110,7 +111,8 @@ const Header: FC = () => {
           Главная
         </Link>
         {currentFormData.type !== RES_KEY && <Link
-          href={`${ROOT_PATH}/${currentFormData.type}`}
+          component={NavLink}
+          to={`/${currentFormData.type}`}
           color="inherit"
           underline="hover"
           sx={{ display: 'flex', alignItems: 'center' }}
