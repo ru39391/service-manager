@@ -2,7 +2,6 @@ import { useState } from 'react';
 import { sortStrArray } from '../utils';
 import { GridValidRowModel, GridColDef } from '@mui/x-data-grid';
 import {
-  INDEX_KEY,
   ID_KEY,
   NAME_KEY,
   DEPT_KEY,
