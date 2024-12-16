@@ -1,30 +1,39 @@
-# React + TypeScript + Vite
+# Веб-приложение для управления прайслистом стоматологической клиники на 3000+ позиций
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Доступный функционал:
+- Парсинг xlsx-документа;
+- Сравнение данных документа с существующими на сайте записями, отображение изменений;
+- Создание, измененеие, удаление данных об услугах и прочих структурных единицах (группах услуг, их специализациях и отделениях специализаций);
+- Создание кастомных прайслистов произвольных услуг и привязка их к ресурсам сайта (посадочным страницам, статьям и проч.)
 
-Currently, two official plugins are available:
+## Запуск и сборка приложения
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react/README.md) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Используется Vite. Для установки зависимостей выполните в директории проекта:
 
-## Expanding the ESLint configuration
+### `npm i`
 
-If you are developing a production application, we recommend updating the configuration to enable type aware lint rules:
+Для запуска приложения в режиме разработки:
 
-- Configure the top-level `parserOptions` property like this:
+### `npm run dev`
 
-```js
-export default {
-  // other rules...
-  parserOptions: {
-    ecmaVersion: 'latest',
-    sourceType: 'module',
-    project: ['./tsconfig.json', './tsconfig.node.json'],
-    tsconfigRootDir: __dirname,
-  },
-}
-```
+Приложение будет доступно по адресу [http://localhost:5173/](http://localhost:5173/)
 
-- Replace `plugin:@typescript-eslint/recommended` to `plugin:@typescript-eslint/recommended-type-checked` or `plugin:@typescript-eslint/strict-type-checked`
-- Optionally add `plugin:@typescript-eslint/stylistic-type-checked`
-- Install [eslint-plugin-react](https://github.com/jsx-eslint/eslint-plugin-react) and add `plugin:react/recommended` & `plugin:react/jsx-runtime` to the `extends` list
+Рекомендуется использовать NodeJS версии v18.0.0
+
+Для подготовки приложения к публикации выполните в консоли:
+
+### `npm run build`
+
+Минифицированные файлы приложения будут доступны в директории `dist` в корне проекта.
+
+## TODO:
+
+- Составить документацию для компонентов и методов приложения;
+- Поправить выбор шаблона и родительского ресурса в фильтре (ресурсы не найдены);
+- Устранить баг удаления специализации в списке множественного выбора (преобразование в строку недопустимого объекта);
+- Поправить отображение списка привязанных услуг при установленном чекбоксе "Комплексный выбор".
+
+## Рефакторинг:
+
+- Пересмотреть используемые типы;
+- Рассмотреть варианты применения useCallback и useMemo.
